@@ -1,0 +1,5 @@
+<library path="multi_data_monitor">
+  <class type="MultiDataMonitor" base_class_type="rviz_common::Panel">
+    <description>MultiDataMonitor</description>
+  </class>
+</library>
