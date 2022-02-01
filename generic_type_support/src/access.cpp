@@ -32,6 +32,16 @@ std::vector<std::string> split(const std::string & input, char delimiter)
   return result;
 }
 
+std::string join(const std::vector<std::string> & input, const std::string & delimiter)
+{
+  std::string result;
+  for (size_t i = 0; i < input.size(); ++i)
+  {
+    result += (i ? delimiter : "") + input[i];
+  }
+  return result;
+}
+
 GenericTypeAccessField::GenericTypeAccessField(const std::string field)
 {
   const auto token = split(field, '@');
@@ -52,13 +62,14 @@ GenericTypeAccessField::GenericTypeAccessField(const std::string field)
   throw std::runtime_error("Invalid field '" + field + "'");
 }
 
-GenericTypeAccess::GenericTypeAccess(const std::string access)
+GenericTypeAccess::GenericTypeAccess(const std::string & path, const std::string & type)
 {
-  for (const auto & field : split(access, '.'))
+  for (const auto & field : split(path, '.'))
   {
     fields_.emplace_back(field);
   }
-  access_ = access;
+  path_ = path;
+  type_ = join(split(type, '/'), "::");
 }
 
 const YAML::Node GenericTypeAccess::Get(const YAML::Node & yaml) const
@@ -90,7 +101,7 @@ bool GenericTypeAccess::Validate(const TypeSupportClass & support) const
     const auto & field = *iter;
     if (!support_class.HasField(field.name))
     {
-      throw std::runtime_error("Field '" + access_ +"' is not a member of '" + support.GetFullName() + "'");
+      throw std::runtime_error("Field '" + path_ +"' is not a member of '" + support.GetFullName() + "'");
     }
 
     TypeSupportField support_field = support_class.GetField(field.name);
@@ -101,12 +112,22 @@ bool GenericTypeAccess::Validate(const TypeSupportClass & support) const
         support_class = support_field.GetClass();
         continue;
       }
-      throw std::runtime_error("Field '" + access_ +"' is not a member of '" + support.GetFullName() + "'");
+      throw std::runtime_error("Field '" + path_ +"' is not a member of '" + support.GetFullName() + "'");
     }
 
     if (support_field.IsClass())
     {
-      throw std::runtime_error("Field '" + access_ +"' in '" + support.GetFullName() + "' is not a primitive type");
+      if(type_.empty())
+      {
+        throw std::runtime_error("Field '" + path_ +"' in '" + support.GetFullName() + "' is not a primitive type");
+      }
+      else
+      {
+        if (type_ != support_field.GetClass().GetFullName())
+        {
+          throw std::runtime_error("Field '" + path_ +"' in '" + support.GetFullName() + "' is not '" + type_ + "'");
+        }
+      }
     }
   }
   return true;

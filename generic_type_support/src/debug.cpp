@@ -50,7 +50,7 @@ void callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized)
 
 int main(int argc, char **argv)
 {
-  generic_type_support::GenericTypeAccess access("stamp.nanosec");
+  generic_type_support::GenericTypeAccess access("stamp.nanosec", "");
   generic_type_support::GenericMessageSupport support("std_msgs/msg/Header");
   access.Validate(support.GetClass());
 

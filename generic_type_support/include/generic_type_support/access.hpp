@@ -38,12 +38,13 @@ struct GenericTypeAccess
 {
 public:
   GenericTypeAccess() = default;
-  GenericTypeAccess(const std::string access);
+  GenericTypeAccess(const std::string & path, const std::string & type);
   const YAML::Node Get(const YAML::Node & yaml) const;
   bool Validate(const TypeSupportClass & support) const;
 
 public:
-  std::string access_;  // TODO: remove debug value
+  std::string path_;  // TODO: remove debug value
+  std::string type_;  // TODO: remove debug value ?
   std::vector<GenericTypeAccessField> fields_;
 };
 
