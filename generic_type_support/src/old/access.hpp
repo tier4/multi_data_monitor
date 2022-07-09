@@ -12,32 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
-#define GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+#ifndef GENERIC_TYPE_SUPPORT__ACCESS_HPP_
+#define GENERIC_TYPE_SUPPORT__ACCESS_HPP_
 
 #include "typesupport.hpp"
 
 #include <yaml-cpp/yaml.h>
-#include <memory>
+#include <string>
 #include <vector>
 
 namespace generic_type_support
 {
 
-class GenericMessageSupport
+struct GenericTypeAccessField
 {
-public:
-  GenericMessageSupport(const std::string & type);
-  YAML::Node DeserializeYAML(const rclcpp::SerializedMessage & serialized) const;
-  std::string GetTypeName() const { return type_; }
-  TypeSupportClass GetClass() const { return introspection_.GetClass(); }
+  enum class Type {VALUE, LIST};
+  explicit GenericTypeAccessField(const std::string field);
 
-private:
-  const std::string type_;
-  const TypeSupportMessage introspection_;
-  const TypeSupportSerialization serialization_;
+  Type type;
+  std::string name;
+  int index;
 };
+
+
+  bool Validate(const TypeSupportClass & support) const;
+
+  std::string path_;  // TODO: remove debug value
+  std::string type_;  // TODO: remove debug value ?
+  std::vector<GenericTypeAccessField> fields_;
 
 }  // namespace generic_type_support
 
-#endif  // GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+#endif  // GENERIC_TYPE_SUPPORT__ACCESS_HPP_

@@ -115,6 +115,11 @@ bool GenericTypeAccess::Validate(const TypeSupportClass & support) const
       throw std::runtime_error("Field '" + path_ +"' is not a member of '" + support.GetFullName() + "'");
     }
 
+/*
+    std::string last_type = "primitive";
+    if (support_field.IsClass())
+    {
+*/
     if (support_field.IsClass())
     {
       if(type_.empty())
@@ -129,6 +134,7 @@ bool GenericTypeAccess::Validate(const TypeSupportClass & support) const
         }
       }
     }
+
   }
   return true;
 }

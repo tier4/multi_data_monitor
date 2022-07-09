@@ -12,20 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#ifndef GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+#define GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
 
-#include <gtest/gtest.h>
-#include "generic_type_support/generic_type_support.hpp"
+#include "typesupport.hpp"
 
-/*
-TEST(generic_type_support, test1)
+#include <vector>
+
+namespace generic_type_support
 {
-  const auto support = generic_type_support::TypeSupportMessage("std_msgs/msg/Header");
-  const auto message = support.GetClass();
-}
-*/
+  std::string GetTypeName() const { return type_; }
+  TypeSupportClass GetClass() const { return introspection_.GetClass(); }
 
-int main(int argc, char ** argv)
-{
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
-}
+
+  const std::string type_;
+  const TypeSupportMessage introspection_;
+  const TypeSupportSerialization serialization_;
+
+
+}  // namespace generic_type_support
+
+#endif  // GENERIC_TYPE_SUPPORT__MESSAGE_HPP_

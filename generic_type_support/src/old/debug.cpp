@@ -12,11 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "generic_type_support/message.hpp"
+#include "generic_type_support/access.hpp"
+
 #include <yaml-cpp/yaml.h>
 #include <iostream>
 #include <rclcpp/rclcpp.hpp>
 
-/*
 std::ostream& operator<<(std::ostream& os, const rclcpp::SerializedMessage & msg)
 {
   const auto array = msg.get_rcl_serialized_message();
@@ -45,11 +47,9 @@ void callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized)
 
   rclcpp::shutdown();
 }
-*/
 
 int main(int argc, char **argv)
 {
-  /*
   generic_type_support::GenericTypeAccess access("stamp.nanosec", "");
   generic_type_support::GenericMessageSupport support("std_msgs/msg/");
   access.Validate(support.GetClass());
@@ -66,5 +66,4 @@ int main(int argc, char **argv)
 
   rclcpp::spin(node);
   rclcpp::shutdown();
-  */
 }

@@ -15,7 +15,35 @@
 #ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
 #define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
 
-#include "message.hpp"
-#include "access.hpp"
+#include <yaml-cpp/yaml.h>
+#include <rclcpp/serialization.hpp>
+#include <memory>
+
+namespace generic_type_support
+{
+
+class GenericMessage
+{
+public:
+  GenericMessage(const std::string & type);
+  YAML::Node DeserializeYAML(const rclcpp::SerializedMessage & serialized) const;
+
+private:
+  struct Data;
+  std::unique_ptr<Data> data_;
+};
+
+struct GenericField
+{
+public:
+  GenericField(const std::string & path, const std::string & type);
+  const YAML::Node Access(const YAML::Node & yaml) const;
+
+public:
+  struct Data;
+  std::unique_ptr<Data> data_;
+};
+
+}  // namespace generic_type_support
 
 #endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_

@@ -27,16 +27,20 @@ namespace generic_type_support
 TypeSupportLibrary TypeSupportLibrary::LoadTypeSupport(const std::string & type)
 {
   constexpr auto identifier = "rosidl_typesupport_cpp";
+  std::cout << "LoadTypeSupport " << type << std::endl;
   const auto library = rclcpp::get_typesupport_library(type, identifier);
   const auto handle = rclcpp::get_typesupport_handle(type, identifier, *library);
+  std::cout << "LoadTypeSupport OK" << std::endl;
   return TypeSupportLibrary{handle, library};
 }
 
 TypeSupportLibrary TypeSupportLibrary::LoadIntrospection(const std::string & type)
 {
   constexpr auto identifier = "rosidl_typesupport_introspection_cpp";
+  std::cout << "LoadIntrospection " << type << std::endl;
   const auto library = rclcpp::get_typesupport_library(type, identifier);
   const auto handle = rclcpp::get_typesupport_handle(type, identifier, *library);
+  std::cout << "LoadIntrospection Handle" << std::endl;
   return TypeSupportLibrary{handle, library};
 }
 
@@ -246,7 +250,7 @@ TypeSupportClass TypeSupportMessage::GetClass() const
 }
 
 TypeSupportSerialization::TypeSupportSerialization(const std::string & type)
-: library_(TypeSupportLibrary::LoadIntrospection(type)), serialization_(library_.handle)
+: library_(TypeSupportLibrary::LoadTypeSupport(type)), serialization_(library_.handle)
 {
 }
 
