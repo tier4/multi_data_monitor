@@ -15,10 +15,17 @@ ament_auto_find_build_dependencies()
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
   src/generic_type_support.cpp
+  src/impl/library.cpp
+  src/impl/field.cpp
+  src/impl/message.cpp
 )
 
-ament_auto_add_executable(debug
-  src/debug.cpp
+ament_auto_add_executable(debug1
+  src/debug1.cpp
+)
+
+ament_auto_add_executable(debug2
+  src/debug2.cpp
 )
 
 if(BUILD_TESTING)

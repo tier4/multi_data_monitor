@@ -18,6 +18,7 @@
 #include <yaml-cpp/yaml.h>
 #include <rclcpp/serialization.hpp>
 #include <memory>
+#include <string>
 
 namespace generic_type_support
 {
@@ -25,7 +26,9 @@ namespace generic_type_support
 class GenericMessage
 {
 public:
-  GenericMessage(const std::string & type);
+  GenericMessage(const std::string & type_name);
+  ~GenericMessage();
+  std::string GetTypeName() const;
   YAML::Node DeserializeYAML(const rclcpp::SerializedMessage & serialized) const;
 
 private:

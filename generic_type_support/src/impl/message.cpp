@@ -12,26 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "generic_type_support/message.hpp"
-
-#include <rclcpp/typesupport_helpers.hpp>
-#include <rclcpp/serialized_message.hpp>
-
-#include <iostream>  // DEBUG
+#include "message.hpp"
 
 namespace generic_type_support
 {
-
-GenericMessageSupport::GenericMessageSupport(const std::string & type)
-: type_(type), introspection_(type), serialization_(type)
-{
-}
-
-YAML::Node GenericMessageSupport::DeserializeYAML(const rclcpp::SerializedMessage & serialized) const
-{
-  TypeSupportMessageMemory memory(introspection_);
-  serialization_.GetSerialization().deserialize_message(&serialized, memory.GetData());
-  return introspection_.GetClass().Get<YAML::Node>(memory.GetData());
-}
 
 }  // namespace generic_type_support

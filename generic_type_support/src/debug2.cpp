@@ -12,24 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
-#define GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+#include "generic_type_support/generic_type_support.hpp"
+#include "impl/library.hpp"
 
-#include "typesupport.hpp"
+#include <yaml-cpp/yaml.h>
+#include <iostream>
 
-#include <vector>
-
-namespace generic_type_support
+int main()
 {
-  std::string GetTypeName() const { return type_; }
-  TypeSupportClass GetClass() const { return introspection_.GetClass(); }
+  using namespace generic_type_support;
+  using namespace std;
 
+  /*
+  generic_type_support::GenericMessage message("std_msgs/msg/Header");
+  cout << message.GetTypeName() << endl;
+  */
 
-  const std::string type_;
-  const TypeSupportMessage introspection_;
-  const TypeSupportSerialization serialization_;
+  const auto lib1 = TypeSupportLibrary::LoadIntrospection("std_msgs/msg/Header");
 
-
-}  // namespace generic_type_support
-
-#endif  // GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+}

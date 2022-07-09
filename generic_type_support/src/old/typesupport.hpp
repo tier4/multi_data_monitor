@@ -18,9 +18,7 @@
 #include "typesupport.hpp"
 
 #include <rclcpp/serialization.hpp>
-#include <rclcpp/typesupport_helpers.hpp>
-#include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
-#include <rosidl_typesupport_introspection_cpp/service_introspection.hpp>
+
 #include <string>
 #include <vector>
 
@@ -34,63 +32,10 @@ class TypeSupportMessageMemory;
 
 class TypeSupportClass;
 class TypeSupportField;
-using TypeSupportHandle = rosidl_message_type_support_t;
-using IntrospectionMessage = rosidl_typesupport_introspection_cpp::MessageMembers;
-using IntrospectionField = rosidl_typesupport_introspection_cpp::MessageMember;
-using IntrospectionService = rosidl_typesupport_introspection_cpp::ServiceMembers;
+
+
 
 // Do not create this class directly.
-struct TypeSupportLibrary
-{
-  static TypeSupportLibrary LoadTypeSupport(const std::string & type);
-  static TypeSupportLibrary LoadIntrospection(const std::string & type);
-
-  const rosidl_message_type_support_t * handle;
-  const std::shared_ptr<rcpputils::SharedLibrary> library;
-};
-
-// Do not create this class directly.
-class TypeSupportField
-{
-public:
-  TypeSupportField(const IntrospectionField * field);
-  void Dump() const;
-  std::string GetName() const { return field_->name_; }
-  bool IsClass() const;
-  bool IsArray() const;
-  bool HasIndex(size_t index) const;
-  TypeSupportClass GetClass() const;
-
-  template<class T>
-  T Get(const void * data) const;
-
-private:
-  const IntrospectionField * field_;
-};
-
-// Do not create this class directly.
-class TypeSupportClass
-{
-public:
-  TypeSupportClass(const IntrospectionMessage * message);
-  TypeSupportClass(const TypeSupportHandle * handle);
-  void Dump() const;
-  std::string GetFullName() const;
-  void CreateMemory(void *& data);
-  void DeleteMemory(void *& data);
-  bool HasField(const std::string & name) const;
-  TypeSupportField GetField(const std::string & name) const;
-
-  // const auto begin() const { return fields_.begin(); }
-  // const auto end() const { return fields_.end(); }
-
-  template<class T>
-  T Get(const void * data) const;
-
-private:
-  const IntrospectionMessage * message_;
-  std::vector<TypeSupportField> fields_;
-};
 
 // This is the interface class.
 class TypeSupportMessage
