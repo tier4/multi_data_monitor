@@ -30,6 +30,7 @@ public:
   std::string GetVersion() const;
 
   std::vector<TopicConfig> GetTopics() const;
+  std::vector<FieldConfig> GetFields() const;
 
 private:
   std::string version_;

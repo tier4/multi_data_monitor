@@ -33,12 +33,20 @@ TopicConfig::TopicConfig(YAML::Node node)
   durability = node["qos"]["durability"].as<std::string>("default");
 }
 
+FieldConfig::FieldConfig(YAML::Node node, const std::string & topic): topic(topic)
+{
+  name = GetNecessary(node, "name", "field").as<std::string>();
+  type = node["type"].as<std::string>("");
+}
+
 MonitorConfig::MonitorConfig(YAML::Node node)
 {
   if (node["topic"])
   {
-    topic = TopicConfig(node["topic"]);
+    topic = TopicConfig(GetNecessary(node, "topic", "monitor"));
+    field = FieldConfig(GetNecessary(node, "field", "monitor"), topic.value().name);
     node.remove("topic");
+    node.remove("field");
   }
   config = node;
 

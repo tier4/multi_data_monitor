@@ -38,14 +38,37 @@ void TopicSubscription::Start(const rclcpp::Node::SharedPtr & node)
   const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> serialized)
   {
     const YAML::Node yaml = message_.ConvertYAML(*serialized);
-    std::cout << "===============================================================" << std::endl;
-    std::cout << yaml << std::endl;
-    //for (const auto & monitor : monitors_)
-    //{
-    //  monitor->Callback(yaml);
-    //}
+    for (const auto & field : fields_)
+    {
+      std::cout << field.first << ": " << field.second.access.Access(yaml) << std::endl;
+    }
   };
   subscription_ = node->create_generic_subscription(config_.name, config_.type, qos, callback);
+}
+
+void TopicSubscription::AddField(const FieldConfig & config)
+{
+  if (fields_.count(config.name) == 0)
+  {
+    const auto access = message_.GetAccess(config.name);
+    fields_.insert(std::make_pair(config.name, TopicField{config, access}));
+  }
+
+  const auto & access = fields_.at(config.name).access;
+  if (config.type.empty())
+  {
+    if (access.IsMessage())
+    {
+      throw ConfigError("field '" + config.name + "' is not a primitive type");
+    }
+  }
+  else
+  {
+    if (access.GetTypeName() != config.type)
+    {
+      throw ConfigError("field '" + config.name + "' is not '" + config.type +"'");
+    }
+  }
 }
 
 }  // namespace monitors

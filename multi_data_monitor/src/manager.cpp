@@ -47,6 +47,12 @@ void Manager::Load(const std::string & path, rclcpp::Node::SharedPtr node)
     subscriptions_.emplace(topic.name, topic);
   }
 
+  for (const auto & field : config.GetFields())
+  {
+    subscriptions_.at(field.topic).AddField(field);
+  }
+
+
 
   for (auto & pair : subscriptions_)
   {

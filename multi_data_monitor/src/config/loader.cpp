@@ -133,4 +133,15 @@ std::vector<TopicConfig> ConfigLoader::GetTopics() const
   return topics;
 }
 
+std::vector<FieldConfig> ConfigLoader::GetFields() const
+{
+  std::vector<FieldConfig> fields;
+  for (const auto & pair : monitors_)
+  {
+    if (!pair.second.field) { continue; }
+    fields.push_back(pair.second.field.value());
+  }
+  return fields;
+}
+
 }  // namespace monitors

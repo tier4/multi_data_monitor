@@ -38,11 +38,21 @@ struct TopicConfig
   std::string durability;
 };
 
+struct FieldConfig
+{
+  FieldConfig() = default;
+  FieldConfig(YAML::Node node, const std::string & topic);
+  std::string topic;
+  std::string name;
+  std::string type;
+};
+
 struct MonitorConfig
 {
   MonitorConfig(YAML::Node node);
   YAML::Node config;
   std::optional<TopicConfig> topic;
+  std::optional<FieldConfig> field;
 };
 
 }  // namespace monitors

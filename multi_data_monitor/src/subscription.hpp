@@ -22,41 +22,27 @@
 namespace monitors
 {
 
+struct TopicField
+{
+  FieldConfig config;
+  generic_type_support::GenericMessage::GenericAccess access;
+};
+
 class TopicSubscription
 {
 public:
   TopicSubscription(const TopicConfig & config);
   void Start(const rclcpp::Node::SharedPtr & node);
+  void AddField(const FieldConfig & config);
+  TopicField & GetField(const std::string & name);
 
 private:
   // NOTE: declaration order where the subscription stops first
   TopicConfig config_;
   rclcpp::GenericSubscription::SharedPtr subscription_;
   generic_type_support::GenericMessage message_;
+  std::unordered_map<std::string, TopicField> fields_;
 };
-
-/*
-class TopicSubscription
-{
-public:
-  TopicSubscription(const std::string & name, const generic_type_support::GenericMessageSupport * support);
-  void Add(Monitor * monitor, const YAML::Node & qos);
-
-private:
-  void Callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized) const;
-
-  // No need to release raw pointer since it is a reference to unique pointer.
-  const std::string name_;
-  const generic_type_support::GenericMessageSupport * const support_;
-  std::vector<Monitor *> monitors_;
-
-  // temporary
-  bool qos_empty;
-  size_t qos_depth;
-  std::string qos_reliability;
-  std::string qos_durability;
-};
-*/
 
 }  // namespace monitors
 
