@@ -13,55 +13,41 @@
 // limitations under the License.
 
 #include "manager.hpp"
+#include "util/parser.hpp"
+#include <string>
+/*
 #include "matrix.hpp"
 #include "simple.hpp"
 #include "titled.hpp"
 #include <QWidget>
-#include <string>
+*/
 
 #include <iostream>
-#include <ament_index_cpp/get_package_share_directory.hpp>  // TODO: move parser
+
 
 namespace monitors
 {
 
-std::pair<std::string, size_t> parse(const std::string & path, size_t & base)
+void Manager::Load(const std::string & path, rclcpp::Node::SharedPtr node)
 {
-  const size_t pos1 = path.find('(', base);
-  const size_t pos2 = path.find(')', base);
-  if (pos1 != base + 1 || pos2 == std::string::npos)
+  YAML::Node config;
+  try
   {
-    return {"$", 1};
+    config = YAML::LoadFile(ParsePath(path));
   }
-  const auto expr = path.substr(base + 2, pos2 - base - 2);
-  if (expr.substr(0, 15) != "find-pkg-share ")
+  catch(YAML::BadFile & error)
   {
-    return {"$", 1};
+    RCLCPP_ERROR_STREAM(node->get_logger(), error.what());
   }
-  return {ament_index_cpp::get_package_share_directory(expr.substr(15)), pos2 - base + 1};
+
+  RCLCPP_INFO_STREAM(node->get_logger(), "format version: " << config["version"].as<std::string>());
+
+
+
 }
 
-void Manager::Load(const std::string & path)
-{
-  std::string parsed;
-  size_t base = 0;
-  while (true)
-  {
-    const size_t pos = path.find('$', base);
-    parsed += path.substr(base, pos - base);
-    if (pos == std::string::npos)
-    {
-      break;
-    }
-    const auto [str, len] = parse(path, base);
-    parsed += str;
-    base = pos + len;
-  }
 
-  yaml_ = YAML::LoadFile(parsed);
-  std::cout << "format version: " << yaml_["version"].as<std::string>() << std::endl;
-}
-
+/*
 void Manager::CreateMonitors()
 {
   const auto CreateMonitor = [](const std::string & name, const YAML::Node & yaml) -> std::unique_ptr<Monitor>
@@ -170,5 +156,6 @@ void Manager::Build(QWidget * panel)
     panel->setLayout(layout);
   }
 }
+*/
 
 }  // namespace monitors

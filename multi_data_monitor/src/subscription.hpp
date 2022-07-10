@@ -21,6 +21,12 @@
 namespace monitors
 {
 
+struct TopicSubscriptionConfig
+{
+
+};
+
+
 class TopicSubscription
 {
 public:

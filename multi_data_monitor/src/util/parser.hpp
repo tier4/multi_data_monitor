@@ -12,24 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef PANEL_HPP_
-#define PANEL_HPP_
+#ifndef UTIL__PARSER_HPP_
+#define UTIL__PARSER_HPP_
 
-#include "manager.hpp"
-#include <rviz_common/panel.hpp>
+#include <string>
 
-class MultiDataMonitor : public rviz_common::Panel
+namespace monitors
 {
-Q_OBJECT
 
-public:
-  explicit MultiDataMonitor(QWidget * parent = nullptr);
-  void save(rviz_common::Config config) const override;
-  void load(const rviz_common::Config & config) override;
+std::string ParsePath(const std::string & path);
 
-private:
-  QString path_;
-  monitors::Manager manager_;
-};
+}  // namespace monitors
 
-#endif  // PANEL_HPP_
+#endif  // UTIL__PARSER_HPP_

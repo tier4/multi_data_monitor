@@ -12,6 +12,7 @@ class MyNode(rclpy.node.Node):
 
     def callback(self):
         msg = std_msgs.msg.Header()
+        msg.frame_id = "test"
         msg.stamp = self.get_clock().now().to_msg()
         self.pub.publish(msg)
 

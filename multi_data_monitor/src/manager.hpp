@@ -15,12 +15,11 @@
 #ifndef MANAGER_HPP_
 #define MANAGER_HPP_
 
-#include "monitor.hpp"
-#include "subscription.hpp"
+//#include "monitor.hpp"
+//#include "subscription.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <yaml-cpp/yaml.h>
-
-#include "generic_type_support/generic_type_support.hpp"
+#include <generic_type_support/generic_type_support.hpp>
 
 namespace monitors
 {
@@ -28,19 +27,18 @@ namespace monitors
 class Manager
 {
 public:
-  void Load(const std::string & path);
-  void CreateMonitors();
-  void CreateSubscription(const rclcpp::Node::SharedPtr & node);
-  void Build(QWidget * panel);
+  void Load(const std::string & path, rclcpp::Node::SharedPtr node);
+  //void CreateMonitors();
+  //void CreateSubscription(const rclcpp::Node::SharedPtr & node);
+  //void Build(QWidget * panel);
 
 private:
-  using GenericMessageSupport = generic_type_support::GenericMessageSupport;
-  YAML::Node yaml_;
+  using GenericMessageSupport = generic_type_support::GenericMessage;
 
   // NOTE: declaration order for the destructors
-  std::map<std::string, std::unique_ptr<const GenericMessageSupport>> supports_;
-  std::map<std::string, std::unique_ptr<Monitor>> monitors_;
-  std::map<std::string, std::unique_ptr<TopicSubscription>> subscriptions_;
+  //std::map<std::string, std::unique_ptr<const GenericMessageSupport>> supports_;
+  //std::map<std::string, std::unique_ptr<Monitor>> monitors_;
+  //std::map<std::string, std::unique_ptr<TopicSubscription>> subscriptions_;
 };
 
 }  // namespace monitors
