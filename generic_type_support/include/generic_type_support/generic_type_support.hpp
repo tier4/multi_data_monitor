@@ -33,24 +33,28 @@ public:
   std::string GetTypeName() const;
   YAML::Node ConvertYAML(const rclcpp::SerializedMessage & serialized) const;
 
-  class GenericField;
-  GenericField GetField(const std::string & path);
+  class GenericAccess;
+  GenericAccess GetAccess(const std::string & path) const;
 
 private:
   struct Data;
-  std::unique_ptr<Data> data_;
+  std::shared_ptr<Data> data_;
 };
 
-class GenericMessage::GenericField
+class GenericMessage::GenericAccess
 {
 public:
-  GenericField(const GenericMessage & generic, const std::string & path);
-  ~GenericField();
+  GenericAccess(const GenericMessage & generic, const std::string & path);
+  ~GenericAccess();
   const YAML::Node Access(const YAML::Node & yaml) const;
+
+  bool IsMessage() const;
+  std::string GetTypeName() const;
+  std::string GetFullPath() const;
 
 public:
   struct Data;
-  std::unique_ptr<Data> data_;
+  std::shared_ptr<Data> data_;
 };
 
 }  // namespace generic_type_support

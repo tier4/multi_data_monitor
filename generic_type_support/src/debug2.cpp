@@ -29,8 +29,8 @@ int main()
     generic_type_support::GenericMessage message("std_msgs/msg/Header");
     cout << message.GetTypeName() << endl;
 
-    const auto field1 = message.GetField("frame_id");
-    const auto field2 = message.GetField("stamp.sec");
+    const auto field1 = message.GetAccess("frame_id");
+    const auto field2 = message.GetAccess("stamp.sec");
 
     cout << "END" << endl;
   }

@@ -41,7 +41,7 @@ GenericMessage::Data::Data(const std::string & type_name)
 
 GenericMessage::GenericMessage(const std::string & type_name)
 {
-  data_ = std::make_unique<Data>(type_name);
+  data_ = std::make_shared<Data>(type_name);
 }
 
 GenericMessage::~GenericMessage()
@@ -64,9 +64,9 @@ YAML::Node GenericMessage::ConvertYAML(const rclcpp::SerializedMessage & seriali
   return yaml;
 }
 
-GenericMessage::GenericField GenericMessage::GetField(const std::string & path)
+GenericMessage::GenericAccess GenericMessage::GetAccess(const std::string & path) const
 {
-  return GenericField(*this, path);
+  return GenericAccess(*this, path);
 }
 
 
@@ -96,15 +96,15 @@ std::string join(const std::vector<std::string> & input, const std::string & del
   return result;
 }
 
-struct GenericFieldElement
+struct GenericAccessElement
 {
-  GenericFieldElement(const std::string & element);
+  GenericAccessElement(const std::string & element);
 
   int index;
   std::string name;
 };
 
-GenericFieldElement::GenericFieldElement(const std::string & element)
+GenericAccessElement::GenericAccessElement(const std::string & element)
 {
   const auto token = split(element, '@');
   name = token[0];
@@ -113,14 +113,15 @@ GenericFieldElement::GenericFieldElement(const std::string & element)
 
 
 
-struct GenericMessage::GenericField::Data
+struct GenericMessage::GenericAccess::Data
 {
-  std::vector<GenericFieldElement> elements;
+  TypeSupportField field = nullptr;  // TODO: check
+  std::vector<GenericAccessElement> elements;
 };
 
-GenericMessage::GenericField::GenericField(const GenericMessage & generic, const std::string & path)
+GenericMessage::GenericAccess::GenericAccess(const GenericMessage & generic, const std::string & path)
 {
-  data_ = std::make_unique<Data>();
+  data_ = std::make_shared<Data>();
   for (const auto & element : split(path, '.'))
   {
     data_->elements.emplace_back(element);
@@ -137,14 +138,34 @@ GenericMessage::GenericField::GenericField(const GenericMessage & generic, const
     }
     field = field.GetMessage().GetField(data_->elements[i].name);
   }
+  data_->field = field;
 }
 
-GenericMessage::GenericField::~GenericField()
+GenericMessage::GenericAccess::~GenericAccess()
 {
   // define the destructor here to delete members.
 }
 
-const YAML::Node GenericMessage::GenericField::Access(const YAML::Node & yaml) const
+bool GenericMessage::GenericAccess::IsMessage() const
+{
+  return data_->field.IsMessage();
+}
+std::string GenericMessage::GenericAccess::GetTypeName() const
+{
+  return data_->field.GetTypeName();
+}
+
+std::string GenericMessage::GenericAccess::GetFullPath() const
+{
+  std::string path;
+  for (size_t i = 0, n = data_->elements.size(); i < n; ++i)
+  {
+    path += (i ? "." : "") + data_->elements[i].name;
+  }
+  return path;
+}
+
+const YAML::Node GenericMessage::GenericAccess::Access(const YAML::Node & yaml) const
 {
   YAML::Node node = yaml;
   for (const auto & element : data_->elements)
@@ -160,32 +181,5 @@ const YAML::Node GenericMessage::GenericField::Access(const YAML::Node & yaml) c
   }
   return node;
 }
-
-/*
-bool GenericTypeAccess::Validate(const TypeSupportClass & support) const
-{
-    //std::string last_type = "primitive";
-    //if (support_field.IsClass())
-    //{
-
-    if (support_field.IsClass())
-    {
-      if(type_.empty())
-      {
-        throw std::runtime_error("Field '" + path_ +"' in '" + support.GetFullName() + "' is not a primitive type");
-      }
-      else
-      {
-        if (type_ != support_field.GetClass().GetFullName())
-        {
-          throw std::runtime_error("Field '" + path_ +"' in '" + support.GetFullName() + "' is not '" + type_ + "'");
-        }
-      }
-    }
-
-  }
-  return true;
-}
-*/
 
 }  // namespace generic_type_support

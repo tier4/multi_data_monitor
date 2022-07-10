@@ -39,8 +39,8 @@ std::shared_ptr<generic_type_support::GenericMessage> message_;
 void callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized)
 {
   const auto yaml = message_->ConvertYAML(*serialized);
-  const auto field1 = message_->GetField("frame_id");
-  const auto field2 = message_->GetField("stamp.sec");
+  const auto field1 = message_->GetAccess("frame_id");
+  const auto field2 = message_->GetAccess("stamp.sec");
 
   std::cout << "==================== DATA ====================" << std::endl;
   std::cout << *serialized << std::endl;
