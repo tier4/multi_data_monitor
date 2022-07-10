@@ -13,8 +13,9 @@
 // limitations under the License.
 
 #include "manager.hpp"
-#include "util/parser.hpp"
+#include "config/loader.hpp"
 #include <string>
+
 /*
 #include "matrix.hpp"
 #include "simple.hpp"
@@ -30,22 +31,28 @@ namespace monitors
 
 void Manager::Load(const std::string & path, rclcpp::Node::SharedPtr node)
 {
-  YAML::Node config;
+  ConfigLoader config;
   try
   {
-    config = YAML::LoadFile(ParsePath(path));
+    config.Load(path);
+    RCLCPP_INFO_STREAM(node->get_logger(), "format version: " << config.GetVersion());
   }
-  catch(YAML::BadFile & error)
+  catch(const ConfigError& error)
   {
     RCLCPP_ERROR_STREAM(node->get_logger(), error.what());
   }
 
-  RCLCPP_INFO_STREAM(node->get_logger(), "format version: " << config["version"].as<std::string>());
+  for (const auto & topic : config.GetTopics())
+  {
+    subscriptions_.emplace(topic.name, topic);
+  }
 
 
-
+  for (auto & pair : subscriptions_)
+  {
+    pair.second.Start(node);
+  }
 }
-
 
 /*
 void Manager::CreateMonitors()

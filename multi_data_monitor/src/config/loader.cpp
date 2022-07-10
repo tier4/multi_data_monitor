@@ -12,12 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "parser.hpp"
+#include "loader.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <string>
 
 namespace monitors
 {
+
+std::string Join(const std::vector<std::string> & input, const std::string & delimiter)
+{
+  std::string result;
+  for (size_t i = 0; i < input.size(); ++i)
+  {
+    result += (i ? delimiter : "") + input[i];
+  }
+  return result;
+}
 
 std::pair<std::string, size_t> ParseElement(const std::string & path, size_t & base)
 {
@@ -52,6 +62,62 @@ std::string ParsePath(const std::string & path)
     base = pos + len;
   }
   return parsed;
+}
+
+YAML::Node LoadYAML(const std::string & path)
+{
+  try
+  {
+    return YAML::LoadFile(ParsePath(path));
+  }
+  catch(YAML::BadFile & error)
+  {
+    throw ConfigError(error.what());
+  }
+}
+
+void ConfigLoader::Load(const std::string & path)
+{
+  YAML::Node config = LoadYAML(path);
+  version_ = config["version"].as<std::string>();
+
+  for (const auto & pair : config["monitors"])
+  {
+    monitors_.emplace(pair.first.as<std::string>(), pair.second);
+  }
+}
+
+std::string ConfigLoader::GetVersion() const
+{
+  return version_;
+}
+
+std::vector<TopicConfig> ConfigLoader::GetTopics() const
+{
+  struct TopicConfigMerge
+  {
+    std::unordered_set<std::string> type;
+  };
+
+  std::unordered_map<std::string, TopicConfigMerge> topic_merge;
+  for (const auto & pair : monitors_)
+  {
+    if (!pair.second.topic) { continue; }
+    const auto & topic = pair.second.topic.value();
+    topic_merge[topic.name].type.insert(topic.type);
+  }
+
+  std::vector<TopicConfig> topics;
+  for (const auto & [name, merge] : topic_merge)
+  {
+    if (merge.type.size() != 1) { throw ConfigError("topic type is not unique: " + name); }
+
+    TopicConfig topic;
+    topic.name = name;
+    topic.type = *merge.type.begin();
+    topics.push_back(topic);
+  }
+  return topics;
 }
 
 }  // namespace monitors

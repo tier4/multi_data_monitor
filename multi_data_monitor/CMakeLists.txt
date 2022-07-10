@@ -24,10 +24,12 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/manager.cpp
   src/panel.hpp
   src/panel.cpp
-  src/util/parser.hpp
-  src/util/parser.cpp
-  #src/subscription.hpp
-  #src/subscription.cpp
+  src/subscription.hpp
+  src/subscription.cpp
+  src/config/loader.hpp
+  src/config/loader.cpp
+  src/config/config.hpp
+  src/config/config.cpp
   #src/monitor.hpp
   #src/monitor.cpp
   #src/matrix.hpp

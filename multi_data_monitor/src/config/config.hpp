@@ -12,16 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef UTIL__PARSER_HPP_
-#define UTIL__PARSER_HPP_
+#ifndef CONFIG__CONFIG_HPP_
+#define CONFIG__CONFIG_HPP_
 
+#include <stdexcept>
 #include <string>
+#include <yaml-cpp/yaml.h>
 
 namespace monitors
 {
 
-std::string ParsePath(const std::string & path);
+class ConfigError : public std::runtime_error
+{
+  using std::runtime_error::runtime_error;
+};
+
+struct TopicConfig
+{
+  TopicConfig() = default;
+  TopicConfig(YAML::Node node);
+  std::string name;
+  std::string type;
+};
+
+struct MonitorConfig
+{
+  MonitorConfig(YAML::Node node);
+  YAML::Node config;
+  std::optional<TopicConfig> topic;
+};
 
 }  // namespace monitors
 
-#endif  // UTIL__PARSER_HPP_
+#endif  // CONFIG__CONFIG_HPP_

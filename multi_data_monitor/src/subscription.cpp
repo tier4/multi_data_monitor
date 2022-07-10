@@ -19,12 +19,38 @@
 namespace monitors
 {
 
-TopicSubscription::TopicSubscription(const std::string & name, const generic_type_support::GenericMessageSupport * support)
-: name_(name), support_(support)
+TopicSubscription::TopicSubscription(const TopicConfig & config) : message_(config.type)
 {
-  qos_empty = true;
+  config_ = config;
 }
 
+void TopicSubscription::Start(const rclcpp::Node::SharedPtr & node)
+{
+  std::cout << "start subscription: " << config_.name << " " << config_.type << std::endl;
+
+  rclcpp::QoS qos(1);
+  /*
+  rclcpp::QoS qos(qos_depth);
+  if (qos_reliability == "reliable") { qos.reliable(); }
+  if (qos_reliability == "best_effort") { qos.best_effort(); }
+  if (qos_durability == "volatile") { qos.durability_volatile(); }
+  if (qos_durability == "transient_local") { qos.transient_local(); }
+  */
+
+  const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> serialized)
+  {
+    const YAML::Node yaml = message_.ConvertYAML(*serialized);
+    std::cout << "===============================================================" << std::endl;
+    std::cout << yaml << std::endl;
+    //for (const auto & monitor : monitors_)
+    //{
+    //  monitor->Callback(yaml);
+    //}
+  };
+  subscription_ = node->create_generic_subscription(config_.name, config_.type, qos, callback);
+}
+
+/*
 void TopicSubscription::Add(Monitor * monitor, const YAML::Node & qos)
 {
   YAML::Node temp_qos = qos ? qos : YAML::Node();
@@ -55,31 +81,7 @@ void TopicSubscription::Add(Monitor * monitor, const YAML::Node & qos)
   monitors_.push_back(monitor);
 }
 
-void TopicSubscription::Start(const rclcpp::Node::SharedPtr & node)
-{
-  std::cout << "start subscription: " << name_ << " " << support_->GetTypeName() << std::endl;
 
-  rclcpp::QoS qos(qos_depth);
-  if (qos_reliability == "reliable") { qos.reliable(); }
-  if (qos_reliability == "best_effort") { qos.best_effort(); }
-  if (qos_durability == "volatile") { qos.durability_volatile(); }
-  if (qos_durability == "transient_local") { qos.transient_local(); }
-
-  using namespace std::placeholders;
-  subscription_ = node->create_generic_subscription(
-  name_,
-  support_->GetTypeName(),
-  qos,
-  std::bind(&TopicSubscription::Callback, this, _1));
-}
-
-void TopicSubscription::Callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized) const
-{
-  const YAML::Node yaml = support_->DeserializeYAML(*serialized);
-  for (const auto & monitor : monitors_)
-  {
-    monitor->Callback(yaml);
-  }
-}
+*/
 
 }  // namespace monitors

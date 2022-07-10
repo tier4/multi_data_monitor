@@ -12,32 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MANAGER_HPP_
-#define MANAGER_HPP_
+#ifndef CONFIG__LOADER_HPP_
+#define CONFIG__LOADER_HPP_
 
-//#include "monitor.hpp"
-#include "subscription.hpp"
-#include <rclcpp/rclcpp.hpp>
+#include "config.hpp"
 #include <string>
 #include <unordered_map>
+#include <unordered_set>
 
 namespace monitors
 {
 
-class Manager
+class ConfigLoader
 {
 public:
-  void Load(const std::string & path, rclcpp::Node::SharedPtr node);
-  //void CreateMonitors();
-  //void CreateSubscription(const rclcpp::Node::SharedPtr & node);
-  //void Build(QWidget * panel);
+  void Load(const std::string & path);
+  std::string GetVersion() const;
+
+  std::vector<TopicConfig> GetTopics() const;
 
 private:
-  // NOTE: declaration order where the subscription stops first
-  std::unordered_map<std::string, TopicSubscription> subscriptions_;
-  //std::map<std::string, std::unique_ptr<Monitor>> monitors_;
+  std::string version_;
+  std::unordered_map<std::string, MonitorConfig> monitors_;
 };
 
 }  // namespace monitors
 
-#endif  // MANAGER_HPP_
+#endif  // CONFIG__LOADER_HPP_

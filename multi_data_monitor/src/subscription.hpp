@@ -15,24 +15,32 @@
 #ifndef SUBSCRIPTION_HPP_
 #define SUBSCRIPTION_HPP_
 
-#include "monitor.hpp"
+#include "config/config.hpp"
 #include <rclcpp/rclcpp.hpp>
+#include <generic_type_support/generic_type_support.hpp>
 
 namespace monitors
 {
 
-struct TopicSubscriptionConfig
+class TopicSubscription
 {
+public:
+  TopicSubscription(const TopicConfig & config);
+  void Start(const rclcpp::Node::SharedPtr & node);
 
+private:
+  // NOTE: declaration order where the subscription stops first
+  TopicConfig config_;
+  rclcpp::GenericSubscription::SharedPtr subscription_;
+  generic_type_support::GenericMessage message_;
 };
 
-
+/*
 class TopicSubscription
 {
 public:
   TopicSubscription(const std::string & name, const generic_type_support::GenericMessageSupport * support);
   void Add(Monitor * monitor, const YAML::Node & qos);
-  void Start(const rclcpp::Node::SharedPtr & node);
 
 private:
   void Callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized) const;
@@ -41,7 +49,6 @@ private:
   const std::string name_;
   const generic_type_support::GenericMessageSupport * const support_;
   std::vector<Monitor *> monitors_;
-  rclcpp::GenericSubscription::SharedPtr subscription_;
 
   // temporary
   bool qos_empty;
@@ -49,6 +56,7 @@ private:
   std::string qos_reliability;
   std::string qos_durability;
 };
+*/
 
 }  // namespace monitors
 
