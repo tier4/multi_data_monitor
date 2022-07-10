@@ -14,6 +14,8 @@
 
 #include "generic_type_support/generic_type_support.hpp"
 #include "impl/library.hpp"
+#include "impl/message.hpp"
+#include "impl/convert.hpp"
 
 #include <yaml-cpp/yaml.h>
 #include <iostream>
@@ -23,11 +25,14 @@ int main()
   using namespace generic_type_support;
   using namespace std;
 
-  /*
-  generic_type_support::GenericMessage message("std_msgs/msg/Header");
-  cout << message.GetTypeName() << endl;
-  */
+  {
+    generic_type_support::GenericMessage message("std_msgs/msg/Header");
+    cout << message.GetTypeName() << endl;
+  }
 
-  const auto lib1 = TypeSupportLibrary::LoadIntrospection("std_msgs/msg/Header");
-
+  {
+    const auto lib1 = TypeSupportLibrary::LoadIntrospection("std_msgs/msg/Header");
+    const auto message = lib1.GetMessage();
+    cout << message.GetTypeName() << endl;
+  }
 }

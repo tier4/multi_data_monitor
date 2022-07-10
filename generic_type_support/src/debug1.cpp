@@ -41,7 +41,7 @@ void callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized)
   std::cout << "==================== Message1 ====================" << std::endl;
   std::cout << *serialized << std::endl;
   std::cout << "==================== Message2 ====================" << std::endl;
-  std::cout << message_->DeserializeYAML(*serialized) << std::endl;
+  std::cout << message_->ConvertYAML(*serialized) << std::endl;
   std::cout << "==================================================" << std::endl;
 
   rclcpp::shutdown();

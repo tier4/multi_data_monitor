@@ -29,7 +29,7 @@ public:
   GenericMessage(const std::string & type_name);
   ~GenericMessage();
   std::string GetTypeName() const;
-  YAML::Node DeserializeYAML(const rclcpp::SerializedMessage & serialized) const;
+  YAML::Node ConvertYAML(const rclcpp::SerializedMessage & serialized) const;
 
 private:
   struct Data;

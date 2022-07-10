@@ -15,7 +15,9 @@
 #ifndef GENERIC_TYPE_SUPPORT__IMPL__LIBRARY_HPP_
 #define GENERIC_TYPE_SUPPORT__IMPL__LIBRARY_HPP_
 
+#include "util/types.hpp"
 #include <rclcpp/typesupport_helpers.hpp>
+#include <rclcpp/serialization.hpp>
 
 namespace generic_type_support
 {
@@ -26,6 +28,8 @@ public:
   TypeSupportLibrary(const std::string & type_name, const std::string & identifier);
   static TypeSupportLibrary LoadTypeSupport(const std::string & type_name);
   static TypeSupportLibrary LoadIntrospection(const std::string & type_name);
+  TypeSupportMessage GetMessage() const;
+  rclcpp::SerializationBase CreateSerialization() const;
 
 private:
   const rosidl_message_type_support_t * handle_;

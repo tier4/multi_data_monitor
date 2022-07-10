@@ -13,8 +13,90 @@
 // limitations under the License.
 
 #include "message.hpp"
+#include "field.hpp"
+#include <iostream>
 
 namespace generic_type_support
 {
+
+TypeSupportMessage::TypeSupportMessage(const IntrospectionMessage * message)
+{
+  message_ = message;
+  for (uint32_t i = 0; i < message_->member_count_; ++i)
+  {
+    fields_.emplace_back(message_->members_ + i);
+  }
+}
+
+TypeSupportMessage::TypeSupportMessage(const  IntrospectionHandle * handle)
+{
+  message_ = reinterpret_cast<const IntrospectionMessage *>(handle->data);
+  for (uint32_t i = 0; i < message_->member_count_; ++i)
+  {
+    fields_.emplace_back(message_->members_ + i);
+  }
+}
+
+TypeSupportMessage::~TypeSupportMessage()
+{
+  // define the destructor here to delete members.
+}
+
+const std::string TypeSupportMessage::GetTypeName() const
+{
+  std::string name = message_->message_namespace_;
+  size_t pos = name.find(':');
+  return name.substr(0, pos) + "/" + name.substr(pos + 2) + "/" + message_->message_name_;
+}
+
+const std::vector<TypeSupportField> & TypeSupportMessage::GetFields() const
+{
+  return fields_;
+}
+
+void TypeSupportMessage::CreateMemory(void *& data) const
+{
+  data = std::malloc(message_->size_of_);
+  message_->init_function(data, rosidl_runtime_cpp::MessageInitialization::DEFAULTS_ONLY);
+}
+
+void TypeSupportMessage::DeleteMemory(void *& data) const
+{
+  message_->fini_function(data);
+  std::free(data);
+}
+
+/*
+void TypeSupportClass::Dump() const
+{
+  std::cout << "namespace     : " << message_->message_namespace_ << std::endl;
+  std::cout << "name          : " << message_->message_name_ << std::endl;
+  std::cout << "member_count  : " << message_->member_count_ << std::endl;
+  std::cout << "size_of       : " << message_->size_of_ << std::endl;
+  std::cout << "members       : " << message_->members_ << std::endl;
+  std::cout << "init_function : " << reinterpret_cast<void *>(message_->init_function) << std::endl;
+  std::cout << "fini_function : " << reinterpret_cast<void *>(message_->fini_function) << std::endl;
+}
+
+bool TypeSupportClass::HasField(const std::string & name) const
+{
+  // TODO: improve algorithm
+  for (const auto field : fields_)
+  {
+    if (name == field.GetName()) { return true; }
+  }
+  return false;
+}
+
+TypeSupportField TypeSupportClass::GetField(const std::string & name) const
+{
+  // TODO: improve algorithm
+  for (const auto field : fields_)
+  {
+    if (name == field.GetName()) { return field; }
+  }
+  throw std::runtime_error("Field '" + name +"' is not a member of '" + GetFullName() + "'");
+}
+*/
 
 }  // namespace generic_type_support

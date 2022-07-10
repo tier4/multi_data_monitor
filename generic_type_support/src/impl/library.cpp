@@ -13,9 +13,13 @@
 // limitations under the License.
 
 #include "library.hpp"
+#include "message.hpp"
 
 namespace generic_type_support
 {
+
+constexpr char typesupport_identifier[] = "rosidl_typesupport_cpp";
+constexpr char introspection_identifier[] = "rosidl_typesupport_introspection_cpp";
 
 TypeSupportLibrary::TypeSupportLibrary(const std::string & type_name, const std::string & identifier)
 {
@@ -25,12 +29,30 @@ TypeSupportLibrary::TypeSupportLibrary(const std::string & type_name, const std:
 
 TypeSupportLibrary TypeSupportLibrary::LoadTypeSupport(const std::string & type_name)
 {
-  return TypeSupportLibrary(type_name, "rosidl_typesupport_cpp");
+  return TypeSupportLibrary(type_name, typesupport_identifier);
 }
 
 TypeSupportLibrary TypeSupportLibrary::LoadIntrospection(const std::string & type_name)
 {
-  return TypeSupportLibrary(type_name, "rosidl_typesupport_introspection_cpp");
+  return TypeSupportLibrary(type_name, introspection_identifier);
+}
+
+TypeSupportMessage TypeSupportLibrary::GetMessage() const
+{
+  if (std::string(handle_->typesupport_identifier) == std::string(introspection_identifier))
+  {
+    return TypeSupportMessage(handle_);
+  }
+  throw TypeSupportIdentifierError(handle_->typesupport_identifier);
+}
+
+rclcpp::SerializationBase TypeSupportLibrary::CreateSerialization() const
+{
+  if (std::string(handle_->typesupport_identifier) == std::string(typesupport_identifier))
+  {
+    return rclcpp::SerializationBase(handle_);
+  }
+  throw TypeSupportIdentifierError(handle_->typesupport_identifier);
 }
 
 }  // namespace generic_type_support

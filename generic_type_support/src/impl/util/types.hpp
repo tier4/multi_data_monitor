@@ -15,20 +15,31 @@
 #ifndef GENERIC_TYPE_SUPPORT__IMPL__UTIL__TYPES_HPP_
 #define GENERIC_TYPE_SUPPORT__IMPL__UTIL__TYPES_HPP_
 
+#include <stdexcept>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/service_introspection.hpp>
 
 namespace generic_type_support
 {
 
-class TypeSupportService;
-class TypeSupportMessage;
-class TypeSupportField;
-
 using IntrospectionHandle = rosidl_message_type_support_t;
 using IntrospectionService = rosidl_typesupport_introspection_cpp::ServiceMembers;
 using IntrospectionMessage = rosidl_typesupport_introspection_cpp::MessageMembers;
 using IntrospectionField = rosidl_typesupport_introspection_cpp::MessageMember;
+
+class TypeSupportService;
+class TypeSupportMessage;
+class TypeSupportField;
+
+class TypeSupportIdentifierError : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
+
+class FieldTypeError : public std::runtime_error
+{
+    using std::runtime_error::runtime_error;
+};
 
 }  // namespace generic_type_support
 

@@ -17,6 +17,7 @@
 
 #include "util/types.hpp"
 #include <string>
+#include <vector>
 
 namespace generic_type_support
 {
@@ -25,15 +26,13 @@ class TypeSupportField
 {
 public:
   TypeSupportField(const IntrospectionField * field);
-  void Dump() const;
-  std::string GetName() const { return field_->name_; }
-  bool IsClass() const;
-  bool IsArray() const;
-  bool HasIndex(size_t index) const;
+  const std::string GetDataName() const;
+  uint32_t GetMemoryOffset() const;
+  uint8_t GetTypeID() const;
   TypeSupportMessage GetMessage() const;
 
-  template<class T>
-  T Get(const void * data) const;
+  bool IsArray() const;
+  std::vector<const void *> GetConstArray(const void * data) const;
 
 private:
   const IntrospectionField * field_;

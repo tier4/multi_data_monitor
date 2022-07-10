@@ -17,30 +17,25 @@
 
 #include "util/types.hpp"
 #include <string>
+#include <vector>
 
 namespace generic_type_support
 {
 
-class TypeSupportClass
+class TypeSupportMessage
 {
 public:
-  TypeSupportClass(const IntrospectionMessage * message);
-  TypeSupportClass(const IntrospectionHandle * handle);
-  void Dump() const;
-  std::string GetFullName() const;
-  void CreateMemory(void *& data);
-  void DeleteMemory(void *& data);
-  bool HasField(const std::string & name) const;
-  TypeSupportField GetField(const std::string & name) const;
-
-  // const auto begin() const { return fields_.begin(); }
-  // const auto end() const { return fields_.end(); }
-
-  template<class T>
-  T Get(const void * data) const;
+  TypeSupportMessage(const IntrospectionMessage * message);
+  TypeSupportMessage(const IntrospectionHandle * handle);
+  ~TypeSupportMessage();
+  const std::string GetTypeName() const;
+  const std::vector<TypeSupportField> & GetFields() const;
+  void CreateMemory(void *& data) const;
+  void DeleteMemory(void *& data) const;
 
 private:
   const IntrospectionMessage * message_;
+  std::vector<TypeSupportField> fields_;
 };
 
 }  // namespace generic_type_support
