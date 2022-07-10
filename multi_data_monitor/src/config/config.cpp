@@ -28,6 +28,9 @@ TopicConfig::TopicConfig(YAML::Node node)
 {
   name = GetNecessary(node, "name", "topic").as<std::string>();
   type = GetNecessary(node, "type", "topic").as<std::string>();
+  depth = node["qos"]["depth"].as<int>(1);
+  reliability = node["qos"]["reliability"].as<std::string>("default");
+  durability = node["qos"]["durability"].as<std::string>("default");
 }
 
 MonitorConfig::MonitorConfig(YAML::Node node)

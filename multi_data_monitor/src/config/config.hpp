@@ -33,6 +33,9 @@ struct TopicConfig
   TopicConfig(YAML::Node node);
   std::string name;
   std::string type;
+  int depth;
+  std::string reliability;
+  std::string durability;
 };
 
 struct MonitorConfig

@@ -97,6 +97,9 @@ std::vector<TopicConfig> ConfigLoader::GetTopics() const
   struct TopicConfigMerge
   {
     std::unordered_set<std::string> type;
+    std::unordered_set<int> depth;
+    std::unordered_set<std::string> reliability;
+    std::unordered_set<std::string> durability;
   };
 
   std::unordered_map<std::string, TopicConfigMerge> topic_merge;
@@ -104,17 +107,27 @@ std::vector<TopicConfig> ConfigLoader::GetTopics() const
   {
     if (!pair.second.topic) { continue; }
     const auto & topic = pair.second.topic.value();
+
     topic_merge[topic.name].type.insert(topic.type);
+    topic_merge[topic.name].depth.insert(topic.depth);
+    topic_merge[topic.name].reliability.insert(topic.reliability);
+    topic_merge[topic.name].durability.insert(topic.durability);
   }
 
   std::vector<TopicConfig> topics;
   for (const auto & [name, merge] : topic_merge)
   {
     if (merge.type.size() != 1) { throw ConfigError("topic type is not unique: " + name); }
+    if (merge.depth.size() != 1) { throw ConfigError("topic depth is not unique: " + name); }
+    if (merge.reliability.size() != 1) { throw ConfigError("topic reliability is not unique: " + name); }
+    if (merge.durability.size() != 1) { throw ConfigError("topic durability is not unique: " + name); }
 
     TopicConfig topic;
     topic.name = name;
     topic.type = *merge.type.begin();
+    topic.depth = *merge.depth.begin();
+    topic.reliability = *merge.reliability.begin();
+    topic.durability = *merge.durability.begin();
     topics.push_back(topic);
   }
   return topics;
