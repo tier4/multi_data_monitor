@@ -80,6 +80,7 @@ void ConfigLoader::Load(const std::string & path)
 {
   YAML::Node config = LoadYAML(path);
   version_ = config["version"].as<std::string>();
+  root_ = config["root"].as<std::string>();
 
   for (const auto & pair : config["monitors"])
   {
@@ -90,6 +91,16 @@ void ConfigLoader::Load(const std::string & path)
 std::string ConfigLoader::GetVersion() const
 {
   return version_;
+}
+
+std::string ConfigLoader::GetRoot() const
+{
+  return root_;
+}
+
+std::unordered_map<std::string, MonitorConfig> ConfigLoader::GetMonitors() const
+{
+  return monitors_;
 }
 
 std::vector<TopicConfig> ConfigLoader::GetTopics() const

@@ -34,6 +34,8 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
 
   const auto node = getDisplayContext()->getRosNodeAbstraction();
   manager_.Load(path_.toStdString(), node.lock()->get_raw_node());
+  manager_.Build(this);
+  manager_.Start(node.lock()->get_raw_node());
 }
 
 #include <pluginlib/class_list_macros.hpp>

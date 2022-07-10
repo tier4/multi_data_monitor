@@ -39,6 +39,15 @@ FieldConfig::FieldConfig(YAML::Node node, const std::string & topic): topic(topi
   type = node["type"].as<std::string>("");
 }
 
+ObjectConfig::ObjectConfig(YAML::Node node) : custom(node)
+{
+  klass = GetNecessary(node, "class", "monitor").as<std::string>();
+  node.remove("class");
+
+  std::cout << "===========================================================================" << std::endl;
+  std::cout << custom << std::endl;
+}
+
 MonitorConfig::MonitorConfig(YAML::Node node)
 {
   if (node["topic"])
@@ -48,10 +57,7 @@ MonitorConfig::MonitorConfig(YAML::Node node)
     node.remove("topic");
     node.remove("field");
   }
-  config = node;
-
-  std::cout << "===========================================================================" << std::endl;
-  std::cout << config << std::endl;
+  object = ObjectConfig(node);
 }
 
 }  // namespace monitors

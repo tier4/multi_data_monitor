@@ -47,10 +47,18 @@ struct FieldConfig
   std::string type;
 };
 
+struct ObjectConfig
+{
+  ObjectConfig() = default;
+  ObjectConfig(YAML::Node node);
+  YAML::Node custom;
+  std::string klass;
+};
+
 struct MonitorConfig
 {
   MonitorConfig(YAML::Node node);
-  YAML::Node config;
+  ObjectConfig object;
   std::optional<TopicConfig> topic;
   std::optional<FieldConfig> field;
 };

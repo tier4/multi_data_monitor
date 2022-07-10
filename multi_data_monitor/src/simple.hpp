@@ -16,7 +16,6 @@
 #define SIMPLE_HPP_
 
 #include "monitor.hpp"
-#include "function.hpp"
 
 // TODO: style class
 #include <map>
@@ -33,11 +32,10 @@ class Simple : public Monitor
 public:
   using Monitor::Monitor;
   void Build(MonitorDict & monitors) override;
-  void Callback(const YAML::Node & message) override;
+  void Callback(const YAML::Node & field) override;
 
 private:
   QLabel * label;
-  FunctionRules rules_;    // TODO: move base class
   StyleDefinition style_;  // TODO: move base class
   std::string prev_;
   std::string title_;

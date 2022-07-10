@@ -18,20 +18,10 @@
 namespace monitors
 {
 
-Monitor::Monitor(const std::string & name, const YAML::Node & yaml)
+Monitor::Monitor(const ObjectConfig & config)
 {
-  name_ = name;
-  yaml_ = yaml;
-
-  if (yaml_["field"]["name"])
-  {
-    const auto field_path = yaml_["field"]["name"].as<std::string>("");
-    const auto field_type = yaml_["field"]["type"].as<std::string>("");
-    access_ = generic_type_support::GenericTypeAccess(field_path, field_type);
-  }
+  config_ = config;
 }
-
-
 
 /*
 void NodeBase::AddChild(QWidget * parent, const std::unique_ptr<NodeBase> & base)

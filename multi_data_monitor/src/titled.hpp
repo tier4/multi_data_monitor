@@ -16,7 +16,6 @@
 #define TITLED_HPP_
 
 #include "monitor.hpp"
-#include "function.hpp"
 
 class QLabel;
 
@@ -28,12 +27,11 @@ class Titled : public Monitor
 public:
   using Monitor::Monitor;
   void Build(MonitorDict & monitors) override;
-  void Callback(const YAML::Node & message) override;
+  void Callback(const YAML::Node & field) override;
 
 private:
   QLabel * value;
   QLabel * title;
-  FunctionRules rules_;  // TODO: move base class
   StyleDefinition style_value_;  // TODO: move base class
   StyleDefinition style_title_;  // TODO: move base class
 public:

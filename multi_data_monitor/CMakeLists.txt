@@ -26,22 +26,22 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/panel.cpp
   src/subscription.hpp
   src/subscription.cpp
+  src/style.hpp
+  src/style.cpp
+  src/function.hpp
+  src/function.cpp
+  src/monitor.hpp
+  src/monitor.cpp
+  src/matrix.hpp
+  src/matrix.cpp
+  src/simple.hpp
+  src/simple.cpp
+  src/titled.hpp
+  src/titled.cpp
   src/config/loader.hpp
   src/config/loader.cpp
   src/config/config.hpp
   src/config/config.cpp
-  #src/monitor.hpp
-  #src/monitor.cpp
-  #src/matrix.hpp
-  #src/matrix.cpp
-  #src/simple.hpp
-  #src/simple.cpp
-  #src/titled.hpp
-  #src/titled.cpp
-  #src/style.hpp
-  #src/style.cpp
-  #src/function.hpp
-  #src/function.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}

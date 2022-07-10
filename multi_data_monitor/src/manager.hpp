@@ -15,8 +15,9 @@
 #ifndef MANAGER_HPP_
 #define MANAGER_HPP_
 
-//#include "monitor.hpp"
+#include "monitor.hpp"
 #include "subscription.hpp"
+#include <QWidget>
 #include <rclcpp/rclcpp.hpp>
 #include <string>
 #include <unordered_map>
@@ -28,14 +29,14 @@ class Manager
 {
 public:
   void Load(const std::string & path, rclcpp::Node::SharedPtr node);
-  //void CreateMonitors();
-  //void CreateSubscription(const rclcpp::Node::SharedPtr & node);
-  //void Build(QWidget * panel);
+  void Build(QWidget * panel);
+  void Start(const rclcpp::Node::SharedPtr & node);
 
 private:
   // NOTE: declaration order where the subscription stops first
+  Monitor * root_;
   std::unordered_map<std::string, TopicSubscription> subscriptions_;
-  //std::map<std::string, std::unique_ptr<Monitor>> monitors_;
+  std::unordered_map<std::string, std::unique_ptr<Monitor>> monitors_;
 };
 
 }  // namespace monitors
