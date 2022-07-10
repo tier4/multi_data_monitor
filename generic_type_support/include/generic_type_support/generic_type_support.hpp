@@ -20,6 +20,8 @@
 #include <memory>
 #include <string>
 
+#include "generic_type_support/errors.hpp"
+
 namespace generic_type_support
 {
 
@@ -31,15 +33,19 @@ public:
   std::string GetTypeName() const;
   YAML::Node ConvertYAML(const rclcpp::SerializedMessage & serialized) const;
 
+  class GenericField;
+  GenericField GetField(const std::string & path);
+
 private:
   struct Data;
   std::unique_ptr<Data> data_;
 };
 
-struct GenericField
+class GenericMessage::GenericField
 {
 public:
-  GenericField(const std::string & path, const std::string & type);
+  GenericField(const GenericMessage & generic, const std::string & path);
+  ~GenericField();
   const YAML::Node Access(const YAML::Node & yaml) const;
 
 public:

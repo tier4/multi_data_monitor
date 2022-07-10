@@ -12,35 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__ACCESS_HPP_
-#define GENERIC_TYPE_SUPPORT__ACCESS_HPP_
+#ifndef GENERIC_TYPE_SUPPORT__ERRORS_HPP_
+#define GENERIC_TYPE_SUPPORT__ERRORS_HPP_
 
-#include "typesupport.hpp"
-
-#include <yaml-cpp/yaml.h>
-#include <string>
-#include <vector>
+#include <stdexcept>
 
 namespace generic_type_support
 {
 
-struct GenericTypeAccessField
+class FieldError : public std::runtime_error
 {
-  enum class Type {VALUE, LIST};
-  explicit GenericTypeAccessField(const std::string field);
-
-  Type type;
-  std::string name;
-  int index;
+  using std::runtime_error::runtime_error;
 };
-
-
-  bool Validate(const TypeSupportClass & support) const;
-
-  std::string path_;  // TODO: remove debug value
-  std::string type_;  // TODO: remove debug value ?
-  std::vector<GenericTypeAccessField> fields_;
 
 }  // namespace generic_type_support
 
-#endif  // GENERIC_TYPE_SUPPORT__ACCESS_HPP_
+#endif  // GENERIC_TYPE_SUPPORT__ERRORS_HPP_

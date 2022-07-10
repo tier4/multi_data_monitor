@@ -14,6 +14,7 @@
 
 #include "message.hpp"
 #include "field.hpp"
+#include "generic_type_support/errors.hpp"
 #include <iostream>
 
 namespace generic_type_support
@@ -54,6 +55,15 @@ const std::vector<TypeSupportField> & TypeSupportMessage::GetFields() const
   return fields_;
 }
 
+const TypeSupportField TypeSupportMessage::GetField(const std::string name) const
+{
+  for (const auto field : fields_)
+  {
+    if (name == field.GetDataName()) { return field; }
+  }
+  throw FieldError("Field '" + name +"' is not a member of '" + GetTypeName() + "'");
+}
+
 void TypeSupportMessage::CreateMemory(void *& data) const
 {
   data = std::malloc(message_->size_of_);
@@ -76,26 +86,6 @@ void TypeSupportClass::Dump() const
   std::cout << "members       : " << message_->members_ << std::endl;
   std::cout << "init_function : " << reinterpret_cast<void *>(message_->init_function) << std::endl;
   std::cout << "fini_function : " << reinterpret_cast<void *>(message_->fini_function) << std::endl;
-}
-
-bool TypeSupportClass::HasField(const std::string & name) const
-{
-  // TODO: improve algorithm
-  for (const auto field : fields_)
-  {
-    if (name == field.GetName()) { return true; }
-  }
-  return false;
-}
-
-TypeSupportField TypeSupportClass::GetField(const std::string & name) const
-{
-  // TODO: improve algorithm
-  for (const auto field : fields_)
-  {
-    if (name == field.GetName()) { return field; }
-  }
-  throw std::runtime_error("Field '" + name +"' is not a member of '" + GetFullName() + "'");
 }
 */
 

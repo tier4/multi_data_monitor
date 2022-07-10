@@ -30,6 +30,7 @@ public:
   ~TypeSupportMessage();
   const std::string GetTypeName() const;
   const std::vector<TypeSupportField> & GetFields() const;
+  const TypeSupportField GetField(const std::string name) const;
   void CreateMemory(void *& data) const;
   void DeleteMemory(void *& data) const;
 

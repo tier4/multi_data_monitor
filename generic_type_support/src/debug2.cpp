@@ -28,11 +28,10 @@ int main()
   {
     generic_type_support::GenericMessage message("std_msgs/msg/Header");
     cout << message.GetTypeName() << endl;
-  }
 
-  {
-    const auto lib1 = TypeSupportLibrary::LoadIntrospection("std_msgs/msg/Header");
-    const auto message = lib1.GetMessage();
-    cout << message.GetTypeName() << endl;
+    const auto field1 = message.GetField("frame_id");
+    const auto field2 = message.GetField("stamp.sec");
+
+    cout << "END" << endl;
   }
 }

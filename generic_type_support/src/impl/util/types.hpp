@@ -36,11 +36,6 @@ class TypeSupportIdentifierError : public std::runtime_error
     using std::runtime_error::runtime_error;
 };
 
-class FieldTypeError : public std::runtime_error
-{
-    using std::runtime_error::runtime_error;
-};
-
 }  // namespace generic_type_support
 
 #endif  // GENERIC_TYPE_SUPPORT__IMPL__UTIL__TYPES_HPP_

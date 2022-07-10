@@ -14,7 +14,7 @@
 
 #include "field.hpp"
 #include "message.hpp"
-#include <iostream>
+#include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 
 namespace generic_type_support
 {
@@ -29,6 +29,52 @@ const std::string TypeSupportField::GetDataName() const
   return field_->name_;
 }
 
+const std::string TypeSupportField::GetTypeName() const
+{
+  using namespace rosidl_typesupport_introspection_cpp;
+
+  switch (GetTypeID())
+  {
+    case ROS_TYPE_FLOAT:
+      return "float";
+    case ROS_TYPE_DOUBLE:
+      return "double";
+    case ROS_TYPE_LONG_DOUBLE:
+      return "long double";
+    case ROS_TYPE_CHAR:
+      return "char";
+    case ROS_TYPE_WCHAR:
+      return "wchar";
+    case ROS_TYPE_BOOLEAN:
+      return "bool";
+    case ROS_TYPE_OCTET:
+      return "octet";
+    case ROS_TYPE_UINT8:
+      return "uint8";
+    case ROS_TYPE_INT8:
+      return "int8";
+    case ROS_TYPE_UINT16:
+      return "uint16";
+    case ROS_TYPE_INT16:
+      return "int16";
+    case ROS_TYPE_UINT32:
+      return "uint32";
+    case ROS_TYPE_INT32:
+      return "int32";
+    case ROS_TYPE_UINT64:
+      return "uint64";
+    case ROS_TYPE_INT64:
+      return "int64";
+    case ROS_TYPE_STRING:
+      return "string";
+    case ROS_TYPE_WSTRING:
+      return "wstring";
+    case ROS_TYPE_MESSAGE:
+      return GetMessage().GetTypeName();
+  }
+  throw std::runtime_error("TypeSupportField::GetTypeName");
+}
+
 uint32_t TypeSupportField::GetMemoryOffset() const
 {
   return field_->offset_;
@@ -37,6 +83,11 @@ uint32_t TypeSupportField::GetMemoryOffset() const
 uint8_t TypeSupportField::GetTypeID() const
 {
   return field_->type_id_;
+}
+
+bool TypeSupportField::IsMessage() const
+{
+  return field_->members_;
 }
 
 TypeSupportMessage TypeSupportField::GetMessage() const

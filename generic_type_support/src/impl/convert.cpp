@@ -15,7 +15,6 @@
 #include "convert.hpp"
 #include "message.hpp"
 #include "field.hpp"
-
 #include <rosidl_typesupport_introspection_cpp/field_types.hpp>
 #include <iostream>
 

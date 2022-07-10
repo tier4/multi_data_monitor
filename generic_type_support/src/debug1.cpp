@@ -38,11 +38,17 @@ std::ostream& operator<<(std::ostream& os, const rclcpp::SerializedMessage & msg
 std::shared_ptr<generic_type_support::GenericMessage> message_;
 void callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized)
 {
-  std::cout << "==================== Message1 ====================" << std::endl;
+  const auto yaml = message_->ConvertYAML(*serialized);
+  const auto field1 = message_->GetField("frame_id");
+  const auto field2 = message_->GetField("stamp.sec");
+
+  std::cout << "==================== DATA ====================" << std::endl;
   std::cout << *serialized << std::endl;
-  std::cout << "==================== Message2 ====================" << std::endl;
-  std::cout << message_->ConvertYAML(*serialized) << std::endl;
-  std::cout << "==================================================" << std::endl;
+  std::cout << "==================== YAML ====================" << std::endl;
+  std::cout << yaml << std::endl;
+  std::cout << "==============================================" << std::endl;
+  std::cout << field1.Access(yaml) << std::endl;
+  std::cout << field2.Access(yaml) << std::endl;
 
   rclcpp::shutdown();
 }

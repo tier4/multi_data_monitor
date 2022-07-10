@@ -27,8 +27,11 @@ class TypeSupportField
 public:
   TypeSupportField(const IntrospectionField * field);
   const std::string GetDataName() const;
+  const std::string GetTypeName() const;
   uint32_t GetMemoryOffset() const;
   uint8_t GetTypeID() const;
+
+  bool IsMessage() const;
   TypeSupportMessage GetMessage() const;
 
   bool IsArray() const;
