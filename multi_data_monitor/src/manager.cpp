@@ -13,149 +13,106 @@
 // limitations under the License.
 
 #include "manager.hpp"
+#include "config/loader.hpp"
 #include "matrix.hpp"
 #include "simple.hpp"
 #include "titled.hpp"
-#include <QWidget>
 #include <string>
 
 #include <iostream>
-#include <ament_index_cpp/get_package_share_directory.hpp>  // TODO: move parser
 
 namespace monitors
 {
 
-std::pair<std::string, size_t> parse(const std::string & path, size_t & base)
+void CreateDefault(const DefaultConfig & config)
 {
-  const size_t pos1 = path.find('(', base);
-  const size_t pos2 = path.find(')', base);
-  if (pos1 != base + 1 || pos2 == std::string::npos)
+  std::cout << "create default: " << config.klass << std::endl;
+
+  if (config.klass == "titled")
   {
-    return {"$", 1};
+    Titled::default_style_title_ = StyleDefinition(config.temp["style"]["title"]);
+    Titled::default_style_value_ = StyleDefinition(config.temp["style"]["value"]);
   }
-  const auto expr = path.substr(base + 2, pos2 - base - 2);
-  if (expr.substr(0, 15) != "find-pkg-share ")
+  if (config.klass == "simple")
   {
-    return {"$", 1};
-  }
-  return {ament_index_cpp::get_package_share_directory(expr.substr(15)), pos2 - base + 1};
-}
-
-void Manager::Load(const std::string & path)
-{
-  std::string parsed;
-  size_t base = 0;
-  while (true)
-  {
-    const size_t pos = path.find('$', base);
-    parsed += path.substr(base, pos - base);
-    if (pos == std::string::npos)
-    {
-      break;
-    }
-    const auto [str, len] = parse(path, base);
-    parsed += str;
-    base = pos + len;
-  }
-
-  yaml_ = YAML::LoadFile(parsed);
-  std::cout << "format version: " << yaml_["version"].as<std::string>() << std::endl;
-}
-
-void Manager::CreateMonitors()
-{
-  const auto CreateMonitor = [](const std::string & name, const YAML::Node & yaml) -> std::unique_ptr<Monitor>
-  {
-    const auto type = yaml["class"].as<std::string>();
-    std::cout << "create node: " << name << "  " << type << std::endl;
-
-    if (type == "matrix")
-    {
-      return std::make_unique<Matrix>(name, yaml);
-    }
-    if (type == "titled")
-    {
-      return std::make_unique<Titled>(name, yaml);
-    }
-    if (type == "simple")
-    {
-      return std::make_unique<Simple>(name, yaml);
-    }
-
-    std::cout << "  unknown type: " << type << std::endl;
-    return nullptr;
-  };
-
-  for (const auto & monitor : yaml_["defaults"])
-  {
-    const auto type = monitor["class"].as<std::string>();
-    std::cout << "set default: " << type << std::endl;
-
-    if (type == "titled")
-    {
-      Titled::default_style_title_ = StyleDefinition(monitor["style"]["title"]);
-      Titled::default_style_value_ = StyleDefinition(monitor["style"]["value"]);
-    }
-    if (type == "simple")
-    {
-      Simple::default_style_ = StyleDefinition(monitor["style"]);
-    }
-  }
-
-  for (const auto & monitor : yaml_["monitors"])
-  {
-    const auto name = monitor.first.as<std::string>();
-    monitors_[name] = CreateMonitor(name, monitor.second);
+    Simple::default_style_ = StyleDefinition(config.temp["style"]);
   }
 }
 
-void Manager::CreateSubscription(const rclcpp::Node::SharedPtr & node)
+std::unique_ptr<Monitor> CreateMonitor(const std::string & name, const ObjectConfig & config)
 {
-  std::map<std::string, MonitorList> topics;
-  for (auto & [_, monitor] : monitors_)
+  std::cout << "create monitor: " << name << "  " << config.klass << std::endl;
+
+  if (config.klass == "matrix")
   {
-    const auto topic = monitor->GetTopic();
-    if (!topic) { continue; }
-    const auto type = topic["type"].as<std::string>();
-    const auto name = topic["name"].as<std::string>();
-
-    std::cout << monitor->GetName() << " " <<  type << " " << name << std::endl;
-
-    if (!supports_.count(type))
-    {
-      std::cout << "create support: " << type << std::endl;
-      supports_[type] = std::make_unique<const GenericMessageSupport>(type);
-    }
-    const GenericMessageSupport * support = supports_[type].get();
-
-    if (!subscriptions_.count(name))
-    {
-      std::cout << "create subscriptions: " << name << std::endl;
-      subscriptions_[name] = std::make_unique<TopicSubscription>(name, support);
-    }
-    TopicSubscription * subscription = subscriptions_[name].get();
-
-    // TODO: CreateMonitorsと処理をまとめる。Monitorが余分なYAMLを持たなくて済む。
-    monitor->SetTypeSupport(support);
-    monitor->ValidateField();
-    subscription->Add(monitor.get(), topic["qos"]);
-
-    std::cout << std::endl;
+    return std::make_unique<Matrix>(config);
+  }
+  if (config.klass == "titled")
+  {
+    return std::make_unique<Titled>(config);
+  }
+  if (config.klass == "simple")
+  {
+    return std::make_unique<Simple>(config);
   }
 
+  throw ConfigError("unknown monitor type" + config.klass);
+}
+
+void Manager::Load(const std::string & path, rclcpp::Node::SharedPtr node)
+{
+  ConfigLoader config; // TODO: support clear/retry when error
+  try
+  {
+    config.Load(path);
+    RCLCPP_INFO_STREAM(node->get_logger(), "format version: " << config.GetVersion());
+  }
+  catch(const ConfigError& error)
+  {
+    RCLCPP_ERROR_STREAM(node->get_logger(), error.what());
+  }
+
+  for (const auto & config : config.GetDefaults())
+  {
+    CreateDefault(config);
+  }
+
+  for (const auto & topic : config.GetTopics())
+  {
+    subscriptions_.emplace(topic.name, topic);
+  }
+
+  for (const auto & field : config.GetFields())
+  {
+    subscriptions_.at(field.topic).AddField(field);
+  }
+
+  for (const auto & pair : config.GetMonitors())
+  {
+    monitors_.emplace(pair.first, CreateMonitor(pair.first, pair.second.object));
+    if (pair.second.topic)
+    {
+      const auto & topic = pair.second.topic.value();
+      const auto & field = pair.second.field.value();
+      subscriptions_.at(topic.name).GetField(field.name).monitors.push_back(monitors_.at(pair.first).get());
+    }
+  }
+  root_ = monitors_.at(config.GetRoot()).get();
+}
+
+void Manager::Start(const rclcpp::Node::SharedPtr & node)
+{
   for (auto & pair : subscriptions_)
   {
-    pair.second->Start(node);
+    pair.second.Start(node);
   }
 }
 
 void Manager::Build(QWidget * panel)
 {
-  const auto name = yaml_["root"].as<std::string>();
-  const auto root = monitors_.at(name).get();
-  root->Build(monitors_);
+  root_->Build(monitors_);
 
-  const auto widget = root->GetWidget();
+  const auto widget = root_->GetWidget();
   std::cout << "widget: " << widget << std::endl;
   if (widget)
   {
@@ -163,7 +120,7 @@ void Manager::Build(QWidget * panel)
     // panel->Widget(widget)
   }
 
-  const auto layout = root->GetLayout();
+  const auto layout = root_->GetLayout();
   std::cout << "layout: " << layout << std::endl;
   if (layout)
   {

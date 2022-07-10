@@ -12,16 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MONITORS__MONITOR_HPP_
-#define MONITORS__MONITOR_HPP_
+#ifndef MONITOR_HPP_
+#define MONITOR_HPP_
 
-#include <yaml-cpp/yaml.h>
+#include "function.hpp"
+#include "config/config.hpp"
 #include <string>
-#include <map>
-#include <memory>
-
-#include <iostream>  // DEBUG
-#include <generic_type_support/generic_type_support.hpp>  // DEBUG, move src
+#include <unordered_map>
 
 class QWidget;
 class QLayout;
@@ -30,40 +27,27 @@ namespace monitors
 {
 
 class Monitor;
-using MonitorList = std::vector<std::shared_ptr<Monitor>>;
-using MonitorDict = std::map<std::string, std::unique_ptr<Monitor>>;
+using MonitorDict = std::unordered_map<std::string, std::unique_ptr<Monitor>>;
 
 class Monitor
 {
 public:
-  Monitor(const std::string & name, const YAML::Node & yaml);
+  Monitor(const ObjectConfig & config);
   virtual ~Monitor() = default;
 
   // TODO: merge (Build, GetWidget, GetLayout)
   QWidget * GetWidget() {return widget_;}
   QLayout * GetLayout() {return layout_;}
   virtual void Build(MonitorDict & monitors) = 0;
-  virtual void Callback([[maybe_unused]] const YAML::Node & message) {}
-
-  std::string GetName() { return name_; }
-
-  // TODO: Remove temporary methods
-  YAML::Node GetTopic() { return yaml_["topic"]; }
-  void ValidateField() { access_.Validate(support_->GetClass()); };
-  void SetTypeSupport(const generic_type_support::GenericMessageSupport * support) { support_ = support; }
-  const generic_type_support::GenericMessageSupport * GetTypeSupport() const { return support_; }
+  virtual void Callback([[maybe_unused]] const YAML::Node & field) {}
 
 protected:
-  std::string name_;
-  YAML::Node yaml_;
+  ObjectConfig config_;
+  FunctionRules rules_;
   QWidget * widget_ = nullptr;
   QLayout * layout_ = nullptr;
-  generic_type_support::GenericTypeAccess access_;
-
-  // TODO: const generic_type_support::GenericMessageSupport * const support_;
-  const generic_type_support::GenericMessageSupport * support_;
 };
 
 }  // namespace monitors
 
-#endif  // MONITORS__MONITOR_HPP_
+#endif  // MONITOR_HPP_

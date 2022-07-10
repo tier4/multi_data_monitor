@@ -12,38 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MONITORS__SUBSCRIPTION_HPP_
-#define MONITORS__SUBSCRIPTION_HPP_
+#ifndef SUBSCRIPTION_HPP_
+#define SUBSCRIPTION_HPP_
 
+#include "config/config.hpp"
 #include "monitor.hpp"
 #include <rclcpp/rclcpp.hpp>
+#include <generic_type_support/generic_type_support.hpp>
 
 namespace monitors
 {
 
+struct TopicField
+{
+  FieldConfig config;
+  generic_type_support::GenericMessage::GenericAccess access;
+  std::vector<Monitor *> monitors;
+};
+
 class TopicSubscription
 {
 public:
-  TopicSubscription(const std::string & name, const generic_type_support::GenericMessageSupport * support);
-  void Add(Monitor * monitor, const YAML::Node & qos);
+  TopicSubscription(const TopicConfig & config);
   void Start(const rclcpp::Node::SharedPtr & node);
+  void AddField(const FieldConfig & config);
+  TopicField & GetField(const std::string & name);
 
 private:
-  void Callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized) const;
-
-  // No need to release raw pointer since it is a reference to unique pointer.
-  const std::string name_;
-  const generic_type_support::GenericMessageSupport * const support_;
-  std::vector<Monitor *> monitors_;
+  // NOTE: declaration order where the subscription stops first
+  TopicConfig config_;
   rclcpp::GenericSubscription::SharedPtr subscription_;
-
-  // temporary
-  bool qos_empty;
-  size_t qos_depth;
-  std::string qos_reliability;
-  std::string qos_durability;
+  generic_type_support::GenericMessage message_;
+  std::unordered_map<std::string, TopicField> fields_;
 };
 
 }  // namespace monitors
 
-#endif  // MONITORS__SUBSCRIPTION_HPP_
+#endif  // SUBSCRIPTION_HPP_

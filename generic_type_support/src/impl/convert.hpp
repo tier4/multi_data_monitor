@@ -12,32 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
-#define GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+#ifndef IMPL__CONVERT_HPP_
+#define IMPL__CONVERT_HPP_
 
-#include "typesupport.hpp"
-
+#include "util/types.hpp"
 #include <yaml-cpp/yaml.h>
-#include <memory>
-#include <vector>
 
 namespace generic_type_support
 {
 
-class GenericMessageSupport
-{
-public:
-  GenericMessageSupport(const std::string & type);
-  YAML::Node DeserializeYAML(const rclcpp::SerializedMessage & serialized) const;
-  std::string GetTypeName() const { return type_; }
-  TypeSupportClass GetClass() const { return introspection_.GetClass(); }
-
-private:
-  const std::string type_;
-  const TypeSupportMessage introspection_;
-  const TypeSupportSerialization serialization_;
-};
+YAML::Node GetMessageYAML(const TypeSupportMessage & message, const void * data);
+YAML::Node GetFieldYAML(const TypeSupportField & field, const void * data);
+YAML::Node GetFieldArray(const TypeSupportField & field, const void * data);
+YAML::Node GetFieldValue(const TypeSupportField & field, const void * data);
 
 }  // namespace generic_type_support
 
-#endif  // GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
+#endif  // IMPL__CONVERT_HPP_

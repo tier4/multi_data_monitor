@@ -28,13 +28,13 @@ StyleDefinition Titled::default_style_title_;
 
 void Titled::Build([[maybe_unused]] MonitorDict & monitors)
 {
-  rules_.Load(yaml_["rules"]);
-  style_value_ = default_style_value_.Merge(StyleDefinition(yaml_["style"]["value"]));
-  style_title_ = default_style_title_.Merge(StyleDefinition(yaml_["style"]["title"]));
+  rules_.Load(config_.custom["rules"]);
+  style_value_ = default_style_value_.Merge(StyleDefinition(config_.custom["style"]["value"]));
+  style_title_ = default_style_title_.Merge(StyleDefinition(config_.custom["style"]["title"]));
 
   layout_ = new QVBoxLayout();
   value = new QLabel();
-  title = new QLabel(QString::fromStdString(yaml_["title"].as<std::string>()));
+  title = new QLabel(QString::fromStdString(config_.custom["title"].as<std::string>()));
 
   value->setAlignment(Qt::AlignCenter);
   title->setAlignment(Qt::AlignCenter);
@@ -47,9 +47,9 @@ void Titled::Build([[maybe_unused]] MonitorDict & monitors)
   layout_->setSpacing(0);
 }
 
-void Titled::Callback(const YAML::Node & message)
+void Titled::Callback(const YAML::Node & field)
 {
-  const auto data = YAML::Clone(access_.Get(message));
+  const auto data = YAML::Clone(field);
   StyleDefinition default_style;  // TODO: implement default style
   FunctionResult result = rules_.Apply({data, default_style});
 

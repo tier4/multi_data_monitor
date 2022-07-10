@@ -12,20 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-#include <gtest/gtest.h>
 #include "generic_type_support/generic_type_support.hpp"
+#include "impl/library.hpp"
+#include "impl/message.hpp"
+#include "impl/convert.hpp"
 
-/*
-TEST(generic_type_support, test1)
-{
-  const auto support = generic_type_support::TypeSupportMessage("std_msgs/msg/Header");
-  const auto message = support.GetClass();
-}
-*/
+#include <yaml-cpp/yaml.h>
+#include <iostream>
 
-int main(int argc, char ** argv)
+int main()
 {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  using namespace generic_type_support;
+  using namespace std;
+
+  {
+    generic_type_support::GenericMessage message("std_msgs/msg/Header");
+    cout << message.GetTypeName() << endl;
+
+    const auto field1 = message.GetAccess("frame_id");
+    const auto field2 = message.GetAccess("stamp.sec");
+
+    cout << "END" << endl;
+  }
 }

@@ -12,37 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef SIMPLE_HPP_
-#define SIMPLE_HPP_
+#ifndef IMPL__FIELD_HPP_
+#define IMPL__FIELD_HPP_
 
-#include "monitor.hpp"
-
-// TODO: style class
-#include <map>
+#include "util/types.hpp"
 #include <string>
 #include <vector>
 
-class QLabel;
-
-namespace monitors
+namespace generic_type_support
 {
 
-class Simple : public Monitor
+class TypeSupportField
 {
 public:
-  using Monitor::Monitor;
-  void Build(MonitorDict & monitors) override;
-  void Callback(const YAML::Node & field) override;
+  TypeSupportField(const IntrospectionField * field);
+  const std::string GetDataName() const;
+  const std::string GetTypeName() const;
+  uint32_t GetMemoryOffset() const;
+  uint8_t GetTypeID() const;
+
+  bool IsMessage() const;
+  TypeSupportMessage GetMessage() const;
+
+  bool IsArray() const;
+  std::vector<const void *> GetConstArray(const void * data) const;
 
 private:
-  QLabel * label;
-  StyleDefinition style_;  // TODO: move base class
-  std::string prev_;
-  std::string title_;
-public:
-  static StyleDefinition default_style_;  // TODO: private and setter
+  const IntrospectionField * field_;
 };
 
-}  // namespace monitors
+}  // namespace generic_type_support
 
-#endif  // SIMPLE_HPP_
+#endif  // IMPL__FIELD_HPP_

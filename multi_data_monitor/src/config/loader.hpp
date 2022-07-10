@@ -12,26 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MATRIX_HPP_
-#define MATRIX_HPP_
+#ifndef CONFIG__LOADER_HPP_
+#define CONFIG__LOADER_HPP_
 
-#include "monitor.hpp"
-
-class QGridLayout;
+#include "config.hpp"
+#include <string>
+#include <unordered_map>
+#include <unordered_set>
 
 namespace monitors
 {
 
-class Matrix : public Monitor
+class ConfigLoader
 {
 public:
-  using Monitor::Monitor;
-  void Build(MonitorDict & monitors) override;
+  void Load(const std::string & path);
+  std::string GetVersion() const;
+  std::string GetRoot() const;
+  std::vector<DefaultConfig> GetDefaults() const;
+  std::unordered_map<std::string, MonitorConfig> GetMonitors() const;
+
+  std::vector<TopicConfig> GetTopics() const;
+  std::vector<FieldConfig> GetFields() const;
 
 private:
-  QGridLayout * grid;
+  std::string version_;
+  std::string root_;
+  std::vector<DefaultConfig> defaults_;
+  std::unordered_map<std::string, MonitorConfig> monitors_;
 };
 
 }  // namespace monitors
 
-#endif  // MATRIX_HPP_
+#endif  // CONFIG__LOADER_HPP_

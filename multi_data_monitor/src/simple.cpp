@@ -26,10 +26,9 @@ StyleDefinition Simple::default_style_;
 
 void Simple::Build([[maybe_unused]] MonitorDict & monitors)
 {
-  title_ = yaml_["title"].as<std::string>("");
-
-  rules_.Load(yaml_["rules"]);
-  style_ = default_style_.Merge(StyleDefinition(yaml_["style"]));
+  rules_.Load(config_.custom["rules"]);
+  style_ = default_style_.Merge(StyleDefinition(config_.custom["style"]));
+  title_ = config_.custom["title"].as<std::string>("");
 
   widget_ = label = new QLabel(QString::fromStdString(title_));
   label->setAlignment(Qt::AlignCenter);
@@ -37,9 +36,9 @@ void Simple::Build([[maybe_unused]] MonitorDict & monitors)
   // setToolTip();
 }
 
-void Simple::Callback(const YAML::Node & message)
+void Simple::Callback(const YAML::Node & field)
 {
-  const auto data = YAML::Clone(access_.Get(message));
+  const auto data = YAML::Clone(field);
   const auto text = data.as<std::string>();
   if (prev_ != text)
   {

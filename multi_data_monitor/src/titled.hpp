@@ -12,11 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MONITORS__WIDGET__TITLED_HPP_
-#define MONITORS__WIDGET__TITLED_HPP_
+#ifndef TITLED_HPP_
+#define TITLED_HPP_
 
 #include "monitor.hpp"
-#include "function.hpp"
 
 class QLabel;
 
@@ -28,12 +27,11 @@ class Titled : public Monitor
 public:
   using Monitor::Monitor;
   void Build(MonitorDict & monitors) override;
-  void Callback(const YAML::Node & message) override;
+  void Callback(const YAML::Node & field) override;
 
 private:
   QLabel * value;
   QLabel * title;
-  FunctionRules rules_;  // TODO: move base class
   StyleDefinition style_value_;  // TODO: move base class
   StyleDefinition style_title_;  // TODO: move base class
 public:
@@ -43,4 +41,4 @@ public:
 
 }  // namespace monitors
 
-#endif  // MONITORS__WIDGET__TITLED_HPP_
+#endif  // TITLED_HPP_

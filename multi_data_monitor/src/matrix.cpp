@@ -24,12 +24,12 @@ void Matrix::Build(MonitorDict & monitors)
 {
   layout_ = grid = new QGridLayout();
 
-  int cols = yaml_["cols"].as<int>();
-  int rows = yaml_["rows"].as<int>();
+  int cols = config_.custom["cols"].as<int>();
+  int rows = config_.custom["rows"].as<int>();
   int x = 0;
   int y = 0;
 
-  for (const auto & node : yaml_["children"])
+  for (const auto & node : config_.custom["children"])
   {
     const auto & child = monitors[node.as<std::string>()];
     if (child)

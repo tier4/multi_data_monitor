@@ -17,10 +17,10 @@
 
 #include "monitor.hpp"
 #include "subscription.hpp"
+#include <QWidget>
 #include <rclcpp/rclcpp.hpp>
-#include <yaml-cpp/yaml.h>
-
-#include "generic_type_support/generic_type_support.hpp"
+#include <string>
+#include <unordered_map>
 
 namespace monitors
 {
@@ -28,19 +28,15 @@ namespace monitors
 class Manager
 {
 public:
-  void Load(const std::string & path);
-  void CreateMonitors();
-  void CreateSubscription(const rclcpp::Node::SharedPtr & node);
+  void Load(const std::string & path, rclcpp::Node::SharedPtr node);
   void Build(QWidget * panel);
+  void Start(const rclcpp::Node::SharedPtr & node);
 
 private:
-  using GenericMessageSupport = generic_type_support::GenericMessageSupport;
-  YAML::Node yaml_;
-
-  // NOTE: declaration order for the destructors
-  std::map<std::string, std::unique_ptr<const GenericMessageSupport>> supports_;
-  std::map<std::string, std::unique_ptr<Monitor>> monitors_;
-  std::map<std::string, std::unique_ptr<TopicSubscription>> subscriptions_;
+  // NOTE: declaration order where the subscription stops first
+  Monitor * root_;
+  std::unordered_map<std::string, TopicSubscription> subscriptions_;
+  std::unordered_map<std::string, std::unique_ptr<Monitor>> monitors_;
 };
 
 }  // namespace monitors

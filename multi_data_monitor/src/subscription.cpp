@@ -19,67 +19,65 @@
 namespace monitors
 {
 
-TopicSubscription::TopicSubscription(const std::string & name, const generic_type_support::GenericMessageSupport * support)
-: name_(name), support_(support)
+TopicSubscription::TopicSubscription(const TopicConfig & config) : message_(config.type)
 {
-  qos_empty = true;
-}
-
-void TopicSubscription::Add(Monitor * monitor, const YAML::Node & qos)
-{
-  YAML::Node temp_qos = qos ? qos : YAML::Node();
-  const auto temp_depth = temp_qos["depth"].as<size_t>(1);
-  const auto temp_reliability = temp_qos["reliability"].as<std::string>("default");
-  const auto temp_durability = temp_qos["durability"].as<std::string>("default");
-  if (qos_empty)
-  {
-    qos_empty = false;
-    qos_depth = temp_depth;
-    qos_reliability = temp_reliability;
-    qos_durability = temp_durability;
-  }
-  else
-  {
-    if (qos_depth != temp_depth || qos_reliability != temp_reliability || qos_durability != temp_durability)
-    {
-      throw std::runtime_error("QoS setting does not match");
-    }
-  }
-
-  if (support_ != monitor->GetTypeSupport())
-  {
-    const auto type1 = support_->GetTypeName();
-    const auto type2 = monitor->GetTypeSupport()->GetTypeName();
-    throw std::runtime_error("Topic '" + name_ + "' has multiple types [" + type1 + ", " + type2 + "]");
-  }
-  monitors_.push_back(monitor);
+  config_ = config;
 }
 
 void TopicSubscription::Start(const rclcpp::Node::SharedPtr & node)
 {
-  std::cout << "start subscription: " << name_ << " " << support_->GetTypeName() << std::endl;
+  RCLCPP_INFO_STREAM(node->get_logger(), "start subscription: " << config_.name << " " << config_.type << " " << config_.depth << " " << config_.reliability << " " << config_.durability);
 
-  rclcpp::QoS qos(qos_depth);
-  if (qos_reliability == "reliable") { qos.reliable(); }
-  if (qos_reliability == "best_effort") { qos.best_effort(); }
-  if (qos_durability == "volatile") { qos.durability_volatile(); }
-  if (qos_durability == "transient_local") { qos.transient_local(); }
+  // TODO: throw unknown settings
+  rclcpp::QoS qos(config_.depth);
+  if (config_.reliability == "reliable") { qos.reliable(); }
+  if (config_.reliability == "best_effort") { qos.best_effort(); }
+  if (config_.durability == "volatile") { qos.durability_volatile(); }
+  if (config_.durability == "transient_local") { qos.transient_local(); }
 
-  using namespace std::placeholders;
-  subscription_ = node->create_generic_subscription(
-  name_,
-  support_->GetTypeName(),
-  qos,
-  std::bind(&TopicSubscription::Callback, this, _1));
+  const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> serialized)
+  {
+    const YAML::Node yaml = message_.ConvertYAML(*serialized);
+    for (const auto & field : fields_)
+    {
+      const YAML::Node node = field.second.access.Access(yaml);
+      for (const auto & monitor : field.second.monitors)
+      {
+        monitor->Callback(node);
+      }
+    }
+  };
+  subscription_ = node->create_generic_subscription(config_.name, config_.type, qos, callback);
 }
 
-void TopicSubscription::Callback(const std::shared_ptr<rclcpp::SerializedMessage> serialized) const
+void TopicSubscription::AddField(const FieldConfig & config)
 {
-  const YAML::Node yaml = support_->DeserializeYAML(*serialized);
-  for (const auto & monitor : monitors_)
+  if (fields_.count(config.name) == 0)
   {
-    monitor->Callback(yaml);
+    const auto access = message_.GetAccess(config.name);
+    fields_.insert(std::make_pair(config.name, TopicField{config, access, {}}));
   }
+
+  const auto & access = fields_.at(config.name).access;
+  if (config.type.empty())
+  {
+    if (access.IsMessage())
+    {
+      throw ConfigError("field '" + config.name + "' is not a primitive type");
+    }
+  }
+  else
+  {
+    if (access.GetTypeName() != config.type)
+    {
+      throw ConfigError("field '" + config.name + "' is not '" + config.type +"'");
+    }
+  }
+}
+
+TopicField & TopicSubscription::GetField(const std::string & name)
+{
+  return fields_.at(name);
 }
 
 }  // namespace monitors

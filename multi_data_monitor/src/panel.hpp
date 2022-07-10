@@ -15,27 +15,19 @@
 #ifndef PANEL_HPP_
 #define PANEL_HPP_
 
-#include <rviz_common/display_context.hpp>
+#include "manager.hpp"
 #include <rviz_common/panel.hpp>
-#include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
-
-#include "manager.hpp"  // TODO: replace forward declaration
-
 
 class MultiDataMonitor : public rviz_common::Panel
 {
-  Q_OBJECT
+Q_OBJECT
 
 public:
   explicit MultiDataMonitor(QWidget * parent = nullptr);
-  void onInitialize() override;
   void save(rviz_common::Config config) const override;
   void load(const rviz_common::Config & config) override;
 
-  void update();
-
 private:
-protected:
   QString path_;
   monitors::Manager manager_;
 };

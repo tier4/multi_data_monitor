@@ -39,7 +39,7 @@ protected:
 class FunctionRules final
 {
 public:
-  void Load(const YAML::Node & yaml);
+  void Load(const YAML::Node & yaml);  // TODO: use config
   FunctionResult Apply(const FunctionResult & base) const;
 
 private:
