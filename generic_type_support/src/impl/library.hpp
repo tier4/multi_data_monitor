@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__IMPL__LIBRARY_HPP_
-#define GENERIC_TYPE_SUPPORT__IMPL__LIBRARY_HPP_
+#ifndef IMPL__LIBRARY_HPP_
+#define IMPL__LIBRARY_HPP_
 
 #include "util/types.hpp"
 #include <rclcpp/typesupport_helpers.hpp>
@@ -38,4 +38,4 @@ private:
 
 }  // namespace generic_type_support
 
-#endif  // GENERIC_TYPE_SUPPORT__IMPL__LIBRARY_HPP_
+#endif  // IMPL__LIBRARY_HPP_

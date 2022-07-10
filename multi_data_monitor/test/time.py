@@ -3,6 +3,7 @@ import rclpy
 import rclpy.node
 import std_msgs.msg
 
+
 class MyNode(rclpy.node.Node):
 
     def __init__(self):
@@ -16,11 +17,13 @@ class MyNode(rclpy.node.Node):
         msg.stamp = self.get_clock().now().to_msg()
         self.pub.publish(msg)
 
+
 def main(args=None):
     rclpy.init(args=args)
     node = MyNode()
     rclpy.spin(node)
     rclpy.shutdown()
+
 
 if __name__ == "__main__":
     main()

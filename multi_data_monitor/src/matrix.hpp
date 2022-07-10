@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MONITORS__LAYOUT__MATRIX_HPP_
-#define MONITORS__LAYOUT__MATRIX_HPP_
+#ifndef MATRIX_HPP_
+#define MATRIX_HPP_
 
 #include "monitor.hpp"
 
@@ -34,4 +34,4 @@ private:
 
 }  // namespace monitors
 
-#endif  // MONITORS__LAYOUT__MATRIX_HPP_
+#endif  // MATRIX_HPP_

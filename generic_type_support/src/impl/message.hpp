@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__IMPL__MESSAGE_HPP_
-#define GENERIC_TYPE_SUPPORT__IMPL__MESSAGE_HPP_
+#ifndef IMPL__MESSAGE_HPP_
+#define IMPL__MESSAGE_HPP_
 
 #include "util/types.hpp"
 #include <string>
@@ -41,4 +41,4 @@ private:
 
 }  // namespace generic_type_support
 
-#endif  // GENERIC_TYPE_SUPPORT__IMPL__MESSAGE_HPP_
+#endif  // IMPL__MESSAGE_HPP_

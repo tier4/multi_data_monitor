@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__IMPL__UTIL__TYPES_HPP_
-#define GENERIC_TYPE_SUPPORT__IMPL__UTIL__TYPES_HPP_
+#ifndef IMPL__UTIL__TYPES_HPP_
+#define IMPL__UTIL__TYPES_HPP_
 
 #include <stdexcept>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
@@ -38,4 +38,4 @@ class TypeSupportIdentifierError : public std::runtime_error
 
 }  // namespace generic_type_support
 
-#endif  // GENERIC_TYPE_SUPPORT__IMPL__UTIL__TYPES_HPP_
+#endif  // IMPL__UTIL__TYPES_HPP_

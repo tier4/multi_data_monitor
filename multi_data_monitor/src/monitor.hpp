@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MONITORS__MONITOR_HPP_
-#define MONITORS__MONITOR_HPP_
+#ifndef MONITOR_HPP_
+#define MONITOR_HPP_
 
 #include <yaml-cpp/yaml.h>
 #include <string>
@@ -66,4 +66,4 @@ protected:
 
 }  // namespace monitors
 
-#endif  // MONITORS__MONITOR_HPP_
+#endif  // MONITOR_HPP_

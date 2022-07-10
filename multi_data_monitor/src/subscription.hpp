@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MONITORS__SUBSCRIPTION_HPP_
-#define MONITORS__SUBSCRIPTION_HPP_
+#ifndef SUBSCRIPTION_HPP_
+#define SUBSCRIPTION_HPP_
 
 #include "monitor.hpp"
 #include <rclcpp/rclcpp.hpp>
@@ -52,4 +52,4 @@ private:
 
 }  // namespace monitors
 
-#endif  // MONITORS__SUBSCRIPTION_HPP_
+#endif  // SUBSCRIPTION_HPP_
