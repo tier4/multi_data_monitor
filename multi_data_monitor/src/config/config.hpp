@@ -27,6 +27,13 @@ class ConfigError : public std::runtime_error
   using std::runtime_error::runtime_error;
 };
 
+struct DefaultConfig
+{
+  DefaultConfig(YAML::Node node);
+  std::string klass;
+  YAML::Node temp;  // TODO: temp
+};
+
 struct TopicConfig
 {
   TopicConfig() = default;
@@ -51,8 +58,8 @@ struct ObjectConfig
 {
   ObjectConfig() = default;
   ObjectConfig(YAML::Node node);
-  YAML::Node custom;
   std::string klass;
+  YAML::Node custom;
 };
 
 struct MonitorConfig

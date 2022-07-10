@@ -29,14 +29,16 @@ public:
   void Load(const std::string & path);
   std::string GetVersion() const;
   std::string GetRoot() const;
-
+  std::vector<DefaultConfig> GetDefaults() const;
   std::unordered_map<std::string, MonitorConfig> GetMonitors() const;
+
   std::vector<TopicConfig> GetTopics() const;
   std::vector<FieldConfig> GetFields() const;
 
 private:
   std::string version_;
   std::string root_;
+  std::vector<DefaultConfig> defaults_;
   std::unordered_map<std::string, MonitorConfig> monitors_;
 };
 

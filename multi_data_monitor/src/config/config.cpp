@@ -24,6 +24,12 @@ YAML::Node GetNecessary(const YAML::Node & node, const std::string & name, const
   throw ConfigError(prefix + " requires '" + name + "' field");
 }
 
+DefaultConfig::DefaultConfig(YAML::Node node) : temp(node)
+{
+  klass = GetNecessary(node, "class", "monitor").as<std::string>();
+  node.remove("class");
+}
+
 TopicConfig::TopicConfig(YAML::Node node)
 {
   name = GetNecessary(node, "name", "topic").as<std::string>();

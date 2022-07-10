@@ -82,6 +82,11 @@ void ConfigLoader::Load(const std::string & path)
   version_ = config["version"].as<std::string>();
   root_ = config["root"].as<std::string>();
 
+  for (const auto & node : config["defaults"])
+  {
+    defaults_.emplace_back(node);
+  }
+
   for (const auto & pair : config["monitors"])
   {
     monitors_.emplace(pair.first.as<std::string>(), pair.second);
@@ -96,6 +101,11 @@ std::string ConfigLoader::GetVersion() const
 std::string ConfigLoader::GetRoot() const
 {
   return root_;
+}
+
+std::vector<DefaultConfig> ConfigLoader::GetDefaults() const
+{
+  return defaults_;
 }
 
 std::unordered_map<std::string, MonitorConfig> ConfigLoader::GetMonitors() const

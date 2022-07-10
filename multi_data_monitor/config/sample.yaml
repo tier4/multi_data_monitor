@@ -60,7 +60,6 @@ monitors:
     class: simple
     topic: { name: /monitor/header, type: std_msgs/msg/Header }
     field: { name: frame_id }
-    style: { font-size: 24 }
     rules:
       - { func: lines, args: 2 }
 
@@ -80,4 +79,5 @@ monitors:
   data_name_6:
     class: simple
     topic: { name: /monitor/array, type: std_msgs/msg/Int32MultiArray, qos: { durability: transient_local } }
-    field: { name: data@0 }
+    field: { name: data@1 }
+    style: { font-size: 24 }

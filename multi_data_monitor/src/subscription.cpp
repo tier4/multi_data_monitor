@@ -40,7 +40,11 @@ void TopicSubscription::Start(const rclcpp::Node::SharedPtr & node)
     const YAML::Node yaml = message_.ConvertYAML(*serialized);
     for (const auto & field : fields_)
     {
-      std::cout << field.first << ": " << field.second.access.Access(yaml) << std::endl;
+      const YAML::Node node = field.second.access.Access(yaml);
+      for (const auto & monitor : field.second.monitors)
+      {
+        monitor->Callback(node);
+      }
     }
   };
   subscription_ = node->create_generic_subscription(config_.name, config_.type, qos, callback);
@@ -51,7 +55,7 @@ void TopicSubscription::AddField(const FieldConfig & config)
   if (fields_.count(config.name) == 0)
   {
     const auto access = message_.GetAccess(config.name);
-    fields_.insert(std::make_pair(config.name, TopicField{config, access}));
+    fields_.insert(std::make_pair(config.name, TopicField{config, access, {}}));
   }
 
   const auto & access = fields_.at(config.name).access;
@@ -69,6 +73,11 @@ void TopicSubscription::AddField(const FieldConfig & config)
       throw ConfigError("field '" + config.name + "' is not '" + config.type +"'");
     }
   }
+}
+
+TopicField & TopicSubscription::GetField(const std::string & name)
+{
+  return fields_.at(name);
 }
 
 }  // namespace monitors

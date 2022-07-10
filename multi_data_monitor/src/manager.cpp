@@ -24,9 +24,24 @@
 namespace monitors
 {
 
+void CreateDefault(const DefaultConfig & config)
+{
+  std::cout << "create default: " << config.klass << std::endl;
+
+  if (config.klass == "titled")
+  {
+    Titled::default_style_title_ = StyleDefinition(config.temp["style"]["title"]);
+    Titled::default_style_value_ = StyleDefinition(config.temp["style"]["value"]);
+  }
+  if (config.klass == "simple")
+  {
+    Simple::default_style_ = StyleDefinition(config.temp["style"]);
+  }
+}
+
 std::unique_ptr<Monitor> CreateMonitor(const std::string & name, const ObjectConfig & config)
 {
-  std::cout << "create node: " << name << "  " << config.klass << std::endl;
+  std::cout << "create monitor: " << name << "  " << config.klass << std::endl;
 
   if (config.klass == "matrix")
   {
@@ -57,6 +72,11 @@ void Manager::Load(const std::string & path, rclcpp::Node::SharedPtr node)
     RCLCPP_ERROR_STREAM(node->get_logger(), error.what());
   }
 
+  for (const auto & config : config.GetDefaults())
+  {
+    CreateDefault(config);
+  }
+
   for (const auto & topic : config.GetTopics())
   {
     subscriptions_.emplace(topic.name, topic);
@@ -70,6 +90,12 @@ void Manager::Load(const std::string & path, rclcpp::Node::SharedPtr node)
   for (const auto & pair : config.GetMonitors())
   {
     monitors_.emplace(pair.first, CreateMonitor(pair.first, pair.second.object));
+    if (pair.second.topic)
+    {
+      const auto & topic = pair.second.topic.value();
+      const auto & field = pair.second.field.value();
+      subscriptions_.at(topic.name).GetField(field.name).monitors.push_back(monitors_.at(pair.first).get());
+    }
   }
   root_ = monitors_.at(config.GetRoot()).get();
 }
@@ -101,26 +127,5 @@ void Manager::Build(QWidget * panel)
     panel->setLayout(layout);
   }
 }
-
-/*
-void Manager::CreateMonitors()
-
-  for (const auto & monitor : yaml_["defaults"])
-  {
-    const auto type = monitor["class"].as<std::string>();
-    std::cout << "set default: " << type << std::endl;
-
-    if (type == "titled")
-    {
-      Titled::default_style_title_ = StyleDefinition(monitor["style"]["title"]);
-      Titled::default_style_value_ = StyleDefinition(monitor["style"]["value"]);
-    }
-    if (type == "simple")
-    {
-      Simple::default_style_ = StyleDefinition(monitor["style"]);
-    }
-  }
-}
-*/
 
 }  // namespace monitors

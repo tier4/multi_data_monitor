@@ -16,6 +16,7 @@
 #define SUBSCRIPTION_HPP_
 
 #include "config/config.hpp"
+#include "monitor.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <generic_type_support/generic_type_support.hpp>
 
@@ -26,6 +27,7 @@ struct TopicField
 {
   FieldConfig config;
   generic_type_support::GenericMessage::GenericAccess access;
+  std::vector<Monitor *> monitors;
 };
 
 class TopicSubscription
