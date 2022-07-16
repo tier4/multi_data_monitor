@@ -27,6 +27,7 @@ public:
     const std::string type_name = "std_msgs/msg/Header";
     message_ = std::make_shared<GenericMessage>(type_name);
     access_ = message_->GetAccess("stamp.sec");
+    std::cout << "The type of " << access_->GetFullPath() << " is " << access_->GetTypeName() << std::endl;
 
     const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> serialized)
     {
