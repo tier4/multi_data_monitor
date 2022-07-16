@@ -15,48 +15,7 @@
 #ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
 #define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
 
-#include <yaml-cpp/yaml.h>
-#include <rclcpp/serialization.hpp>
-#include <memory>
-#include <string>
-
-#include "generic_type_support/errors.hpp"
-
-namespace generic_type_support
-{
-
-class GenericMessage
-{
-public:
-  GenericMessage(const std::string & type_name);
-  ~GenericMessage();
-  std::string GetTypeName() const;
-  YAML::Node ConvertYAML(const rclcpp::SerializedMessage & serialized) const;
-
-  class GenericAccess;
-  std::shared_ptr<GenericAccess> GetAccess(const std::string & path) const;
-
-private:
-  struct Data;
-  std::shared_ptr<Data> data_;
-};
-
-class GenericMessage::GenericAccess
-{
-public:
-  GenericAccess(const GenericMessage & generic, const std::string & path);
-  ~GenericAccess();
-  const YAML::Node Access(const YAML::Node & yaml) const;
-
-  bool IsMessage() const;
-  std::string GetTypeName() const;
-  std::string GetFullPath() const;
-
-public:
-  struct Data;
-  std::shared_ptr<Data> data_;
-};
-
-}  // namespace generic_type_support
+#include <generic_type_support/errors.hpp>
+#include <generic_type_support/message.hpp>
 
 #endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
