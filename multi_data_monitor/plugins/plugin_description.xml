@@ -1,5 +1,5 @@
 <library path="multi_data_monitor">
-  <class type="MultiDataMonitor" base_class_type="rviz_common::Panel">
-    <description>MultiDataMonitor</description>
+  <class type="multi_data_monitor::MultiDataMonitor" base_class_type="rviz_common::Panel">
+    <description>The plugin that displays various data in combination.</description>
   </class>
 </library>

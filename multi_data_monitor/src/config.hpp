@@ -15,14 +15,16 @@
 #ifndef CONFIG_HPP_
 #define CONFIG_HPP_
 
-namespace monitors
+#include <string>
+
+namespace multi_data_monitor
 {
 
-struct MonitorConfig
+struct ConfigFile
 {
-  MonitorConfig(const std::string & package, const std::string & path);
+  ConfigFile(const std::string & package, const std::string & path);
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
 #endif  // CONFIG_HPP_

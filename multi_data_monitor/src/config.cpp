@@ -12,16 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "setting.hpp"
+#include "config.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <string>
 
-namespace monitors
+#include <iostream>
+using namespace std;
+
+namespace multi_data_monitor
 {
 
-MonitorConfig::MonitorConfig(const std::string & package, const std::string & path)
+ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 {
 
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
