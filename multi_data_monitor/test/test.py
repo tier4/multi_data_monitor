@@ -3,8 +3,7 @@
 import rclpy
 import rclpy.node
 import std_msgs.msg
-from rclpy.qos import QoSProfile
-from rclpy.qos import QoSDurabilityPolicy
+from rclpy.qos import QoSDurabilityPolicy, QoSProfile
 
 
 class MyNode(rclpy.node.Node):

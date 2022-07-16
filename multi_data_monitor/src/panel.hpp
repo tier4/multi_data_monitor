@@ -19,6 +19,9 @@
 #include <rviz_common/panel.hpp>
 
 class QMouseEvent;
+class QLineEdit;
+class MonitorWidget;
+class SettingWidget;
 
 class MultiDataMonitor : public rviz_common::Panel
 {
@@ -28,11 +31,39 @@ public:
   explicit MultiDataMonitor(QWidget * parent = nullptr);
   void save(rviz_common::Config config) const override;
   void load(const rviz_common::Config & config) override;
+  void onInitialize() override;
   void mousePressEvent(QMouseEvent * event) override;
 
 private:
-  QString path_;
   monitors::Manager manager_;
+  MonitorWidget * monitor_;
+  SettingWidget * setting_;
+};
+
+
+class MonitorWidget : public QWidget
+{
+Q_OBJECT
+
+public:
+  explicit MonitorWidget(MultiDataMonitor * parent);
+};
+
+
+class SettingWidget : public QWidget
+{
+Q_OBJECT
+
+public:
+  explicit SettingWidget(MultiDataMonitor * parent);
+  void save(rviz_common::Config config) const;
+  void load(const rviz_common::Config & config);
+  std::string getPackage() const;
+  std::string getPath() const;
+
+private:
+  QLineEdit * package_;
+  QLineEdit * path_;
 };
 
 #endif  // PANEL_HPP_

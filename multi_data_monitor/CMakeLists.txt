@@ -17,7 +17,6 @@ find_package(Qt5 ${rviz_QT_VERSION} REQUIRED Core Widgets)
 set(QT_LIBRARIES Qt5::Widgets)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-add_definitions(-DQT_NO_KEYWORDS)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
   src/manager.hpp
@@ -38,10 +37,6 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/simple.cpp
   src/titled.hpp
   src/titled.cpp
-  src/config/loader.hpp
-  src/config/loader.cpp
-  src/config/config.hpp
-  src/config/config.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
