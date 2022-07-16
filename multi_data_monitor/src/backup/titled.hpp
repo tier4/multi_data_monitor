@@ -19,7 +19,7 @@
 
 class QLabel;
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 class Titled : public Monitor
@@ -39,6 +39,6 @@ public:
   static StyleDefinition default_style_title_;  // TODO: private and setter
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
 #endif  // TITLED_HPP_

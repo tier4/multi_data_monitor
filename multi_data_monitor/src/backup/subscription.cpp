@@ -16,7 +16,7 @@
 
 #include <iostream>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 TopicSubscription::TopicSubscription(const TopicConfig & config) : message_(config.type)
@@ -80,4 +80,4 @@ TopicField & TopicSubscription::GetField(const std::string & name)
   return fields_.at(name);
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor

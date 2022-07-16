@@ -19,24 +19,10 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/manager.hpp
-  src/manager.cpp
-  src/panel.hpp
-  src/panel.cpp
-  src/subscription.hpp
-  src/subscription.cpp
-  src/style.hpp
-  src/style.cpp
-  src/function.hpp
-  src/function.cpp
-  src/monitor.hpp
-  src/monitor.cpp
-  src/matrix.hpp
-  src/matrix.cpp
-  src/simple.hpp
-  src/simple.cpp
-  src/titled.hpp
-  src/titled.cpp
+  src/widget.hpp
+  src/widget.cpp
+  src/config.hpp
+  src/config.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}

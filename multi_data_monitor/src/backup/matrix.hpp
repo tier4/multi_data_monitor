@@ -19,7 +19,7 @@
 
 class QGridLayout;
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 class Matrix : public Monitor
@@ -32,6 +32,6 @@ private:
   QGridLayout * grid;
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
 #endif  // MATRIX_HPP_

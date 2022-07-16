@@ -16,7 +16,7 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <string>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 std::string Join(const std::vector<std::string> & input, const std::string & delimiter)
@@ -165,4 +165,4 @@ std::vector<FieldConfig> ConfigLoader::GetFields() const
   return fields;
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "manager.hpp"
-#include "config/loader.hpp"
 #include "matrix.hpp"
 #include "simple.hpp"
 #include "titled.hpp"
@@ -21,7 +20,7 @@
 
 #include <iostream>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 void CreateDefault(const DefaultConfig & config)
@@ -128,4 +127,4 @@ void Manager::Build(QWidget * panel)
   }
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor

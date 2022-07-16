@@ -16,14 +16,13 @@
 #define MONITOR_HPP_
 
 #include "function.hpp"
-#include "config/config.hpp"
 #include <string>
 #include <unordered_map>
 
 class QWidget;
 class QLayout;
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 class Monitor;
@@ -48,6 +47,6 @@ protected:
   QLayout * layout_ = nullptr;
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
 #endif  // MONITOR_HPP_

@@ -12,37 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef SIMPLE_HPP_
-#define SIMPLE_HPP_
-
 #include "monitor.hpp"
-
-// TODO: style class
-#include <map>
 #include <string>
-#include <vector>
 
-class QLabel;
-
-namespace monitors
+namespace multi_data_monitor
 {
 
-class Simple : public Monitor
+Monitor::Monitor(const ObjectConfig & config)
 {
-public:
-  using Monitor::Monitor;
-  void Build(MonitorDict & monitors) override;
-  void Callback(const YAML::Node & field) override;
+  config_ = config;
+}
 
-private:
-  QLabel * label;
-  StyleDefinition style_;  // TODO: move base class
-  std::string prev_;
-  std::string title_;
-public:
-  static StyleDefinition default_style_;  // TODO: private and setter
-};
+/*
+void NodeBase::AddChild(QWidget * parent, const std::unique_ptr<NodeBase> & base)
+{
+  auto layout = base->GetLayout();
+  auto widget = base->GetWidget();
+  std::cout << widget << " " << layout << std::endl;
 
-}  // namespace monitors
+  if (layout)
+  {
+    parent->setLayout(layout);
+  }
+}
 
-#endif  // SIMPLE_HPP_
+void NodeBase::AddChild(QLayout * parent, const std::unique_ptr<NodeBase> & base)
+{
+  (void)parent;
+  (void)base;
+}
+*/
+
+}  // namespace multi_data_monitor

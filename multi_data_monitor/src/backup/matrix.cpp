@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 void Matrix::Build(MonitorDict & monitors)
@@ -48,4 +48,4 @@ void Matrix::Build(MonitorDict & monitors)
   }
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor

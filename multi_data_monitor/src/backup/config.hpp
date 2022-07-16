@@ -19,7 +19,7 @@
 #include <string>
 #include <yaml-cpp/yaml.h>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 class ConfigError : public std::runtime_error
@@ -70,6 +70,6 @@ struct MonitorConfig
   std::optional<FieldConfig> field;
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
 #endif  // CONFIG__CONFIG_HPP_

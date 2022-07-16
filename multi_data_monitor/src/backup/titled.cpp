@@ -17,7 +17,7 @@
 #include <QVBoxLayout>
 #include <string>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 constexpr auto kStyleSheetValue = "border-width: 1px 1px 1px 1px; border-style: solid;";
@@ -57,4 +57,4 @@ void Titled::Callback(const YAML::Node & field)
   value->setText(QString::fromStdString(text));
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor

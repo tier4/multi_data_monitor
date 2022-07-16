@@ -20,7 +20,7 @@
 #include <unordered_map>
 #include <unordered_set>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 class ConfigLoader
@@ -42,6 +42,6 @@ private:
   std::unordered_map<std::string, MonitorConfig> monitors_;
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
 #endif  // CONFIG__LOADER_HPP_

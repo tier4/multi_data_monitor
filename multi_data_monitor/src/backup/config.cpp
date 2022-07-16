@@ -15,7 +15,7 @@
 #include "config.hpp"
 #include <iostream>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 YAML::Node GetNecessary(const YAML::Node & node, const std::string & name, const std::string & prefix)
@@ -66,4 +66,4 @@ MonitorConfig::MonitorConfig(YAML::Node node)
   object = ObjectConfig(node);
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor

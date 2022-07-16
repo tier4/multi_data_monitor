@@ -12,33 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MANAGER_HPP_
-#define MANAGER_HPP_
+#ifndef SUBSCRIPTION_HPP_
+#define SUBSCRIPTION_HPP_
 
 #include "monitor.hpp"
-#include "subscription.hpp"
-#include <QWidget>
 #include <rclcpp/rclcpp.hpp>
-#include <string>
-#include <unordered_map>
+#include <generic_type_support/generic_type_support.hpp>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
-class Manager
+struct TopicField
+{
+  using GenericAccess = generic_type_support::GenericMessage::GenericAccess;
+  FieldConfig config;
+  std::shared_ptr<GenericAccess> access;
+  std::vector<Monitor *> monitors;
+};
+
+class TopicSubscription
 {
 public:
-  void Load(const std::string & path, rclcpp::Node::SharedPtr node);
-  void Build(QWidget * panel);
+  TopicSubscription(const TopicConfig & config);
   void Start(const rclcpp::Node::SharedPtr & node);
+  void AddField(const FieldConfig & config);
+  TopicField & GetField(const std::string & name);
 
 private:
   // NOTE: declaration order where the subscription stops first
-  Monitor * root_;
-  std::unordered_map<std::string, TopicSubscription> subscriptions_;
-  std::unordered_map<std::string, std::unique_ptr<Monitor>> monitors_;
+  TopicConfig config_;
+  rclcpp::GenericSubscription::SharedPtr subscription_;
+  generic_type_support::GenericMessage message_;
+  std::unordered_map<std::string, TopicField> fields_;
 };
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
 
-#endif  // MANAGER_HPP_
+#endif  // SUBSCRIPTION_HPP_

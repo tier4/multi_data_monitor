@@ -17,7 +17,7 @@
 
 #include <iostream>
 
-namespace monitors
+namespace multi_data_monitor
 {
 
 constexpr auto kStyleSheet = "border-width: 1px 1px 1px 1px; border-style: solid;";
@@ -51,4 +51,4 @@ void Simple::Callback(const YAML::Node & field)
   }
 }
 
-}  // namespace monitors
+}  // namespace multi_data_monitor
