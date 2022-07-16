@@ -20,8 +20,6 @@
 #include <memory>
 #include <string>
 
-#include <generic_type_support/errors.hpp>
-
 namespace generic_type_support
 {
 
