@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "generic_type_support/generic_type_support.hpp"
+#include <generic_type_support/generic_type_support.hpp>
 #include "impl/library.hpp"
 #include "impl/convert.hpp"
 #include "impl/message.hpp"

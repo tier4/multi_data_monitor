@@ -14,7 +14,7 @@
 
 
 #include <gtest/gtest.h>
-#include "generic_type_support/generic_type_support.hpp"
+#include <generic_type_support/generic_type_support.hpp>
 
 /*
 TEST(generic_type_support, test1)
