@@ -64,12 +64,10 @@ YAML::Node GenericMessage::ConvertYAML(const rclcpp::SerializedMessage & seriali
   return yaml;
 }
 
-GenericMessage::GenericAccess GenericMessage::GetAccess(const std::string & path) const
+std::shared_ptr<GenericMessage::GenericAccess> GenericMessage::GetAccess(const std::string & path) const
 {
-  return GenericAccess(*this, path);
+  return std::make_shared<GenericAccess>(*this, path);
 }
-
-
 
 std::vector<std::string> split(const std::string & input, char delimiter)
 {

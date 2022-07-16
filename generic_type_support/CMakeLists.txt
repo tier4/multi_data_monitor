@@ -21,12 +21,12 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/impl/convert.cpp
 )
 
-ament_auto_add_executable(debug1
-  src/debug1.cpp
+ament_auto_add_executable(print
+  src/examples/print.cpp
 )
 
-ament_auto_add_executable(debug2
-  src/debug2.cpp
+ament_auto_add_executable(check
+  src/examples/check.cpp
 )
 
 if(BUILD_TESTING)

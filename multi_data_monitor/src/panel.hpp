@@ -18,6 +18,8 @@
 #include "manager.hpp"
 #include <rviz_common/panel.hpp>
 
+class QMouseEvent;
+
 class MultiDataMonitor : public rviz_common::Panel
 {
 Q_OBJECT
@@ -26,6 +28,7 @@ public:
   explicit MultiDataMonitor(QWidget * parent = nullptr);
   void save(rviz_common::Config config) const override;
   void load(const rviz_common::Config & config) override;
+  void mousePressEvent(QMouseEvent * event) override;
 
 private:
   QString path_;

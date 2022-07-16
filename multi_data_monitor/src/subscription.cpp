@@ -40,7 +40,7 @@ void TopicSubscription::Start(const rclcpp::Node::SharedPtr & node)
     const YAML::Node yaml = message_.ConvertYAML(*serialized);
     for (const auto & field : fields_)
     {
-      const YAML::Node node = field.second.access.Access(yaml);
+      const YAML::Node node = field.second.access->Access(yaml);
       for (const auto & monitor : field.second.monitors)
       {
         monitor->Callback(node);
@@ -61,14 +61,14 @@ void TopicSubscription::AddField(const FieldConfig & config)
   const auto & access = fields_.at(config.name).access;
   if (config.type.empty())
   {
-    if (access.IsMessage())
+    if (access->IsMessage())
     {
       throw ConfigError("field '" + config.name + "' is not a primitive type");
     }
   }
   else
   {
-    if (access.GetTypeName() != config.type)
+    if (access->GetTypeName() != config.type)
     {
       throw ConfigError("field '" + config.name + "' is not '" + config.type +"'");
     }

@@ -25,8 +25,9 @@ namespace monitors
 
 struct TopicField
 {
+  using GenericAccess = generic_type_support::GenericMessage::GenericAccess;
   FieldConfig config;
-  generic_type_support::GenericMessage::GenericAccess access;
+  std::shared_ptr<GenericAccess> access;
   std::vector<Monitor *> monitors;
 };
 

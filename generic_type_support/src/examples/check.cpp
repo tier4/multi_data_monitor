@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -13,25 +13,21 @@
 // limitations under the License.
 
 #include "generic_type_support/generic_type_support.hpp"
-#include "impl/library.hpp"
-#include "impl/message.hpp"
-#include "impl/convert.hpp"
 
-#include <yaml-cpp/yaml.h>
 #include <iostream>
 
 int main()
 {
-  using namespace generic_type_support;
-  using namespace std;
+  using GenericMessage = generic_type_support::GenericMessage;
+  using FieldError = generic_type_support::FieldError;
 
+  try
   {
-    generic_type_support::GenericMessage message("std_msgs/msg/Header");
-    cout << message.GetTypeName() << endl;
-
-    const auto field1 = message.GetAccess("frame_id");
-    const auto field2 = message.GetAccess("stamp.sec");
-
-    cout << "END" << endl;
+    const auto message_ = std::make_shared<GenericMessage>("std_msgs/msg/Header");
+    const auto access_ = message_->GetAccess("stamp.msec");
+  }
+  catch(const FieldError & error)
+  {
+    std::cout << "ERROR: " << error.what() << std::endl;
   }
 }

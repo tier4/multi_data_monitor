@@ -34,7 +34,7 @@ public:
   YAML::Node ConvertYAML(const rclcpp::SerializedMessage & serialized) const;
 
   class GenericAccess;
-  GenericAccess GetAccess(const std::string & path) const;
+  std::shared_ptr<GenericAccess> GetAccess(const std::string & path) const;
 
 private:
   struct Data;

@@ -38,5 +38,10 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
   manager_.Start(node.lock()->get_raw_node());
 }
 
+void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
+{
+  printf("mousePressEvent\n");
+}
+
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(MultiDataMonitor, rviz_common::Panel)
