@@ -29,24 +29,16 @@ struct ConfigFile
 
 struct FieldConfig
 {
-  using Key = std::string;
-  using Map = std::unordered_map<Key, FieldConfig>;
+  using Map = std::unordered_map<std::string, FieldConfig>;
   std::string path;
 };
 
 struct TopicConfig
 {
-  using Key = std::pair<std::string, std::string>;
-  using Map = std::unordered_map<Key, TopicConfig>;
+  using Map = std::unordered_map<std::string, TopicConfig>;
   std::string name;
   std::string type;
   FieldConfig::Map fields;
-};
-
-struct InputConfig
-{
-  // Input Object
-  // Field Object
 };
 
 }  // namespace multi_data_monitor

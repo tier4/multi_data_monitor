@@ -25,6 +25,7 @@ class ConfigError : public std::runtime_error
 {
 public:
   static ConfigError LoadFile(const std::string & message);
+  static ConfigError Parse(const std::string & message);
 
 private:
   using std::runtime_error::runtime_error;

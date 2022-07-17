@@ -53,13 +53,77 @@ YAML::Node LoadFile(const std::string & package, const std::string & source)
   }
 }
 
+void ParseView(const YAML::Node & yaml, const std::string & path)
+{
+  if (yaml.IsScalar())
+  {
+    return;
+  }
+
+  if (!yaml["class"])
+  {
+    throw ConfigError::Parse("no class: " + path);  // TODO(Takagi, Isamu): message
+  }
+
+  const auto name = yaml["class"].as<std::string>();
+  cout << "  panel: " << name << endl;
+
+  if (yaml["children"])
+  {
+    for (const auto & node : yaml["children"])
+    {
+      ParseView(node, path);
+    }
+  }
+}
+
+void ParseData(const YAML::Node & yaml, const std::string & path)
+{
+  if (yaml.IsScalar())
+  {
+    return;
+  }
+
+  if (!yaml["class"])
+  {
+    throw ConfigError::Parse("no class: " + path);  // TODO(Takagi, Isamu): message
+  }
+
+  const auto name = yaml["class"].as<std::string>();
+  cout << "  class: " << name << endl;
+
+  if (yaml["input"])
+  {
+    ParseData(yaml["input"], path);
+  }
+}
+
 ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 {
-  const auto yaml = LoadFile(package, path);
-  cout << yaml << endl;
-
-  for (const auto & monitor : yaml["monitors"])
+  try
   {
+    const auto yaml = LoadFile(package, path);
+
+    TopicConfig topics;
+    for (const auto & pair : yaml["monitors"])
+    {
+      const auto name = pair.first.as<std::string>();
+      cout << "========================================================" << endl;
+      cout << "monitor: " << name << endl;
+      ParseView(pair.second, name);
+    }
+
+    for (const auto & pair : yaml["messages"])
+    {
+      const auto name = pair.first.as<std::string>();
+      cout << "========================================================" << endl;
+      cout << "message: " << name << endl;
+      ParseData(pair.second, name);
+    }
+  }
+  catch (YAML::Exception & error)
+  {
+    throw ConfigError::LoadFile(error.what());
   }
 }
 

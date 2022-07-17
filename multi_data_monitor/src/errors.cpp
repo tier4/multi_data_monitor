@@ -22,4 +22,9 @@ ConfigError ConfigError::LoadFile(const std::string & message)
   return ConfigError("Failed to load config (" + message + ").");
 }
 
+ConfigError ConfigError::Parse(const std::string & message)
+{
+  return ConfigError("Failed to parse config (" + message + ").");
+}
+
 }  // namespace multi_data_monitor

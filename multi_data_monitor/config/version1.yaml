@@ -1,8 +1,8 @@
 # --------------------------------------------------
-# headers
+# metadata
 # --------------------------------------------------
 version: 0
-root: main
+root: layout_main
 
 # --------------------------------------------------
 # defaults
@@ -13,19 +13,48 @@ defaults: ~
 # monitors
 # --------------------------------------------------
 monitors:
-  data_name_1:
-    class: multi_data_monitor::Title
-    input: { topic: /test/header, field: stamp.sec, type: std_msgs/msg/Header }
-    title: Second
+  layout_main:
+    class: multi_data_monitor::Matrix
+    param: { cols: 3, rows: 2 }
+    children:
+      - widget1
+      - widget2
+      - class: multi_data_monitor::Title
+        param: { title: Second }
+        input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
 
-  data_name_2:
+  widget1:
     class: multi_data_monitor::Title
+    param: { title: Second }
+    input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
+
+  widget2:
+    class: multi_data_monitor::Title
+    param: { title: Nanosecond }
     input:
-      { topic: /test/header, field: stamp.nanosec, type: std_msgs/msg/Header }
-    title: Nanosecond
+      class: filter
+      input: { class: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
+      rules:
+        - aaa
+        - bbb
+        - ccc
 
-topics:
-  /test/header: std_msgs/msg/Header
+# --------------------------------------------------
+# messages
+# --------------------------------------------------:
+messages:
+  stream1:
+    class: filter
+    input: stream2
+    rules:
+      - aaa
+      - bbb
 
-inputs:
-  name: { topic: /test/header, field: stamp.sec, type: std_msgs/msg/Header }
+  stream2:
+    class: filter
+    input: { class: topic, name: /test/double, data: data, type: std_msgs/msg/Float64 }
+    rules:
+      - aaa
+      - bbb
+
+  stream3: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/Uint32 }
