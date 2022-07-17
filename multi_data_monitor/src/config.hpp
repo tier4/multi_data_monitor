@@ -16,6 +16,7 @@
 #define CONFIG_HPP_
 
 #include <yaml-cpp/yaml.h>
+#include <memory>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -23,6 +24,19 @@
 
 namespace multi_data_monitor
 {
+
+struct InputBase
+{
+  virtual ~InputBase() = default;
+  void RegisterCallback(InputBase * output);
+};
+
+struct InputLink
+{
+  std::string name;
+  std::string data;
+  std::unique_ptr<InputBase> node;
+};
 
 struct FilterConfig
 {
@@ -35,6 +49,7 @@ struct TopicConfig
   std::string name;
   std::string type;
   std::string data;
+  std::string qos;
 };
 
 struct TopicGroup
@@ -44,7 +59,7 @@ struct TopicGroup
 struct ConfigFile
 {
   ConfigFile(const std::string & package, const std::string & path);
-  void ParseNode(bool view, YAML::Node yaml, const std::string & path);
+  InputLink ParseData(YAML::Node yaml, const std::string & path);
 
   std::vector<TopicConfig> topics;
 };

@@ -19,6 +19,7 @@
 #include <fmt/format.h>
 #include <filesystem>
 #include <iostream>  // DEBUG
+#include <memory>
 #include <string>
 using std::cout;
 using std::endl;
@@ -93,6 +94,7 @@ TopicConfig::TopicConfig(YAML::Node yaml)
   name = TakeNode(yaml, "name").as<std::string>();
   type = TakeNode(yaml, "type").as<std::string>();
   data = TakeNode(yaml, "data").as<std::string>();
+  qos = TakeNode(yaml, "qos", true).as<std::string>("DD1");
 }
 
 ConfigFile::ConfigFile(const std::string & package, const std::string & path)
@@ -101,6 +103,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
   {
     const auto yaml = LoadFile(package, path);
 
+    /*
     for (const auto & pair : yaml["monitors"])
     {
       const auto name = pair.first.as<std::string>();
@@ -108,13 +111,14 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
       cout << "monitor: " << name << endl;
       ParseNode(true, pair.second, name);
     }
+    */
 
     for (const auto & pair : yaml["messages"])
     {
       const auto name = pair.first.as<std::string>();
       cout << "========================================================" << endl;
       cout << "message: " << name << endl;
-      ParseNode(false, pair.second, name);
+      ParseData(pair.second, name);
     }
   }
   catch (YAML::Exception & error)
@@ -123,14 +127,17 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
   }
 }
 
-void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
+InputLink ConfigFile::ParseData(YAML::Node yaml, const std::string & path)
 {
-  std::string mark = path + (view ? "" : ".input");
+  std::string mark = path + ".input";
   try
   {
+    InputLink link;
+
     if (yaml.IsScalar())
     {
-      return;
+      link.name = yaml.as<std::string>();
+      return link;
     }
 
     if (!yaml.IsMap())
@@ -139,31 +146,41 @@ void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
     }
 
     const auto name = TakeNode(yaml, "class").as<std::string>();
-    cout << (view ? "  view: " : "  data: ") << name << " (" << path << ")" << endl;
+    mark = path + "." + name;
+    cout << "  data: " << name << " (" << path << ")" << endl;
 
-    if (name == "filter")
-    {
-      const auto config = FilterConfig(yaml);
-      (void)config;
-    }
     if (name == "topic")
     {
-      const auto config = TopicConfig(yaml);
-      (void)config;
+      const auto topic = TopicConfig(yaml);
+      link.name = topic.name;
+      link.data = topic.data;
     }
-
-    const auto children = TakeNode(yaml, "children", true);  // TODO(Takagi, Isamu)
-    const auto input = TakeNode(yaml, "input", true);        // TODO(Takagi, Isamu)
-    TakeNode(yaml, "param", true);                           // TODO(Takagi, Isamu)
-
-    mark = path + (view ? "" : "." + name);
-    CheckUnused(yaml);
-
-    if (input.IsDefined())
+    if (name == "filter")
     {
-      ParseNode(false, input, mark);
+      (void)FilterConfig(yaml);  // TODO(Takagi, Isamu)
+
+      const auto source = ParseData(TakeNode(yaml, "input"), mark);
+      link.node = std::make_unique<InputBase>();
+      link.name = source.name;
+      link.data = source.data;
+      if (source.node)
+      {
+        source.node->RegisterCallback(link.node.get());
+      }
+    }
+    CheckUnused(yaml);
+    return link;
+
+    /*
+    if (view)
+    {
+      const auto object = name.substr(0, 6);
+      const auto plugin = name.substr(8);
+      cout << "  view: " << object << " " << plugin << " (" << path << ")" << endl;
+      TakeNode(yaml, "param", true);  // TODO(Takagi, Isamu)
     }
 
+    //const auto children = TakeNode(yaml, "children", true);  // TODO(Takagi, Isamu)
     if (children.IsDefined())
     {
       if (!children.IsSequence())
@@ -175,6 +192,7 @@ void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
         ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
       }
     }
+    */
   }
   catch (const ParseError & error)
   {

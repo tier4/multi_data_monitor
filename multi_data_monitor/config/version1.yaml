@@ -14,27 +14,27 @@ defaults: ~
 # --------------------------------------------------
 monitors:
   layout_main:
-    class: multi_data_monitor::Matrix
+    class: layout::multi_data_monitor::Matrix
     param: { cols: 3, rows: 2 }
     children:
       - widget1
       - widget2
-      - class: multi_data_monitor::Matrix
+      - class: layout::multi_data_monitor::Matrix
         param: { cols: 1, rows: 1 }
         children:
-          - class: multi_data_monitor::Title
+          - class: widget::multi_data_monitor::Title
             param: { title: Second }
             input:
               class: filter
               input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
 
   widget1:
-    class: multi_data_monitor::Title
+    class: widget::multi_data_monitor::Title
     param: { title: Second }
     input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
 
   widget2:
-    class: multi_data_monitor::Title
+    class: widget::multi_data_monitor::Title
     param: { title: Nanosecond }
     input:
       class: filter
@@ -62,4 +62,4 @@ messages:
       - aaa
       - bbb
 
-  stream3: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/Uint32 }
+  stream3: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/Uint32, qos: RT1 }
