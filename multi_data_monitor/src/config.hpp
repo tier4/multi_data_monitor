@@ -22,7 +22,7 @@ namespace multi_data_monitor
 
 struct ConfigFile
 {
-  ConfigFile(const std::string & package, const std::string & source);
+  ConfigFile(const std::string & package, const std::string & path);
 };
 
 }  // namespace multi_data_monitor

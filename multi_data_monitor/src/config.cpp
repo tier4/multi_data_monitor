@@ -26,24 +26,22 @@ using namespace std;
 namespace multi_data_monitor
 {
 
-ConfigFile::ConfigFile(const std::string & package, const std::string & source)
+YAML::Node LoadFile(const std::string & package, const std::string & source)
 {
   try
   {
     auto path = std::filesystem::path();
-
     if (!package.empty())
     {
       path.append(ament_index_cpp::get_package_share_directory(package));
     }
     path.append(source);
 
-    if (!std::filesystem::exists(path))
+    if (std::filesystem::exists(path))
     {
-      throw ConfigError::LoadFile("file not found: " + path.string());
+      return YAML::LoadFile(path);
     }
-    const auto yaml = YAML::LoadFile(path);
-    cout << yaml << endl;
+    throw ConfigError::LoadFile("file not found: " + path.string());
   }
   catch(const ament_index_cpp::PackageNotFoundError & error)
   {
@@ -53,6 +51,12 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & source)
   {
     throw ConfigError::LoadFile(error.what());
   }
+}
+
+ConfigFile::ConfigFile(const std::string & package, const std::string & path)
+{
+  const auto yaml = LoadFile(package, path);
+  cout << yaml << endl;
 }
 
 }  // namespace multi_data_monitor
