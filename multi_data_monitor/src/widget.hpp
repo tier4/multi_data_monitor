@@ -16,6 +16,7 @@
 #define WIDGET_HPP_
 
 #include <rviz_common/panel.hpp>
+#include <string>
 
 class QMouseEvent;
 class QLineEdit;
@@ -25,7 +26,7 @@ namespace multi_data_monitor
 
 class MonitorWidget : public QWidget
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
   explicit MonitorWidget(rviz_common::Panel * panel);
@@ -33,7 +34,7 @@ public:
 
 class SettingWidget : public QWidget
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
   explicit SettingWidget(rviz_common::Panel * panel);
@@ -49,7 +50,7 @@ private:
 
 class MultiDataMonitor : public rviz_common::Panel
 {
-Q_OBJECT
+  Q_OBJECT
 
 public:
   explicit MultiDataMonitor(QWidget * parent = nullptr);
@@ -63,6 +64,6 @@ private:
   SettingWidget * setting_;
 };
 
-}
+}  // namespace multi_data_monitor
 
 #endif  // WIDGET_HPP_

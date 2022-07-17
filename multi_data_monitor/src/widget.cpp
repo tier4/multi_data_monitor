@@ -14,15 +14,15 @@
 
 #include "widget.hpp"
 #include "config.hpp"
+#include <QFormLayout>  // debug
+#include <QGridLayout>
+#include <QLabel>  // debug
+#include <QLineEdit>
+#include <QMouseEvent>
+#include <QStackedLayout>
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
-#include <QMouseEvent>
-#include <QFormLayout>
-#include <QStackedLayout>
-#include <QLineEdit>
-
-#include <QLabel>
-#include <QGridLayout>
+#include <string>
 
 namespace multi_data_monitor
 {
@@ -34,8 +34,6 @@ MonitorWidget::MonitorWidget(rviz_common::Panel * panel) : QWidget(panel)
   layout->addWidget(widget);
   setLayout(layout);
 }
-
-
 
 SettingWidget::SettingWidget(rviz_common::Panel * panel) : QWidget(panel)
 {
@@ -72,8 +70,6 @@ std::string SettingWidget::getPath() const
   return path_->text().toStdString();
 }
 
-
-
 MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent)
 {
   const auto stacked = new QStackedLayout();
@@ -100,16 +96,15 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
 
   const auto file = ConfigFile(setting_->getPackage(), setting_->getPath());
 
-/*
-  manager_.Load(path_.toStdString(), node.lock()->get_raw_node());
-  manager_.Build(this);
-  manager_.Start(node.lock()->get_raw_node());
-*/
+  /*
+    manager_.Load(path_.toStdString(), node.lock()->get_raw_node());
+    manager_.Build(this);
+    manager_.Start(node.lock()->get_raw_node());
+  */
 }
 
 void MultiDataMonitor::onInitialize()
 {
-
 }
 
 void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
@@ -126,7 +121,7 @@ void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
   }
 }
 
-}
+}  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(multi_data_monitor::MultiDataMonitor, rviz_common::Panel)

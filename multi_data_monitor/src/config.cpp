@@ -17,11 +17,11 @@
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <yaml-cpp/yaml.h>
-#include <string>
 #include <filesystem>
-
 #include <iostream>
-using namespace std;
+#include <string>
+using std::cout;
+using std::endl;
 
 namespace multi_data_monitor
 {
@@ -43,11 +43,11 @@ YAML::Node LoadFile(const std::string & package, const std::string & source)
     }
     throw ConfigError::LoadFile("file not found: " + path.string());
   }
-  catch(const ament_index_cpp::PackageNotFoundError & error)
+  catch (const ament_index_cpp::PackageNotFoundError & error)
   {
     throw ConfigError::LoadFile("package not found: " + package);
   }
-  catch(YAML::Exception & error)
+  catch (YAML::Exception & error)
   {
     throw ConfigError::LoadFile(error.what());
   }
@@ -60,7 +60,6 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 
   for (const auto & monitor : yaml["monitors"])
   {
-
   }
 }
 
