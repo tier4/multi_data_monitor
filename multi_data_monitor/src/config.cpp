@@ -26,6 +26,35 @@ using std::endl;
 namespace multi_data_monitor
 {
 
+struct ParseError : public std::runtime_error
+{
+  using std::runtime_error::runtime_error;
+};
+
+void CheckUnused(const YAML::Node & yaml)
+{
+  std::string unused;
+  for (const auto & pair : yaml)
+  {
+    unused += " " + pair.first.as<std::string>();
+  }
+  if (!unused.empty())
+  {
+    throw ParseError("has unused keys:" + unused);
+  }
+}
+
+YAML::Node TakeNode(YAML::Node yaml, const std::string & name, bool optional = false)
+{
+  const auto node = yaml[name];
+  if (optional || node.IsDefined())
+  {
+    yaml.remove(name);
+    return node;
+  }
+  throw ParseError(fmt::format("has no '{}'", name));
+}
+
 YAML::Node LoadFile(const std::string & package, const std::string & source)
 {
   try
@@ -81,43 +110,81 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
   }
 }
 
-void ConfigFile::ParseNode(bool view, const YAML::Node & yaml, const std::string & parent)
+void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
 {
-  if (yaml.IsScalar())
+  std::string mark = path;
+  try
   {
-    return;
-  }
-
-  if (!yaml["class"])
-  {
-    throw ConfigError::Parse(fmt::format("node '{}{}.class' not found", parent, view ? "" : ".input"));
-  }
-
-  const auto name = yaml["class"].as<std::string>();
-  cout << (view ? "  view: " : "  data: ") << name << " (" << parent << ")" << endl;
-
-  const auto path = parent + (view ? "" : "." + name);
-  if (yaml["input"])
-  {
-    ParseNode(false, yaml["input"], path);
-  }
-
-  const auto children = yaml["children"];
-  if (children.IsDefined())
-  {
-    if (!children.IsSequence())
+    if (yaml.IsScalar())
     {
-      throw ConfigError::Parse(fmt::format("node '{}.children' is not an array", path));
+      return;
     }
-    for (size_t i = 0, n = children.size(); i < n; ++i)
+
+    if (!yaml.IsMap())
     {
-      ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
+      throw ConfigError::Parse(fmt::format("node '{}' is not a dict", path));
     }
+
+    if (!yaml["class"])
+    {
+      throw ConfigError::Parse(fmt::format("node '{}{}.class' not found", path, view ? "" : ".input"));
+    }
+
+    mark = path + (view ? "" : ".input");
+    const auto name = TakeNode(yaml, "class").as<std::string>();
+    cout << (view ? "  view: " : "  data: ") << name << " (" << path << ")" << endl;
+
+    if (name == "filter")
+    {
+      const auto config = FilterConfig(yaml);
+      (void)config;
+    }
+    if (name == "topic")
+    {
+      const auto config = TopicConfig(yaml);
+      (void)config;
+    }
+
+    const auto children = TakeNode(yaml, "children", true);  // TODO(Takagi, Isamu)
+    const auto input = TakeNode(yaml, "input", true);        // TODO(Takagi, Isamu)
+    TakeNode(yaml, "param", true);                           // TODO(Takagi, Isamu)
+
+    mark = path + (view ? "" : "." + name);
+    CheckUnused(yaml);
+
+    if (input.IsDefined())
+    {
+      ParseNode(false, input, mark);
+    }
+
+    if (children.IsDefined())
+    {
+      if (!children.IsSequence())
+      {
+        throw ConfigError::Parse(fmt::format("node '{}.children' is not a list", mark));
+      }
+      for (size_t i = 0, n = children.size(); i < n; ++i)
+      {
+        ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
+      }
+    }
+  }
+  catch (const ParseError & error)
+  {
+    throw ConfigError::Parse(mark + " " + error.what());
   }
 }
 
-TopicConfig::TopicConfig(const YAML::Node & yaml)
+FilterConfig::FilterConfig(YAML::Node yaml)
 {
+  TakeNode(yaml, "rules", true);  // TODO(Takagi, Isamu)
+}
+
+TopicConfig::TopicConfig(YAML::Node yaml)
+{
+  name = TakeNode(yaml, "name").as<std::string>();
+  type = TakeNode(yaml, "type").as<std::string>();
+  data = TakeNode(yaml, "data").as<std::string>();
 }
 
 }  // namespace multi_data_monitor

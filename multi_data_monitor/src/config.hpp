@@ -26,12 +26,17 @@ namespace multi_data_monitor
 struct ConfigFile
 {
   ConfigFile(const std::string & package, const std::string & path);
-  void ParseNode(bool view, const YAML::Node & yaml, const std::string & parent);
+  void ParseNode(bool view, YAML::Node yaml, const std::string & path);
+};
+
+struct FilterConfig
+{
+  explicit FilterConfig(YAML::Node yaml);
 };
 
 struct TopicConfig
 {
-  explicit TopicConfig(const YAML::Node & yaml);
+  explicit TopicConfig(YAML::Node yaml);
   std::string name;
   std::string type;
   std::string data;
