@@ -109,8 +109,6 @@ void MultiDataMonitor::onInitialize()
 
 void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
 {
-  printf("mousePressEvent\n");
-
   if (event->modifiers() & Qt::ControlModifier)
   {
     const auto layout = dynamic_cast<QStackedLayout *>(this->layout());

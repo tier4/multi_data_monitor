@@ -16,7 +16,7 @@
 #include "errors.hpp"
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
-#include <yaml-cpp/yaml.h>
+#include <fmt/format.h>
 #include <filesystem>
 #include <iostream>
 #include <string>
@@ -53,64 +53,18 @@ YAML::Node LoadFile(const std::string & package, const std::string & source)
   }
 }
 
-void ParseView(const YAML::Node & yaml, const std::string & path)
-{
-  if (yaml.IsScalar())
-  {
-    return;
-  }
-
-  if (!yaml["class"])
-  {
-    throw ConfigError::Parse("no class: " + path);  // TODO(Takagi, Isamu): message
-  }
-
-  const auto name = yaml["class"].as<std::string>();
-  cout << "  panel: " << name << endl;
-
-  if (yaml["children"])
-  {
-    for (const auto & node : yaml["children"])
-    {
-      ParseView(node, path);
-    }
-  }
-}
-
-void ParseData(const YAML::Node & yaml, const std::string & path)
-{
-  if (yaml.IsScalar())
-  {
-    return;
-  }
-
-  if (!yaml["class"])
-  {
-    throw ConfigError::Parse("no class: " + path);  // TODO(Takagi, Isamu): message
-  }
-
-  const auto name = yaml["class"].as<std::string>();
-  cout << "  class: " << name << endl;
-
-  if (yaml["input"])
-  {
-    ParseData(yaml["input"], path);
-  }
-}
-
 ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 {
   try
   {
     const auto yaml = LoadFile(package, path);
 
-    TopicConfig topics;
     for (const auto & pair : yaml["monitors"])
     {
       const auto name = pair.first.as<std::string>();
       cout << "========================================================" << endl;
       cout << "monitor: " << name << endl;
-      ParseView(pair.second, name);
+      ParseNode(true, pair.second, name);
     }
 
     for (const auto & pair : yaml["messages"])
@@ -118,13 +72,52 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
       const auto name = pair.first.as<std::string>();
       cout << "========================================================" << endl;
       cout << "message: " << name << endl;
-      ParseData(pair.second, name);
+      ParseNode(false, pair.second, name);
     }
   }
   catch (YAML::Exception & error)
   {
     throw ConfigError::LoadFile(error.what());
   }
+}
+
+void ConfigFile::ParseNode(bool view, const YAML::Node & yaml, const std::string & parent)
+{
+  if (yaml.IsScalar())
+  {
+    return;
+  }
+
+  if (!yaml["class"])
+  {
+    throw ConfigError::Parse(fmt::format("node '{}{}.class' not found", parent, view ? "" : ".input"));
+  }
+
+  const auto name = yaml["class"].as<std::string>();
+  cout << (view ? "  view: " : "  data: ") << name << " (" << parent << ")" << endl;
+
+  const auto path = parent + (view ? "" : "." + name);
+  if (yaml["input"])
+  {
+    ParseNode(false, yaml["input"], path);
+  }
+
+  const auto children = yaml["children"];
+  if (children.IsDefined())
+  {
+    if (!children.IsSequence())
+    {
+      throw ConfigError::Parse(fmt::format("node '{}.children' is not an array", path));
+    }
+    for (size_t i = 0, n = children.size(); i < n; ++i)
+    {
+      ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
+    }
+  }
+}
+
+TopicConfig::TopicConfig(const YAML::Node & yaml)
+{
 }
 
 }  // namespace multi_data_monitor

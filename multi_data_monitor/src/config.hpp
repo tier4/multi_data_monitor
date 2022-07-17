@@ -15,6 +15,7 @@
 #ifndef CONFIG_HPP_
 #define CONFIG_HPP_
 
+#include <yaml-cpp/yaml.h>
 #include <string>
 #include <unordered_map>
 #include <utility>
@@ -25,20 +26,19 @@ namespace multi_data_monitor
 struct ConfigFile
 {
   ConfigFile(const std::string & package, const std::string & path);
-};
-
-struct FieldConfig
-{
-  using Map = std::unordered_map<std::string, FieldConfig>;
-  std::string path;
+  void ParseNode(bool view, const YAML::Node & yaml, const std::string & parent);
 };
 
 struct TopicConfig
 {
-  using Map = std::unordered_map<std::string, TopicConfig>;
+  explicit TopicConfig(const YAML::Node & yaml);
   std::string name;
   std::string type;
-  FieldConfig::Map fields;
+  std::string data;
+};
+
+struct TopicGroup
+{
 };
 
 }  // namespace multi_data_monitor

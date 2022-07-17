@@ -19,9 +19,14 @@ monitors:
     children:
       - widget1
       - widget2
-      - class: multi_data_monitor::Title
-        param: { title: Second }
-        input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
+      - class: multi_data_monitor::Matrix
+        param: { cols: 1, rows: 1 }
+        children:
+          - class: multi_data_monitor::Title
+            param: { title: Second }
+            input:
+              class: filter
+              input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
 
   widget1:
     class: multi_data_monitor::Title

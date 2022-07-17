@@ -9,6 +9,7 @@
   <buildtool_depend>ament_cmake_auto</buildtool_depend>
 
   <depend>ament_index_cpp</depend>
+  <depend>fmt</depend>
   <depend>generic_type_support</depend>
   <depend>libqt5-core</depend>
   <depend>libqt5-gui</depend>
