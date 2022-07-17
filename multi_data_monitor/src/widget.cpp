@@ -98,11 +98,7 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
 
   const auto node = getDisplayContext()->getRosNodeAbstraction();
 
-  const auto logger = node.lock()->get_raw_node()->get_logger();
-  RCLCPP_INFO_STREAM(logger, setting_->getPackage());
-  RCLCPP_INFO_STREAM(logger, setting_->getPath());
-
-  const auto file = ConfigFile("", "");
+  const auto file = ConfigFile(setting_->getPackage(), setting_->getPath());
 
 /*
   manager_.Load(path_.toStdString(), node.lock()->get_raw_node());

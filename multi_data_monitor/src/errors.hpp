@@ -12,19 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CONFIG_HPP_
-#define CONFIG_HPP_
+#ifndef ERRORS_HPP_
+#define ERRORS_HPP_
 
+#include <stdexcept>
 #include <string>
 
 namespace multi_data_monitor
 {
 
-struct ConfigFile
+class ConfigError : public std::runtime_error
 {
-  ConfigFile(const std::string & package, const std::string & source);
+public:
+  static ConfigError LoadFile(const std::string & message);
+
+private:
+  using std::runtime_error::runtime_error;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CONFIG_HPP_
+#endif  // ERRORS_HPP_

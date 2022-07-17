@@ -12,19 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CONFIG_HPP_
-#define CONFIG_HPP_
-
-#include <string>
+#include "errors.hpp"
 
 namespace multi_data_monitor
 {
 
-struct ConfigFile
+ConfigError ConfigError::LoadFile(const std::string & message)
 {
-  ConfigFile(const std::string & package, const std::string & source);
-};
+  return ConfigError("Failed to load config (" + message + ").");
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // CONFIG_HPP_

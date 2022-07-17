@@ -21,6 +21,8 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 ament_auto_add_library(${PROJECT_NAME} SHARED
   src/widget.hpp
   src/widget.cpp
+  src/errors.hpp
+  src/errors.cpp
   src/config.hpp
   src/config.cpp
 )

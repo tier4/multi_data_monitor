@@ -13,8 +13,12 @@
 // limitations under the License.
 
 #include "config.hpp"
+#include "errors.hpp"
+#include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <yaml-cpp/yaml.h>
 #include <string>
+#include <filesystem>
 
 #include <iostream>
 using namespace std;
@@ -22,9 +26,33 @@ using namespace std;
 namespace multi_data_monitor
 {
 
-ConfigFile::ConfigFile(const std::string & package, const std::string & path)
+ConfigFile::ConfigFile(const std::string & package, const std::string & source)
 {
+  try
+  {
+    auto path = std::filesystem::path();
 
+    if (!package.empty())
+    {
+      path.append(ament_index_cpp::get_package_share_directory(package));
+    }
+    path.append(source);
+
+    if (!std::filesystem::exists(path))
+    {
+      throw ConfigError::LoadFile("file not found: " + path.string());
+    }
+    const auto yaml = YAML::LoadFile(path);
+    cout << yaml << endl;
+  }
+  catch(const ament_index_cpp::PackageNotFoundError & error)
+  {
+    throw ConfigError::LoadFile("package not found: " + package);
+  }
+  catch(YAML::Exception & error)
+  {
+    throw ConfigError::LoadFile(error.what());
+  }
 }
 
 }  // namespace multi_data_monitor
