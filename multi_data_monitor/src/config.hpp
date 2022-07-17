@@ -16,6 +16,7 @@
 #define CONFIG_HPP_
 
 #include <string>
+#include <unordered_map>
 
 namespace multi_data_monitor
 {
@@ -23,6 +24,28 @@ namespace multi_data_monitor
 struct ConfigFile
 {
   ConfigFile(const std::string & package, const std::string & path);
+};
+
+struct FieldConfig
+{
+  using Key = std::string;
+  using Map = std::unordered_map<Key, FieldConfig>;
+  std::string path;
+};
+
+struct TopicConfig
+{
+  using Key = std::pair<std::string, std::string>;
+  using Map = std::unordered_map<Key, TopicConfig>;
+  std::string name;
+  std::string type;
+  FieldConfig::Map fields;
+};
+
+struct InputConfig
+{
+  // Input Object
+  // Field Object
 };
 
 }  // namespace multi_data_monitor

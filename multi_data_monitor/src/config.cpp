@@ -57,6 +57,11 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 {
   const auto yaml = LoadFile(package, path);
   cout << yaml << endl;
+
+  for (const auto & monitor : yaml["monitors"])
+  {
+
+  }
 }
 
 }  // namespace multi_data_monitor

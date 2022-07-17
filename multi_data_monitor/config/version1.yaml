@@ -12,4 +12,20 @@ defaults: ~
 # --------------------------------------------------
 # monitors
 # --------------------------------------------------
-monitors: ~
+monitors:
+  data_name_1:
+    class: multi_data_monitor::Title
+    input: { topic: /test/header, field: stamp.sec, type: std_msgs/msg/Header }
+    title: Second
+
+  data_name_2:
+    class: multi_data_monitor::Title
+    input:
+      { topic: /test/header, field: stamp.nanosec, type: std_msgs/msg/Header }
+    title: Nanosecond
+
+topics:
+  /test/header: std_msgs/msg/Header
+
+inputs:
+  name: { topic: /test/header, field: stamp.sec, type: std_msgs/msg/Header }
