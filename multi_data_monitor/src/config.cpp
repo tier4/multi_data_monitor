@@ -18,7 +18,7 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <fmt/format.h>
 #include <filesystem>
-#include <iostream>
+#include <iostream>  // DEBUG
 #include <string>
 using std::cout;
 using std::endl;
@@ -36,11 +36,12 @@ void CheckUnused(const YAML::Node & yaml)
   std::string unused;
   for (const auto & pair : yaml)
   {
-    unused += " " + pair.first.as<std::string>();
+    unused += pair.first.as<std::string>() + " ";
   }
   if (!unused.empty())
   {
-    throw ParseError("has unused keys:" + unused);
+    unused.pop_back();
+    throw ParseError(fmt::format(" has unused keys `{}`", unused));
   }
 }
 
@@ -52,7 +53,7 @@ YAML::Node TakeNode(YAML::Node yaml, const std::string & name, bool optional = f
     yaml.remove(name);
     return node;
   }
-  throw ParseError(fmt::format("has no '{}'", name));
+  throw ParseError(fmt::format(" has no '{}'", name));
 }
 
 YAML::Node LoadFile(const std::string & package, const std::string & source)
@@ -80,6 +81,18 @@ YAML::Node LoadFile(const std::string & package, const std::string & source)
   {
     throw ConfigError::LoadFile(error.what());
   }
+}
+
+FilterConfig::FilterConfig(YAML::Node yaml)
+{
+  TakeNode(yaml, "rules", true);  // TODO(Takagi, Isamu)
+}
+
+TopicConfig::TopicConfig(YAML::Node yaml)
+{
+  name = TakeNode(yaml, "name").as<std::string>();
+  type = TakeNode(yaml, "type").as<std::string>();
+  data = TakeNode(yaml, "data").as<std::string>();
 }
 
 ConfigFile::ConfigFile(const std::string & package, const std::string & path)
@@ -112,7 +125,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 
 void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
 {
-  std::string mark = path;
+  std::string mark = path + (view ? "" : ".input");
   try
   {
     if (yaml.IsScalar())
@@ -122,15 +135,9 @@ void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
 
     if (!yaml.IsMap())
     {
-      throw ConfigError::Parse(fmt::format("node '{}' is not a dict", path));
+      throw ParseError(" is not a dict");
     }
 
-    if (!yaml["class"])
-    {
-      throw ConfigError::Parse(fmt::format("node '{}{}.class' not found", path, view ? "" : ".input"));
-    }
-
-    mark = path + (view ? "" : ".input");
     const auto name = TakeNode(yaml, "class").as<std::string>();
     cout << (view ? "  view: " : "  data: ") << name << " (" << path << ")" << endl;
 
@@ -161,7 +168,7 @@ void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
     {
       if (!children.IsSequence())
       {
-        throw ConfigError::Parse(fmt::format("node '{}.children' is not a list", mark));
+        throw ParseError(".children is not a list");
       }
       for (size_t i = 0, n = children.size(); i < n; ++i)
       {
@@ -171,20 +178,8 @@ void ConfigFile::ParseNode(bool view, YAML::Node yaml, const std::string & path)
   }
   catch (const ParseError & error)
   {
-    throw ConfigError::Parse(mark + " " + error.what());
+    throw ConfigError::Parse(mark + error.what());
   }
-}
-
-FilterConfig::FilterConfig(YAML::Node yaml)
-{
-  TakeNode(yaml, "rules", true);  // TODO(Takagi, Isamu)
-}
-
-TopicConfig::TopicConfig(YAML::Node yaml)
-{
-  name = TakeNode(yaml, "name").as<std::string>();
-  type = TakeNode(yaml, "type").as<std::string>();
-  data = TakeNode(yaml, "data").as<std::string>();
 }
 
 }  // namespace multi_data_monitor

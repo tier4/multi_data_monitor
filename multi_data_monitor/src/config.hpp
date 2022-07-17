@@ -19,15 +19,10 @@
 #include <string>
 #include <unordered_map>
 #include <utility>
+#include <vector>
 
 namespace multi_data_monitor
 {
-
-struct ConfigFile
-{
-  ConfigFile(const std::string & package, const std::string & path);
-  void ParseNode(bool view, YAML::Node yaml, const std::string & path);
-};
 
 struct FilterConfig
 {
@@ -44,6 +39,14 @@ struct TopicConfig
 
 struct TopicGroup
 {
+};
+
+struct ConfigFile
+{
+  ConfigFile(const std::string & package, const std::string & path);
+  void ParseNode(bool view, YAML::Node yaml, const std::string & path);
+
+  std::vector<TopicConfig> topics;
 };
 
 }  // namespace multi_data_monitor
