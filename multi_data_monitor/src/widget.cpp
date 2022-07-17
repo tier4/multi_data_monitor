@@ -14,12 +14,14 @@
 
 #include "widget.hpp"
 #include "config.hpp"
+#include <QDockWidget>
 #include <QFormLayout>  // debug
 #include <QGridLayout>
 #include <QLabel>  // debug
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QStackedLayout>
+#include <QVBoxLayout>
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
 #include <string>
@@ -29,9 +31,16 @@ namespace multi_data_monitor
 
 MonitorWidget::MonitorWidget(rviz_common::Panel * panel) : QWidget(panel)
 {
-  const auto widget = new QLabel("monitor");
+  constexpr auto kStyleSheet = "border-width: 1px 1px 1px 1px; border-style: solid;";
   const auto layout = new QGridLayout();
-  layout->addWidget(widget);
+  for (size_t i = 0; i < 6; ++i)
+  {
+    const auto widget = new QLabel(std::to_string(i + 1).c_str());
+    widget->setAlignment(Qt::AlignCenter);
+    widget->setStyleSheet(kStyleSheet);
+    layout->addWidget(widget, i / 3, i % 3);
+  }
+  layout->setContentsMargins(3, 1, 3, 1);
   setLayout(layout);
 }
 
@@ -106,6 +115,16 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
 
 void MultiDataMonitor::onInitialize()
 {
+  const auto parent = dynamic_cast<QDockWidget *>(this->parent());
+  if (parent)
+  {
+    const auto widget = new QWidget();
+    const auto layout = new QVBoxLayout();
+    layout->addWidget(parent->titleBarWidget());
+    layout->setMargin(0);
+    widget->setLayout(layout);
+    parent->setTitleBarWidget(widget);
+  }
 }
 
 void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
@@ -116,6 +135,15 @@ void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
     if (layout)
     {
       layout->setCurrentIndex(1 - layout->currentIndex());
+    }
+  }
+  if (event->modifiers() & Qt::ShiftModifier)
+  {
+    const auto parent = dynamic_cast<QDockWidget *>(this->parent());
+    if (parent)
+    {
+      const auto title = parent->titleBarWidget()->layout()->itemAt(0)->widget();
+      title->setVisible(!title->isVisible());
     }
   }
 }
