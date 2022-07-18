@@ -13,8 +13,43 @@
 // limitations under the License.
 
 #include "stream.hpp"
+#include "config.hpp"
+#include <memory>
 
 namespace multi_data_monitor
 {
+
+TopicStream::TopicStream(const TopicConfig & config)
+{
+  config_ = config;
+}
+
+void TopicStream::Callback(const YAML::Node & yaml)
+{
+  throw ConfigError::Logic("TopicStream::Callback");
+}
+
+void TopicStream::Register(Stream * output)
+{
+  outputs_.insert(output);
+}
+
+void TopicStream::Subscribe(rclcpp::Node::ConstSharedPtr node)
+{
+  auto qos = rclcpp::QoS(config_.depth);
+
+  const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> serialized)
+  {
+    // const auto yaml = message_->ConvertYAML(*serialized);
+    // const auto node = access_->Access(yaml);
+  };
+
+  subscription_ = node->create_generic_subscription(config_.name, config_.type, qos, callback);
+}
+
+void TopicStream::Unsubscribe()
+{
+  subscription_.reset();
+}
 
 }  // namespace multi_data_monitor

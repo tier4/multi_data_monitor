@@ -40,9 +40,9 @@ widgets:
       class: filter
       input: { class: topic, name: /test/header, data: stamp.nanosec }
       rules:
-        - aaa
-        - bbb
-        - ccc
+        - { class: aaa }
+        - { class: bbb }
+        - { class: ccc }
 
 # --------------------------------------------------
 # streams
@@ -52,14 +52,14 @@ streams:
     class: filter
     input: stream2
     rules:
-      - aaa
-      - bbb
+      - { class: aaa }
+      - { class: bbb }
 
   stream2:
     class: filter
     input: { class: topic, name: /test/double, data: data, type: std_msgs/msg/Float64 }
     rules:
-      - aaa
-      - bbb
+      - { class: aaa }
+      - { class: bbb }
 
   stream3: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/Uint32 }

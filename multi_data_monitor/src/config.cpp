@@ -87,7 +87,7 @@ TopicConfig TopicMerge::Convert()
   {
     if (set.size() != 1)
     {
-      throw ConfigError::ParseFile("topic " + var + " is not unique: " + name);
+      throw ConfigError("topic " + var + " is not unique: " + name);
     }
   };
 
@@ -126,7 +126,7 @@ ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)
 }
 ConfigError ConfigNode::Error(const std::string message)
 {
-  return ConfigError::ParseFile(fmt::format("{} '{}' {}", path, type, message));
+  return ConfigError(fmt::format("{} '{}' {}", path, type, message));
 }
 
 void ConfigNode::CheckUnknownKeys()
@@ -169,14 +169,14 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     // check to distinguish from errors in YAML::LoadFile
     if (!std::filesystem::exists(file_path))
     {
-      throw ConfigError::LoadFile("file not found: " + file_path.string());
+      throw SystemError("file not found: " + file_path.string());
     }
 
     // load config and convert version if possible
     const auto yaml = YAML::LoadFile(file_path);
     if (yaml["version"].as<std::string>("") != "1")
     {
-      throw ConfigError::LoadFile("this version is not supported");
+      throw ConfigError("this version is not supported");
     }
 
     // load widgets
@@ -211,11 +211,11 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
   }
   catch (const ament_index_cpp::PackageNotFoundError & error)
   {
-    throw ConfigError::LoadFile("package not found: " + package);
+    throw SystemError("package not found: " + package);
   }
   catch (YAML::Exception & error)
   {
-    throw ConfigError::LoadFile(error.what());
+    throw SystemError(error.what());
   }
 }
 
@@ -225,7 +225,7 @@ ConfigNode * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
   const auto node = nodes_.emplace_back(std::make_unique<ConfigNode>(yaml, path)).get();
   if (!node->yaml.IsMap())
   {
-    throw ConfigError::ParseFile(node->path + " is not a dict");
+    throw ConfigError(node->path + " is not a dict");
   }
 
   // get class name
@@ -258,7 +258,7 @@ ConfigNode * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
       const std::string path = node->path + "." + field;
       if (!children.IsSequence())
       {
-        throw ConfigError::ParseFile(path + " is not a list");
+        throw ConfigError(path + " is not a list");
       }
       for (size_t i = 0, n = children.size(); i < n; ++i)
       {

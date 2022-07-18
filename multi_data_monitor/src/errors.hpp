@@ -21,14 +21,29 @@
 namespace multi_data_monitor
 {
 
-class ConfigError : public std::runtime_error
+struct BaseError : public std::runtime_error
 {
-public:
-  static ConfigError LoadFile(const std::string & message);
-  static ConfigError ParseFile(const std::string & message);
-
-private:
   using std::runtime_error::runtime_error;
+};
+
+struct SystemError : public BaseError
+{
+  explicit SystemError(const std::string & message);
+};
+
+struct ConfigError : public BaseError
+{
+  explicit ConfigError(const std::string & message);
+};
+
+struct LogicError : public BaseError
+{
+  explicit LogicError(const std::string & message);
+};
+
+struct RuntimeError : public BaseError
+{
+  explicit RuntimeError(const std::string & message);
 };
 
 }  // namespace multi_data_monitor

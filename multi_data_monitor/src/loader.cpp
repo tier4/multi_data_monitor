@@ -63,6 +63,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
   }
   cout << "========================================================" << endl;
 
+  /*
   for (auto & topic : config.topics_)
   {
     cout << "===== " << endl;
@@ -78,6 +79,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
     }
     cout << "]" << endl;
   }
+  */
 }
 
 }  // namespace multi_data_monitor

@@ -17,14 +17,20 @@
 namespace multi_data_monitor
 {
 
-ConfigError ConfigError::LoadFile(const std::string & message)
+SystemError::SystemError(const std::string & message) : BaseError("Failed to load config (" + message + ").")
 {
-  return ConfigError("Failed to load config (" + message + ").");
 }
 
-ConfigError ConfigError::ParseFile(const std::string & message)
+ConfigError::ConfigError(const std::string & message) : BaseError("Failed to parse config (" + message + ").")
 {
-  return ConfigError("Failed to parse config (" + message + ").");
+}
+
+LogicError::LogicError(const std::string & message) : BaseError(message)
+{
+}
+
+RuntimeError::RuntimeError(const std::string & message) : BaseError(message)
+{
 }
 
 }  // namespace multi_data_monitor
