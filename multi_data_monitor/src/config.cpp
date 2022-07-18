@@ -93,29 +93,23 @@ ConfigNode * ConfigTrees::Parse(YAML::Node yaml, const std::string & path)
     node->input = Parse(input, node->path + ".input");
   }
 
-  return node;
-
-  /*
-  if (view)
+  for (const std::string field : {"children", "rules"})
   {
-    const auto object = name.substr(0, 6);
-    const auto plugin = name.substr(8);
-    cout << "  view: " << object << " " << plugin << " (" << path << ")" << endl;
-    TakeNode(yaml, "param", true);  // TODO(Takagi, Isamu)
+    const auto children = node->TakeNode(field, true);
+    if (children)
+    {
+      const std::string path = node->path + "." + field;
+      if (!children.IsSequence())
+      {
+        throw ConfigError::ParseFile(path + " is not a list");
+      }
+      for (size_t i = 0, n = children.size(); i < n; ++i)
+      {
+        node->children.push_back(Parse(children[i], fmt::format("{}[{}]", path, i)));
+      }
+    }
   }
-
-  //const auto children = TakeNode(yaml, "children", true);  // TODO(Takagi, Isamu)
-  if (children.IsDefined())
-  {
-    if (!children.IsSequence())
-    {
-      throw ParseError(".children is not a list");
-    }
-    for (size_t i = 0, n = children.size(); i < n; ++i)
-    {
-      ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
-    }
-  */
+  return node;
 }
 
 YAML::Node LoadFile(const std::string & package, const std::string & source)
@@ -151,19 +145,16 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
   {
     const auto yaml = LoadFile(package, path);
 
+    ConfigTrees trees;
+
     cout << "========================================================" << endl;
-    /*
+
     for (const auto & pair : yaml["monitors"])
     {
       const auto name = pair.first.as<std::string>();
-      cout << "monitor: " << name << endl;
-      ParseNode(true, pair.second, name);
+      const auto temp = trees.Parse(pair.second, name);
+      (void)temp;
     }
-    */
-
-    cout << "========================================================" << endl;
-
-    ConfigTrees trees;
 
     for (const auto & pair : yaml["messages"])
     {
@@ -174,16 +165,15 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 
     for (const auto & node : trees.nodes)
     {
-      cout << fmt::format("Node[{}]: {:8} {:15} {:10} {}", (const void *)node.get(), node->type, node->name, node->data, node->path) << endl; // NOLINT
+      cout << fmt::format("Node     {:50} ({}, {}, {})", node->path, node->type, node->name, node->data) << endl;
       if (node->input)
       {
-        cout << fmt::format("  Input[{}]: {}", (const void *)node->input, node->input->path) << endl;
+        cout << fmt::format("  Input  {}", node->input->path) << endl;
       }
       for (const auto child : node->children)
       {
-        cout << fmt::format("  Child[{}]: {}", (const void *)child, child->path) << endl;
+        cout << fmt::format("  Child  {}", child->path) << endl;
       }
-      cout << endl;
     }
 
     cout << "========================================================" << endl;
