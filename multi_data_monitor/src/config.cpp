@@ -20,6 +20,7 @@
 #include <filesystem>
 #include <iostream>  // DEBUG
 #include <memory>
+#include <optional>
 #include <string>
 using std::cout;
 using std::endl;
@@ -27,11 +28,7 @@ using std::endl;
 namespace multi_data_monitor
 {
 
-struct ParseError : public std::runtime_error
-{
-  using std::runtime_error::runtime_error;
-};
-
+/*
 void CheckUnused(const YAML::Node & yaml)
 {
   std::string unused;
@@ -45,16 +42,80 @@ void CheckUnused(const YAML::Node & yaml)
     throw ParseError(fmt::format(" has unused keys `{}`", unused));
   }
 }
+*/
 
-YAML::Node TakeNode(YAML::Node yaml, const std::string & name, bool optional = false)
+ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)
+{
+  if (yaml.IsScalar())
+  {
+    this->path = path;
+    this->yaml["class"] = "target";
+    this->yaml["name"] = yaml;
+  }
+  else
+  {
+    this->path = path;
+    this->yaml.reset(yaml);
+  }
+}
+
+YAML::Node ConfigNode::TakeNode(const std::string & name, bool optional)
 {
   const auto node = yaml[name];
-  if (optional || node.IsDefined())
+  if (optional || node)
   {
     yaml.remove(name);
     return node;
   }
-  throw ParseError(fmt::format(" has no '{}'", name));
+  throw ConfigError::ParseFile(fmt::format("{} has no '{}'", path, name));
+}
+
+ConfigNode * ConfigTrees::Parse(YAML::Node yaml, const std::string & path)
+{
+  const auto node = nodes.emplace_back(std::make_unique<ConfigNode>(yaml, path)).get();
+
+  if (!node->yaml.IsMap())
+  {
+    throw ConfigError::ParseFile(node->path + " is not a dict");
+  }
+
+  node->type = node->TakeNode("class").as<std::string>();
+
+  if (node->type == "topic")
+  {
+    node->name = node->TakeNode("name").as<std::string>();
+    node->data = node->TakeNode("data").as<std::string>();
+  }
+
+  const auto input = node->TakeNode("input", true);
+  if (input)
+  {
+    node->input = Parse(input, node->path + ".input");
+  }
+
+  return node;
+
+  /*
+  if (view)
+  {
+    const auto object = name.substr(0, 6);
+    const auto plugin = name.substr(8);
+    cout << "  view: " << object << " " << plugin << " (" << path << ")" << endl;
+    TakeNode(yaml, "param", true);  // TODO(Takagi, Isamu)
+  }
+
+  //const auto children = TakeNode(yaml, "children", true);  // TODO(Takagi, Isamu)
+  if (children.IsDefined())
+  {
+    if (!children.IsSequence())
+    {
+      throw ParseError(".children is not a list");
+    }
+    for (size_t i = 0, n = children.size(); i < n; ++i)
+    {
+      ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
+    }
+  */
 }
 
 YAML::Node LoadFile(const std::string & package, const std::string & source)
@@ -84,119 +145,52 @@ YAML::Node LoadFile(const std::string & package, const std::string & source)
   }
 }
 
-FilterConfig::FilterConfig(YAML::Node yaml)
-{
-  TakeNode(yaml, "rules", true);  // TODO(Takagi, Isamu)
-}
-
-TopicConfig::TopicConfig(YAML::Node yaml)
-{
-  name = TakeNode(yaml, "name").as<std::string>();
-  type = TakeNode(yaml, "type").as<std::string>();
-  data = TakeNode(yaml, "data").as<std::string>();
-  qos = TakeNode(yaml, "qos", true).as<std::string>("DD1");
-}
-
 ConfigFile::ConfigFile(const std::string & package, const std::string & path)
 {
   try
   {
     const auto yaml = LoadFile(package, path);
 
+    cout << "========================================================" << endl;
     /*
     for (const auto & pair : yaml["monitors"])
     {
       const auto name = pair.first.as<std::string>();
-      cout << "========================================================" << endl;
       cout << "monitor: " << name << endl;
       ParseNode(true, pair.second, name);
     }
     */
 
+    cout << "========================================================" << endl;
+
+    ConfigTrees trees;
+
     for (const auto & pair : yaml["messages"])
     {
       const auto name = pair.first.as<std::string>();
-      cout << "========================================================" << endl;
-      cout << "message: " << name << endl;
-      ParseData(pair.second, name);
+      const auto temp = trees.Parse(pair.second, name);
+      (void)temp;
     }
+
+    for (const auto & node : trees.nodes)
+    {
+      cout << fmt::format("Node[{}]: {:8} {:15} {:10} {}", (const void *)node.get(), node->type, node->name, node->data, node->path) << endl; // NOLINT
+      if (node->input)
+      {
+        cout << fmt::format("  Input[{}]: {}", (const void *)node->input, node->input->path) << endl;
+      }
+      for (const auto child : node->children)
+      {
+        cout << fmt::format("  Child[{}]: {}", (const void *)child, child->path) << endl;
+      }
+      cout << endl;
+    }
+
+    cout << "========================================================" << endl;
   }
   catch (YAML::Exception & error)
   {
     throw ConfigError::LoadFile(error.what());
-  }
-}
-
-InputLink ConfigFile::ParseData(YAML::Node yaml, const std::string & path)
-{
-  std::string mark = path + ".input";
-  try
-  {
-    InputLink link;
-
-    if (yaml.IsScalar())
-    {
-      link.name = yaml.as<std::string>();
-      return link;
-    }
-
-    if (!yaml.IsMap())
-    {
-      throw ParseError(" is not a dict");
-    }
-
-    const auto name = TakeNode(yaml, "class").as<std::string>();
-    mark = path + "." + name;
-    cout << "  data: " << name << " (" << path << ")" << endl;
-
-    if (name == "topic")
-    {
-      const auto topic = TopicConfig(yaml);
-      link.name = topic.name;
-      link.data = topic.data;
-    }
-    if (name == "filter")
-    {
-      (void)FilterConfig(yaml);  // TODO(Takagi, Isamu)
-
-      const auto source = ParseData(TakeNode(yaml, "input"), mark);
-      link.node = std::make_unique<InputBase>();
-      link.name = source.name;
-      link.data = source.data;
-      if (source.node)
-      {
-        source.node->RegisterCallback(link.node.get());
-      }
-    }
-    CheckUnused(yaml);
-    return link;
-
-    /*
-    if (view)
-    {
-      const auto object = name.substr(0, 6);
-      const auto plugin = name.substr(8);
-      cout << "  view: " << object << " " << plugin << " (" << path << ")" << endl;
-      TakeNode(yaml, "param", true);  // TODO(Takagi, Isamu)
-    }
-
-    //const auto children = TakeNode(yaml, "children", true);  // TODO(Takagi, Isamu)
-    if (children.IsDefined())
-    {
-      if (!children.IsSequence())
-      {
-        throw ParseError(".children is not a list");
-      }
-      for (size_t i = 0, n = children.size(); i < n; ++i)
-      {
-        ParseNode(true, children[i], fmt::format("{}[{}]", path, i));
-      }
-    }
-    */
-  }
-  catch (const ParseError & error)
-  {
-    throw ConfigError::Parse(mark + error.what());
   }
 }
 

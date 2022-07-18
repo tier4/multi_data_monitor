@@ -18,50 +18,60 @@
 #include <yaml-cpp/yaml.h>
 #include <memory>
 #include <string>
-#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 
 namespace multi_data_monitor
 {
 
-struct InputBase
+struct ConfigNode
 {
-  virtual ~InputBase() = default;
-  void RegisterCallback(InputBase * output);
-};
+  ConfigNode(YAML::Node yaml, const std::string & path);
+  YAML::Node TakeNode(const std::string & name, bool optional = false);
 
-struct InputLink
-{
-  std::string name;
-  std::string data;
-  std::unique_ptr<InputBase> node;
-};
-
-struct FilterConfig
-{
-  explicit FilterConfig(YAML::Node yaml);
-};
-
-struct TopicConfig
-{
-  explicit TopicConfig(YAML::Node yaml);
-  std::string name;
+  YAML::Node yaml;
+  std::string path;
   std::string type;
+  std::string name;
   std::string data;
-  std::string qos;
+
+  ConfigNode * input = nullptr;
+  std::vector<ConfigNode *> children;
 };
 
-struct TopicGroup
+struct ConfigTrees
 {
+  ConfigNode * Parse(YAML::Node yaml, const std::string & path);
+  std::vector<std::unique_ptr<ConfigNode>> nodes;
 };
 
 struct ConfigFile
 {
   ConfigFile(const std::string & package, const std::string & path);
-  InputLink ParseData(YAML::Node yaml, const std::string & path);
+};
 
-  std::vector<TopicConfig> topics;
+class Stream
+{
+public:
+  virtual ~Stream() = default;
+  virtual void Callback(const YAML::Node & yaml) = 0;
+  virtual void Register(Stream * output)
+  {
+    outputs_.insert(output);  // TODO(Takagi, Isamu)
+  };
+
+  std::unordered_set<Stream *> outputs_;  // TODO(Takagi, Isamu): move subclass
+};
+
+class Rules : public Stream
+{
+public:
+  void Callback(const YAML::Node & yaml) { (void)yaml; };
+};
+
+struct TopicGroup
+{
 };
 
 }  // namespace multi_data_monitor

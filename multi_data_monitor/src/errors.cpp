@@ -22,7 +22,7 @@ ConfigError ConfigError::LoadFile(const std::string & message)
   return ConfigError("Failed to load config (" + message + ").");
 }
 
-ConfigError ConfigError::Parse(const std::string & message)
+ConfigError ConfigError::ParseFile(const std::string & message)
 {
   return ConfigError("Failed to parse config (" + message + ").");
 }
