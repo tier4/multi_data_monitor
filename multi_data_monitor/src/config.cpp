@@ -72,27 +72,35 @@ YAML::Node ConfigNode::TakeNode(const std::string & name, bool optional)
 
 ConfigNode * ConfigTrees::Parse(YAML::Node yaml, const std::string & path)
 {
+  // create config node
   const auto node = nodes.emplace_back(std::make_unique<ConfigNode>(yaml, path)).get();
-
   if (!node->yaml.IsMap())
   {
     throw ConfigError::ParseFile(node->path + " is not a dict");
   }
 
+  // get class name
   node->type = node->TakeNode("class").as<std::string>();
 
+  // save the text for reference in some types
   if (node->type == "topic")
   {
     node->name = node->TakeNode("name").as<std::string>();
     node->data = node->TakeNode("data").as<std::string>();
   }
+  if (node->type == "target")
+  {
+    node->name = node->TakeNode("name").as<std::string>();
+  }
 
+  // parse input node
   const auto input = node->TakeNode("input", true);
   if (input)
   {
     node->input = Parse(input, node->path + ".input");
   }
 
+  // parse child nodes
   for (const std::string field : {"children", "rules"})
   {
     const auto children = node->TakeNode(field, true);
