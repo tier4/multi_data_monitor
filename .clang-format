@@ -12,6 +12,7 @@ BraceWrapping:
   AfterStruct: true
   BeforeCatch: true
   BeforeElse: true
+  BeforeLambdaBody: true
 BreakBeforeBraces: Custom
 ColumnLimit: 120
 ConstructorInitializerIndentWidth: 0

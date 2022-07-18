@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "config.hpp"
-#include "errors.hpp"
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <fmt/format.h>
@@ -22,27 +21,99 @@
 #include <memory>
 #include <optional>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 using std::cout;
 using std::endl;
 
 namespace multi_data_monitor
 {
 
-/*
-void CheckUnused(const YAML::Node & yaml)
+class FieldMerge
 {
-  std::string unused;
-  for (const auto & pair : yaml)
-  {
-    unused += pair.first.as<std::string>() + " ";
-  }
-  if (!unused.empty())
-  {
-    unused.pop_back();
-    throw ParseError(fmt::format(" has unused keys `{}`", unused));
-  }
+public:
+  void Add(ConfigNode * node);
+
+private:
+  std::string data;
+};
+
+class TopicMerge
+{
+public:
+  void Add(ConfigNode * node);
+  TopicConfig Convert();
+
+private:
+  std::string name;
+  std::unordered_set<std::string> types;
+  std::unordered_set<size_t> depth;
+  std::unordered_set<std::string> reliability;
+  std::unordered_set<std::string> durability;
+  std::unordered_map<std::string, FieldMerge> fields;
+};
+
+void FieldMerge::Add(ConfigNode * node)
+{
+  data = node->data;
 }
-*/
+
+void TopicMerge::Add(ConfigNode * node)
+{
+  const auto type = node->TakeNode("type", true).as<std::string>("");
+  if (!type.empty())
+  {
+    types.insert(type);
+  }
+
+  const auto qos = node->TakeNode("qos", true).as<std::string>("");
+  if (!qos.empty())
+  {
+    try
+    {
+      depth.insert(std::stoul(qos.substr(2)));
+      reliability.insert(qos.substr(0, 1));
+      durability.insert(qos.substr(1, 1));
+    }
+    catch (...)
+    {
+      throw node->Error("has invalid qos settings");
+    }
+  }
+
+  fields[node->data].Add(node);
+  name = node->name;
+  node->CheckUnknownKeys();
+}
+
+TopicConfig TopicMerge::Convert()
+{
+  const auto check_unique = [this](auto set, const std::string & var)
+  {
+    if (set.size() != 1)
+    {
+      throw ConfigError::ParseFile("topic " + var + " is not unique: " + name);
+    }
+  };
+
+  // clang-format off
+  if (depth.empty()) { depth.insert(1); }
+  if (reliability.empty()) { reliability.insert("D"); }
+  if (durability.empty()) { durability.insert("D"); }
+  // clang-format on
+
+  check_unique(types, "type");
+  check_unique(depth, "depth");
+  check_unique(reliability, "reliability");
+  check_unique(durability, "durability");
+
+  std::vector<FieldConfig> field_configs;
+  for (const auto & pair : fields)
+  {
+    field_configs.push_back(FieldConfig{pair.first});
+  }
+  return {name, *types.begin(), *depth.begin(), *reliability.begin(), *durability.begin(), field_configs};
+}
 
 ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)
 {
@@ -58,6 +129,24 @@ ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)
     this->yaml.reset(yaml);
   }
 }
+ConfigError ConfigNode::Error(const std::string message)
+{
+  return ConfigError::ParseFile(fmt::format("{} '{}' {}", path, type, message));
+}
+
+void ConfigNode::CheckUnknownKeys()
+{
+  std::string unknown;
+  for (const auto & pair : yaml)
+  {
+    unknown += pair.first.as<std::string>() + " ";
+  }
+  if (!unknown.empty())
+  {
+    unknown.pop_back();
+    throw Error(fmt::format("has unknown keys '{}'", unknown));
+  }
+}
 
 YAML::Node ConfigNode::TakeNode(const std::string & name, bool optional)
 {
@@ -67,14 +156,14 @@ YAML::Node ConfigNode::TakeNode(const std::string & name, bool optional)
     yaml.remove(name);
     return node;
   }
-  throw ConfigError::ParseFile(fmt::format("{} has no '{}'", path, name));
+  throw Error(fmt::format("has no '{}'", name));
 }
 
 ConfigFile::ConfigFile(const std::string & package, const std::string & file)
 {
   try
   {
-    // resolve package path
+    // resolve file path
     auto file_path = std::filesystem::path();
     if (!package.empty())
     {
@@ -95,13 +184,15 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
       throw ConfigError::LoadFile("this version is not supported");
     }
 
-    for (const auto & pair : yaml["monitors"])
+    // load widgets
+    for (const auto & pair : yaml["widgets"])
     {
       const auto name = pair.first.as<std::string>();
       const auto temp = Parse(pair.second, name);
       (void)temp;
     }
 
+    // load streams
     for (const auto & pair : yaml["streams"])
     {
       const auto name = pair.first.as<std::string>();
@@ -123,6 +214,33 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
       }
     }
     cout << "========================================================" << endl;
+
+    // merge topic settings
+    std::unordered_map<std::string, TopicMerge> topics;
+    for (const auto & node : nodes_)
+    {
+      if (node->type == "topic")
+      {
+        topics[node->name].Add(node.get());
+      }
+    }
+
+    for (auto & merge : topics)
+    {
+      const auto topic = merge.second.Convert();
+      cout << "===== " << endl;
+      cout << topic.name << endl;
+      cout << topic.type << endl;
+      cout << topic.depth << endl;
+      cout << topic.reliability << endl;
+      cout << topic.durability << endl;
+      cout << "[ ";
+      for (const auto & field : topic.fields)
+      {
+        cout << field.data << " ";
+      }
+      cout << "]" << endl;
+    }
   }
   catch (const ament_index_cpp::PackageNotFoundError & error)
   {

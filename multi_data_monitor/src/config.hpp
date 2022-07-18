@@ -15,23 +15,35 @@
 #ifndef CONFIG_HPP_
 #define CONFIG_HPP_
 
+#include "errors.hpp"
 #include <yaml-cpp/yaml.h>
 #include <memory>
 #include <string>
-#include <unordered_set>
-#include <utility>
 #include <vector>
 
 namespace multi_data_monitor
 {
 
-struct ConfigTopic
+struct FieldConfig
 {
+  std::string data;
+};
+
+struct TopicConfig
+{
+  std::string name;
+  std::string type;
+  size_t depth;
+  std::string reliability;
+  std::string durability;
+  std::vector<FieldConfig> fields;
 };
 
 struct ConfigNode
 {
   ConfigNode(YAML::Node yaml, const std::string & path);
+  ConfigError Error(const std::string message);
+  void CheckUnknownKeys();
   YAML::Node TakeNode(const std::string & name, bool optional = false);
 
   YAML::Node yaml;

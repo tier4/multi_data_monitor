@@ -127,7 +127,7 @@ void MultiDataMonitor::onInitialize()
   }
 }
 
-void MultiDataMonitor::mousePressEvent([[maybe_unused]] QMouseEvent * event)
+void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 {
   if (event->modifiers() & Qt::ControlModifier)
   {
