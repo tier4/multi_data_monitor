@@ -15,7 +15,9 @@
 #ifndef WIDGET_HPP_
 #define WIDGET_HPP_
 
+#include "loader.hpp"
 #include <rviz_common/panel.hpp>
+#include <memory>
 #include <string>
 
 class QMouseEvent;
@@ -58,8 +60,10 @@ public:
   void load(const rviz_common::Config & config) override;
   void onInitialize() override;
   void mousePressEvent(QMouseEvent * event) override;
+  void reload();
 
 private:
+  std::unique_ptr<Loader> loader_;
   MonitorWidget * monitor_;
   SettingWidget * setting_;
 };

@@ -13,7 +13,6 @@
 // limitations under the License.
 
 #include "widget.hpp"
-#include "config.hpp"
 #include <QDockWidget>
 #include <QFormLayout>  // debug
 #include <QGridLayout>
@@ -24,6 +23,7 @@
 #include <QVBoxLayout>
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
+#include <memory>
 #include <string>
 
 namespace multi_data_monitor
@@ -100,17 +100,7 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
 {
   Panel::load(config);
   setting_->load(config);
-
-  const auto node = getDisplayContext()->getRosNodeAbstraction();
-
-  const auto file = ConfigFile(setting_->getPackage(), setting_->getPath());
-  (void)file;
-
-  /*
-    manager_.Load(path_.toStdString(), node.lock()->get_raw_node());
-    manager_.Build(this);
-    manager_.Start(node.lock()->get_raw_node());
-  */
+  reload();
 }
 
 void MultiDataMonitor::onInitialize()
@@ -125,6 +115,9 @@ void MultiDataMonitor::onInitialize()
     widget->setLayout(layout);
     parent->setTitleBarWidget(widget);
   }
+
+  auto rviz_node = getDisplayContext()->getRosNodeAbstraction().lock();
+  loader_ = std::make_unique<Loader>(this, rviz_node->get_raw_node());
 }
 
 void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
@@ -137,6 +130,7 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
       layout->setCurrentIndex(1 - layout->currentIndex());
     }
   }
+
   if (event->modifiers() & Qt::ShiftModifier)
   {
     const auto parent = dynamic_cast<QDockWidget *>(this->parent());
@@ -146,6 +140,11 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
       title->setVisible(!title->isVisible());
     }
   }
+}
+
+void MultiDataMonitor::reload()
+{
+  loader_->Reload(setting_->getPackage(), setting_->getPath());
 }
 
 }  // namespace multi_data_monitor

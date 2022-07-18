@@ -17,14 +17,9 @@
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <fmt/format.h>
 #include <filesystem>
-#include <iostream>  // DEBUG
-#include <memory>
-#include <optional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
-using std::cout;
-using std::endl;
 
 namespace multi_data_monitor
 {
@@ -200,21 +195,6 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
       (void)temp;
     }
 
-    cout << "========================================================" << endl;
-    for (const auto & node : nodes_)
-    {
-      cout << fmt::format("Node     {:50} ({}, {}, {})", node->path, node->type, node->name, node->data) << endl;
-      if (node->input)
-      {
-        cout << fmt::format("  Input  {}", node->input->path) << endl;
-      }
-      for (const auto child : node->children)
-      {
-        cout << fmt::format("  Child  {}", child->path) << endl;
-      }
-    }
-    cout << "========================================================" << endl;
-
     // merge topic settings
     std::unordered_map<std::string, TopicMerge> topics;
     for (const auto & node : nodes_)
@@ -224,22 +204,9 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
         topics[node->name].Add(node.get());
       }
     }
-
     for (auto & merge : topics)
     {
-      const auto topic = merge.second.Convert();
-      cout << "===== " << endl;
-      cout << topic.name << endl;
-      cout << topic.type << endl;
-      cout << topic.depth << endl;
-      cout << topic.reliability << endl;
-      cout << topic.durability << endl;
-      cout << "[ ";
-      for (const auto & field : topic.fields)
-      {
-        cout << field.data << " ";
-      }
-      cout << "]" << endl;
+      topics_.push_back(merge.second.Convert());
     }
   }
   catch (const ament_index_cpp::PackageNotFoundError & error)

@@ -61,8 +61,9 @@ class ConfigFile
 public:
   ConfigFile(const std::string & package, const std::string & file);
 
-private:
+  // private:
   ConfigNode * Parse(YAML::Node yaml, const std::string & path);
+  std::vector<TopicConfig> topics_;
   std::vector<std::unique_ptr<ConfigNode>> nodes_;
 };
 

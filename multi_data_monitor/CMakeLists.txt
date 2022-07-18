@@ -26,6 +26,8 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/errors.cpp
   src/config.hpp
   src/config.cpp
+  src/loader.hpp
+  src/loader.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}
