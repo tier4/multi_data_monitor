@@ -25,6 +25,10 @@
 namespace multi_data_monitor
 {
 
+struct ConfigTopic
+{
+};
+
 struct ConfigNode
 {
   ConfigNode(YAML::Node yaml, const std::string & path);
@@ -40,38 +44,14 @@ struct ConfigNode
   std::vector<ConfigNode *> children;
 };
 
-struct ConfigTrees
+class ConfigFile
 {
+public:
+  ConfigFile(const std::string & package, const std::string & file);
+
+private:
   ConfigNode * Parse(YAML::Node yaml, const std::string & path);
-  std::vector<std::unique_ptr<ConfigNode>> nodes;
-};
-
-struct ConfigFile
-{
-  ConfigFile(const std::string & package, const std::string & path);
-};
-
-class Stream
-{
-public:
-  virtual ~Stream() = default;
-  virtual void Callback(const YAML::Node & yaml) = 0;
-  virtual void Register(Stream * output)
-  {
-    outputs_.insert(output);  // TODO(Takagi, Isamu)
-  };
-
-  std::unordered_set<Stream *> outputs_;  // TODO(Takagi, Isamu): move subclass
-};
-
-class Rules : public Stream
-{
-public:
-  void Callback(const YAML::Node & yaml) { (void)yaml; };
-};
-
-struct TopicGroup
-{
+  std::vector<std::unique_ptr<ConfigNode>> nodes_;
 };
 
 }  // namespace multi_data_monitor
