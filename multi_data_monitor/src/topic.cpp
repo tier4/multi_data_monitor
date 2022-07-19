@@ -13,7 +13,10 @@
 // limitations under the License.
 
 #include "topic.hpp"
+#include "config.hpp"
+#include "stream.hpp"
 #include <memory>
+#include <string>
 
 // clang-format off
 #include <iostream>
@@ -25,44 +28,53 @@ using std::endl;
 namespace multi_data_monitor
 {
 
-TopicStream::TopicStream(const TopicConfig & config)
+struct Topic::Field
 {
-  config_ = config;
-  message_ = std::make_shared<generic_type_support::GenericMessage>(config_.type);
-}
+  std::string data;
+  std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access;
+  std::vector<Stream *> callbacks;
+};
 
-void TopicStream::Callback([[maybe_unused]] const YAML::Node & yaml)
+Topic::Topic(const TopicConfig & config) : qos_(config.depth)
 {
-  throw LogicError("TopicStream::Callback");
-}
+  name_ = config.name;
+  type_ = config.type;
 
-void TopicStream::Register(Stream * output)
-{
-  outputs_.insert(output);
-}
-
-void TopicStream::Subscribe(rclcpp::Node::SharedPtr node)
-{
   // clang-format off
-  auto qos = rclcpp::QoS(config_.depth);
-  if (config_.reliability == "R") { qos.reliable(); }
-  if (config_.reliability == "B") { qos.best_effort(); }
-  if (config_.durability == "V") { qos.durability_volatile(); }
-  if (config_.durability == "T") { qos.transient_local(); }
+  if (config.reliability == "R") { qos_.reliable(); }
+  if (config.reliability == "B") { qos_.best_effort(); }
+  if (config.durability == "V") { qos_.durability_volatile(); }
+  if (config.durability == "T") { qos_.transient_local(); }
   // clang-format on
 
-  const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> serialized)
+  support_ = std::make_shared<generic_type_support::GenericMessage>(config.type);
+  for (const auto & field : config.fields)
   {
-    const auto yaml = message_->ConvertYAML(*serialized);
-    // const auto node = access_->Access(yaml);
-    cout << "===========================" << endl;
-    cout << yaml << endl;
-  };
-
-  subscription_ = node->create_generic_subscription(config_.name, config_.type, qos, callback);
+    const auto access = support_->GetAccess(field.data);
+    fields_.push_back(Field{field.data, access, {}});
+  }
 }
 
-void TopicStream::Unsubscribe()
+Topic::~Topic()
+{
+}
+
+void Topic::Subscribe(rclcpp::Node::SharedPtr node)
+{
+  const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> message)
+  {
+    const auto yaml = support_->ConvertYAML(*message);
+    cout << "===========================" << endl;
+    for (const auto & field : fields_)
+    {
+      cout << field.data << ": " << field.access->Access(yaml) << endl;
+    }
+  };
+
+  subscription_ = node->create_generic_subscription(name_, type_, qos_, callback);
+}
+
+void Topic::Unsubscribe()
 {
   subscription_.reset();
 }

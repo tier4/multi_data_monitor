@@ -15,31 +15,36 @@
 #ifndef TOPIC_HPP_
 #define TOPIC_HPP_
 
-#include "config.hpp"
-#include "stream.hpp"
 #include <generic_type_support/generic_type_support.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <yaml-cpp/yaml.h>
 #include <memory>
-#include <unordered_set>
+#include <string>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-class TopicStream : public Stream
+class TopicConfig;
+class Stream;
+
+class Topic
 {
 public:
-  explicit TopicStream(const TopicConfig & config);
-  void Callback(const YAML::Node & yaml) override;
-  void Register(Stream * output) override;
+  explicit Topic(const TopicConfig & config);
+  ~Topic();
   void Subscribe(rclcpp::Node::SharedPtr node);
   void Unsubscribe();
 
 private:
-  TopicConfig config_;
+  std::string name_;
+  std::string type_;
+  std::shared_ptr<generic_type_support::GenericMessage> support_;
+  rclcpp::QoS qos_;
   rclcpp::GenericSubscription::ConstSharedPtr subscription_;
-  std::shared_ptr<generic_type_support::GenericMessage> message_;
-  std::unordered_set<Stream *> outputs_;
+
+  class Field;
+  std::vector<Field> fields_;
 };
 
 }  // namespace multi_data_monitor

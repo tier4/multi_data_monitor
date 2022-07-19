@@ -14,6 +14,7 @@
 
 #include "loader.hpp"
 #include "config.hpp"
+#include "stream.hpp"
 #include "topic.hpp"
 #include <utility>
 #include <vector>
@@ -30,6 +31,7 @@ namespace multi_data_monitor
 
 struct Loader::Impl
 {
+  std::vector<std::unique_ptr<Topic>> topics;
   std::vector<std::unique_ptr<Stream>> streams;
 };
 
@@ -64,18 +66,16 @@ void Loader::Reload(const std::string & package, const std::string & path)
   }
   cout << "========================================================" << endl;
 
-  for (auto & topic : config.topics_)
+  for (auto & config : config.topics_)
   {
-    cout << fmt::format("{} {}", topic.name, topic.type) << " ";
-    cout << fmt::format("({}{}{})", topic.reliability, topic.durability, topic.depth) << endl;
-    for (const auto & field : topic.fields)
+    cout << fmt::format("{} {}", config.name, config.type) << " ";
+    cout << fmt::format("({}{}{})", config.reliability, config.durability, config.depth) << endl;
+    for (const auto & field : config.fields)
     {
       cout << " - " << field.data << endl;
     }
 
-    auto stream = std::make_unique<TopicStream>(topic);
-    stream->Subscribe(node_);
-    impl_->streams.push_back(std::move(stream));
+    impl_->topics.emplace_back(std::make_unique<Topic>(config))->Subscribe(node_);
   }
 
   cout << "========================================================" << endl;
