@@ -235,6 +235,16 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
   }
 }
 
+const std::vector<TopicConfig> & ConfigFile::GetTopics() const
+{
+  return topics_;
+}
+
+const std::vector<std::unique_ptr<ConfigNode>> & ConfigFile::GetNodes() const
+{
+  return nodes_;
+}
+
 ConfigNode * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
 {
   // create config node

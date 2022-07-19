@@ -16,27 +16,25 @@
 #define STREAM_HPP_
 
 #include <yaml-cpp/yaml.h>
-#include <unordered_set>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-class Stream
+struct Stream
 {
-public:
   virtual ~Stream() = default;
   virtual void Callback(const YAML::Node & yaml) = 0;
-  virtual void Register(Stream * output) = 0;
 };
 
 class FilterStream : public Stream
 {
 public:
   void Callback(const YAML::Node & yaml) override;
-  void Register(Stream * output) override;
+  void Register(Stream * output);
 
 private:
-  std::unordered_set<Stream *> outputs_;
+  std::vector<Stream *> callbacks;
 };
 
 }  // namespace multi_data_monitor

@@ -25,8 +25,8 @@
 namespace multi_data_monitor
 {
 
-class TopicConfig;
 class Stream;
+class TopicConfig;
 
 class Topic
 {
@@ -35,6 +35,7 @@ public:
   ~Topic();
   void Subscribe(rclcpp::Node::SharedPtr node);
   void Unsubscribe();
+  void Register(const std::string & field, Stream * output);
 
 private:
   std::string name_;

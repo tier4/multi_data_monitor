@@ -30,9 +30,9 @@ namespace multi_data_monitor
 
 struct Topic::Field
 {
-  std::string data;
-  std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access;
-  std::vector<Stream *> callbacks;
+  std::string data_;
+  std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access_;
+  std::vector<Stream *> callbacks_;
 };
 
 Topic::Topic(const TopicConfig & config) : qos_(config.depth)
@@ -64,13 +64,11 @@ void Topic::Subscribe(rclcpp::Node::SharedPtr node)
   const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> message)
   {
     const auto yaml = support_->ConvertYAML(*message);
-    cout << "===========================" << endl;
     for (const auto & field : fields_)
     {
-      cout << field.data << ": " << field.access->Access(yaml) << endl;
+      cout << field.data_ << ": " << field.access_->Access(yaml) << endl;
     }
   };
-
   subscription_ = node->create_generic_subscription(name_, type_, qos_, callback);
 }
 

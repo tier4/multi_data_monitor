@@ -44,6 +44,10 @@ widgets:
         - { class: bbb }
         - { class: ccc }
 
+  widget3:
+    class: widget::multi_data_monitor::Title
+    input: stream3
+
 # --------------------------------------------------
 # streams
 # --------------------------------------------------:

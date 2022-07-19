@@ -47,38 +47,35 @@ Loader::~Loader()
   // define the destructor here for unique_ptr.
 }
 
+void Dump(const std::vector<std::unique_ptr<ConfigNode>> & nodes, bool children = false)
+{
+  for (const auto & node : nodes)
+  {
+    cout << fmt::format("Node     {:50} ({}, {}, {})", node->path, node->type, node->name, node->data) << endl;
+    if (children)
+    {
+      if (node->input)
+      {
+        cout << fmt::format("  Input  {}", node->input->path) << endl;
+      }
+      for (const auto child : node->children)
+      {
+        cout << fmt::format("  Child  {}", child->path) << endl;
+      }
+    }
+  }
+}
+
 void Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
 
-  cout << "========================================================" << endl;
-  for (const auto & node : config.nodes_)
+  for (auto & config : config.GetTopics())
   {
-    cout << fmt::format("Node     {:50} ({}, {}, {})", node->path, node->type, node->name, node->data) << endl;
-    if (node->input)
-    {
-      cout << fmt::format("  Input  {}", node->input->path) << endl;
-    }
-    for (const auto child : node->children)
-    {
-      cout << fmt::format("  Child  {}", child->path) << endl;
-    }
-  }
-  cout << "========================================================" << endl;
-
-  for (auto & config : config.topics_)
-  {
-    cout << fmt::format("{} {}", config.name, config.type) << " ";
-    cout << fmt::format("({}{}{})", config.reliability, config.durability, config.depth) << endl;
-    for (const auto & field : config.fields)
-    {
-      cout << " - " << field.data << endl;
-    }
-
     impl_->topics.emplace_back(std::make_unique<Topic>(config))->Subscribe(node_);
   }
 
-  cout << "========================================================" << endl;
+  Dump(config.GetNodes());
 }
 
 }  // namespace multi_data_monitor
