@@ -14,7 +14,8 @@
 
 #include "loader.hpp"
 #include "config.hpp"
-#include "stream.hpp"
+#include "topic.hpp"
+#include <utility>
 #include <vector>
 
 // clang-format off
@@ -29,10 +30,10 @@ namespace multi_data_monitor
 
 struct Loader::Impl
 {
-  std::vector<Stream> streams;
+  std::vector<std::unique_ptr<Stream>> streams;
 };
 
-Loader::Loader(QWidget * rviz, rclcpp::Node::ConstSharedPtr node)
+Loader::Loader(QWidget * rviz, rclcpp::Node::SharedPtr node)
 {
   impl_ = std::make_unique<Impl>();
   rviz_ = rviz;
@@ -63,23 +64,21 @@ void Loader::Reload(const std::string & package, const std::string & path)
   }
   cout << "========================================================" << endl;
 
-  /*
   for (auto & topic : config.topics_)
   {
-    cout << "===== " << endl;
-    cout << topic.name << endl;
-    cout << topic.type << endl;
-    cout << topic.depth << endl;
-    cout << topic.reliability << endl;
-    cout << topic.durability << endl;
-    cout << "[ ";
+    cout << fmt::format("{} {}", topic.name, topic.type) << " ";
+    cout << fmt::format("({}{}{})", topic.reliability, topic.durability, topic.depth) << endl;
     for (const auto & field : topic.fields)
     {
-      cout << field.data << " ";
+      cout << " - " << field.data << endl;
     }
-    cout << "]" << endl;
+
+    auto stream = std::make_unique<TopicStream>(topic);
+    stream->Subscribe(node_);
+    impl_->streams.push_back(std::move(stream));
   }
-  */
+
+  cout << "========================================================" << endl;
 }
 
 }  // namespace multi_data_monitor

@@ -26,12 +26,12 @@ widgets:
             param: { title: Second }
             input:
               class: filter
-              input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header, qos: RT2 }
+              input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header, qos: RV1 }
 
   widget1:
     class: widget::multi_data_monitor::Title
     param: { title: Second }
-    input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header, qos: RT2 }
+    input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header, qos: RV1 }
 
   widget2:
     class: widget::multi_data_monitor::Title
@@ -62,4 +62,4 @@ streams:
       - { class: aaa }
       - { class: bbb }
 
-  stream3: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/Uint32 }
+  stream3: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }

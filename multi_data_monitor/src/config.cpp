@@ -42,10 +42,10 @@ public:
 private:
   std::string name;
   std::unordered_set<std::string> types;
-  std::unordered_set<size_t> depth;
-  std::unordered_set<std::string> reliability;
-  std::unordered_set<std::string> durability;
-  std::unordered_map<std::string, FieldMerge> fields;
+  std::unordered_set<size_t> depths;
+  std::unordered_set<std::string> reliabilities;
+  std::unordered_set<std::string> durabilities;
+  std::unordered_map<std::string, FieldMerge> merge_fields;
 };
 
 void FieldMerge::Add(ConfigNode * node)
@@ -64,19 +64,30 @@ void TopicMerge::Add(ConfigNode * node)
   const auto qos = node->TakeNode("qos", true).as<std::string>("");
   if (!qos.empty())
   {
+    static const auto valid_reliability = std::unordered_set<std::string>({"D", "R", "B"});
+    static const auto valid_durability = std::unordered_set<std::string>({"D", "V", "T"});
     try
     {
-      depth.insert(std::stoul(qos.substr(2)));
-      reliability.insert(qos.substr(0, 1));
-      durability.insert(qos.substr(1, 1));
+      const auto depth = std::stoul(qos.substr(2));
+      const auto reliability = qos.substr(0, 1);
+      const auto durability = qos.substr(1, 1);
+
+      if (valid_reliability.count(reliability) == 0 || valid_durability.count(durability) == 0)
+      {
+        throw std::logic_error("");
+      }
+
+      depths.insert(depth);
+      reliabilities.insert(reliability);
+      durabilities.insert(durability);
     }
-    catch (...)
+    catch (const std::logic_error &)
     {
-      throw node->Error("has invalid qos settings");
+      throw node->Error("has invalid qos settings '" + qos + '"');
     }
   }
 
-  fields[node->data].Add(node);
+  merge_fields[node->data].Add(node);
   name = node->name;
   node->CheckUnknownKeys();
 }
@@ -92,22 +103,27 @@ TopicConfig TopicMerge::Convert()
   };
 
   // clang-format off
-  if (depth.empty()) { depth.insert(1); }
-  if (reliability.empty()) { reliability.insert("D"); }
-  if (durability.empty()) { durability.insert("D"); }
+  if (depths.empty()) { depths.insert(1); }
+  if (reliabilities.empty()) { reliabilities.insert("D"); }
+  if (durabilities.empty()) { durabilities.insert("D"); }
   // clang-format on
 
   check_unique(types, "type");
-  check_unique(depth, "depth");
-  check_unique(reliability, "reliability");
-  check_unique(durability, "durability");
+  check_unique(depths, "depth");
+  check_unique(reliabilities, "reliability");
+  check_unique(durabilities, "durability");
 
-  std::vector<FieldConfig> field_configs;
-  for (const auto & pair : fields)
+  std::vector<FieldConfig> fields;
+  for (const auto & pair : merge_fields)
   {
-    field_configs.push_back(FieldConfig{pair.first});
+    fields.push_back(FieldConfig{pair.first});
   }
-  return {name, *types.begin(), *depth.begin(), *reliability.begin(), *durability.begin(), field_configs};
+  const auto type = *types.begin();
+  const auto depth = *depths.begin();
+  const auto reliability = *reliabilities.begin();
+  const auto durability = *durabilities.begin();
+
+  return {name, type, depth, reliability, durability, fields};
 }
 
 ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)

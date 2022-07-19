@@ -15,8 +15,6 @@
 #ifndef STREAM_HPP_
 #define STREAM_HPP_
 
-#include "config.hpp"
-#include <rclcpp/rclcpp.hpp>
 #include <yaml-cpp/yaml.h>
 #include <unordered_set>
 
@@ -29,21 +27,6 @@ public:
   virtual ~Stream() = default;
   virtual void Callback(const YAML::Node & yaml) = 0;
   virtual void Register(Stream * output) = 0;
-};
-
-class TopicStream : public Stream
-{
-public:
-  explicit TopicStream(const TopicConfig & config);
-  void Callback(const YAML::Node & yaml) override;
-  void Register(Stream * output) override;
-  void Subscribe(rclcpp::Node::ConstSharedPtr node);
-  void Unsubscribe();
-
-private:
-  TopicConfig config_;
-  rclcpp::GenericSubscription::ConstSharedPtr subscription_;
-  std::unordered_set<Stream *> outputs_;
 };
 
 class FilterStream : public Stream

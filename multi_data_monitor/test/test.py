@@ -7,21 +7,20 @@ from rclpy.qos import QoSDurabilityPolicy, QoSProfile
 
 
 class MyNode(rclpy.node.Node):
-
     def __init__(self):
         super().__init__("talker")
         qos = QoSProfile(depth=1, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
-        self.pub_header = self.create_publisher(std_msgs.msg.Header, "/monitor/header", 1)
-        self.pub_double = self.create_publisher(std_msgs.msg.Float64, "/monitor/double", 1)
-        self.pub_sint32 = self.create_publisher(std_msgs.msg.Int32, "/monitor/int", 1)
-        self.pub_vector = self.create_publisher(std_msgs.msg.Int32MultiArray, "/monitor/array", qos)
+        self.pub_header = self.create_publisher(std_msgs.msg.Header, "/test/header", 1)
+        self.pub_double = self.create_publisher(std_msgs.msg.Float64, "/test/double", 1)
+        self.pub_uint32 = self.create_publisher(std_msgs.msg.UInt32, "/test/uint32", 1)
+        self.pub_vector = self.create_publisher(std_msgs.msg.Int32MultiArray, "/test/array", qos)
         self.count = 0
         self.timer = self.create_timer(1.0, self.on_timer)
 
     def on_timer(self):
         self.publish_header()
         self.publish_double()
-        self.publish_sint32()
+        self.publish_uint32()
         self.publish_vector()
         self.count += 1
 
@@ -36,10 +35,10 @@ class MyNode(rclpy.node.Node):
         msg.data = self.count * 0.1
         self.pub_double.publish(msg)
 
-    def publish_sint32(self):
-        msg = std_msgs.msg.Int32()
+    def publish_uint32(self):
+        msg = std_msgs.msg.UInt32()
         msg.data = self.count % 5
-        self.pub_sint32.publish(msg)
+        self.pub_uint32.publish(msg)
 
     def publish_vector(self):
         msg = std_msgs.msg.Int32MultiArray()

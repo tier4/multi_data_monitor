@@ -12,33 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LOADER_HPP_
-#define LOADER_HPP_
+#ifndef TOPIC_HPP_
+#define TOPIC_HPP_
 
 #include "config.hpp"
+#include "stream.hpp"
+#include <generic_type_support/generic_type_support.hpp>
 #include <rclcpp/rclcpp.hpp>
+#include <yaml-cpp/yaml.h>
 #include <memory>
-#include <string>
-
-class QWidget;
+#include <unordered_set>
 
 namespace multi_data_monitor
 {
 
-class Loader
+class TopicStream : public Stream
 {
 public:
-  Loader(QWidget * rviz, rclcpp::Node::SharedPtr node);
-  ~Loader();
-  void Reload(const std::string & package, const std::string & path);
+  explicit TopicStream(const TopicConfig & config);
+  void Callback(const YAML::Node & yaml) override;
+  void Register(Stream * output) override;
+  void Subscribe(rclcpp::Node::SharedPtr node);
+  void Unsubscribe();
 
 private:
-  struct Impl;
-  std::unique_ptr<Impl> impl_;
-  QWidget * rviz_;
-  rclcpp::Node::SharedPtr node_;
+  TopicConfig config_;
+  rclcpp::GenericSubscription::ConstSharedPtr subscription_;
+  std::shared_ptr<generic_type_support::GenericMessage> message_;
+  std::unordered_set<Stream *> outputs_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // LOADER_HPP_
+#endif  // TOPIC_HPP_
