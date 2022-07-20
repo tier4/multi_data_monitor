@@ -39,12 +39,13 @@ struct TopicConfig
   std::vector<FieldConfig> fields;
 };
 
-struct ConfigNode
+struct NodeConfig
 {
-  ConfigNode(YAML::Node yaml, const std::string & path);
+  NodeConfig(YAML::Node yaml, const std::string & path);
   ConfigError Error(const std::string message);
   void CheckUnknownKeys();
   YAML::Node TakeNode(const std::string & name, bool optional = false);
+  NodeConfig * ResolveTarget();
 
   YAML::Node yaml;
   std::string path;
@@ -52,8 +53,9 @@ struct ConfigNode
   std::string name;
   std::string data;
 
-  ConfigNode * input = nullptr;
-  std::vector<ConfigNode *> children;
+  NodeConfig * target = nullptr;
+  NodeConfig * stream = nullptr;
+  std::vector<NodeConfig *> children;
 };
 
 class ConfigFile
@@ -61,12 +63,12 @@ class ConfigFile
 public:
   ConfigFile(const std::string & package, const std::string & file);
   const std::vector<TopicConfig> & GetTopics() const;
-  const std::vector<std::unique_ptr<ConfigNode>> & GetNodes() const;
+  const std::vector<std::unique_ptr<NodeConfig>> & GetNodes() const;
 
 private:
-  ConfigNode * Parse(YAML::Node yaml, const std::string & path);
+  NodeConfig * Parse(YAML::Node yaml, const std::string & path);
   std::vector<TopicConfig> topics_;
-  std::vector<std::unique_ptr<ConfigNode>> nodes_;
+  std::vector<std::unique_ptr<NodeConfig>> nodes_;
 };
 
 }  // namespace multi_data_monitor

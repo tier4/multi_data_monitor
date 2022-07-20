@@ -27,7 +27,7 @@ namespace multi_data_monitor
 class FieldMerge
 {
 public:
-  void Add(ConfigNode * node);
+  void Add(NodeConfig * node);
 
 private:
   std::string data;
@@ -36,7 +36,7 @@ private:
 class TopicMerge
 {
 public:
-  void Add(ConfigNode * node);
+  void Add(NodeConfig * node);
   TopicConfig Convert();
 
 private:
@@ -48,12 +48,12 @@ private:
   std::unordered_map<std::string, FieldMerge> merge_fields;
 };
 
-void FieldMerge::Add(ConfigNode * node)
+void FieldMerge::Add(NodeConfig * node)
 {
   data = node->data;
 }
 
-void TopicMerge::Add(ConfigNode * node)
+void TopicMerge::Add(NodeConfig * node)
 {
   const auto type = node->TakeNode("type", true).as<std::string>("");
   if (!type.empty())
@@ -126,7 +126,7 @@ TopicConfig TopicMerge::Convert()
   return {name, type, depth, reliability, durability, fields};
 }
 
-ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)
+NodeConfig::NodeConfig(YAML::Node yaml, const std::string & path)
 {
   if (yaml.IsScalar())
   {
@@ -140,12 +140,13 @@ ConfigNode::ConfigNode(YAML::Node yaml, const std::string & path)
     this->yaml.reset(yaml);
   }
 }
-ConfigError ConfigNode::Error(const std::string message)
+
+ConfigError NodeConfig::Error(const std::string message)
 {
   return ConfigError(fmt::format("{} '{}' {}", path, type, message));
 }
 
-void ConfigNode::CheckUnknownKeys()
+void NodeConfig::CheckUnknownKeys()
 {
   std::string unknown;
   for (const auto & pair : yaml)
@@ -159,7 +160,7 @@ void ConfigNode::CheckUnknownKeys()
   }
 }
 
-YAML::Node ConfigNode::TakeNode(const std::string & name, bool optional)
+YAML::Node NodeConfig::TakeNode(const std::string & name, bool optional)
 {
   const auto node = yaml[name];
   if (optional || node)
@@ -196,19 +197,30 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     }
 
     // load widgets
+    std::unordered_map<std::string, NodeConfig *> widgets;
     for (const auto & pair : yaml["widgets"])
     {
       const auto name = pair.first.as<std::string>();
-      const auto temp = Parse(pair.second, name);
-      (void)temp;
+      const auto node = Parse(pair.second, name);
+      widgets.emplace(name, node);
     }
 
     // load streams
+    std::unordered_map<std::string, NodeConfig *> streams;
     for (const auto & pair : yaml["streams"])
     {
       const auto name = pair.first.as<std::string>();
-      const auto temp = Parse(pair.second, name);
-      (void)temp;
+      const auto node = Parse(pair.second, name);
+      streams.emplace(name, node);
+    }
+
+    // resolve targets
+    for (const auto & node : nodes_)
+    {
+      if (node->type != "target")
+      {
+        node->target = node.get();
+      }
     }
 
     // merge topic settings
@@ -240,15 +252,15 @@ const std::vector<TopicConfig> & ConfigFile::GetTopics() const
   return topics_;
 }
 
-const std::vector<std::unique_ptr<ConfigNode>> & ConfigFile::GetNodes() const
+const std::vector<std::unique_ptr<NodeConfig>> & ConfigFile::GetNodes() const
 {
   return nodes_;
 }
 
-ConfigNode * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
+NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
 {
   // create config node
-  const auto node = nodes_.emplace_back(std::make_unique<ConfigNode>(yaml, path)).get();
+  const auto node = nodes_.emplace_back(std::make_unique<NodeConfig>(yaml, path)).get();
   if (!node->yaml.IsMap())
   {
     throw ConfigError(node->path + " is not a dict");
@@ -272,7 +284,7 @@ ConfigNode * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
   const auto input = node->TakeNode("input", true);
   if (input)
   {
-    node->input = Parse(input, node->path + ".input");
+    node->stream = Parse(input, node->path + ".input");
   }
 
   // parse child nodes

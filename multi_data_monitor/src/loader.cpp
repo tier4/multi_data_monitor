@@ -47,20 +47,23 @@ Loader::~Loader()
   // define the destructor here for unique_ptr.
 }
 
-void Dump(const std::vector<std::unique_ptr<ConfigNode>> & nodes, bool children = false)
+void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children = false)
 {
   for (const auto & node : nodes)
   {
-    cout << fmt::format("Node     {:50} ({}, {}, {})", node->path, node->type, node->name, node->data) << endl;
+    const auto ptr1 = fmt::format("{}", static_cast<void *>(node.get()));
+    const auto ptr2 = fmt::format("{}", static_cast<void *>(node->target));
+    const auto info = fmt::format("{}, {}, {}", node->type, node->name, node->data);
+    cout << fmt::format("{:50} [{} => {}] ({})", node->path, ptr1, ptr2, info) << endl;
     if (children)
     {
-      if (node->input)
+      if (node->stream)
       {
-        cout << fmt::format("  Input  {}", node->input->path) << endl;
+        cout << fmt::format(" - {}", node->stream->path) << endl;
       }
       for (const auto child : node->children)
       {
-        cout << fmt::format("  Child  {}", child->path) << endl;
+        cout << fmt::format(" - {}", child->path) << endl;
       }
     }
   }
@@ -70,6 +73,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
 
+  // std::unordered_map<NodeConfig *, Topic *>;
   for (auto & config : config.GetTopics())
   {
     impl_->topics.emplace_back(std::make_unique<Topic>(config))->Subscribe(node_);
