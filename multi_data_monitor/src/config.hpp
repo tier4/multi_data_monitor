@@ -53,8 +53,8 @@ struct NodeConfig
   std::string name;
   std::string data;
 
-  NodeConfig * target = nullptr;
-  NodeConfig * stream = nullptr;
+  NodeConfig * target;
+  NodeConfig * stream;
   std::vector<NodeConfig *> children;
 };
 

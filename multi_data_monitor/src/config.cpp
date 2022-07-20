@@ -139,6 +139,9 @@ NodeConfig::NodeConfig(YAML::Node yaml, const std::string & path)
     this->path = path;
     this->yaml.reset(yaml);
   }
+
+  this->target = this;
+  this->stream = nullptr;
 }
 
 ConfigError NodeConfig::Error(const std::string message)
@@ -169,6 +172,15 @@ YAML::Node NodeConfig::TakeNode(const std::string & name, bool optional)
     return node;
   }
   throw Error(fmt::format("has no '{}'", name));
+}
+
+NodeConfig * NodeConfig::ResolveTarget()
+{
+  if (target != target->target)
+  {
+    target = target->ResolveTarget();
+  }
+  return target;
 }
 
 ConfigFile::ConfigFile(const std::string & package, const std::string & file)
@@ -217,10 +229,16 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     // resolve targets
     for (const auto & node : nodes_)
     {
-      if (node->type != "target")
+      if (node->type == "target")
       {
-        node->target = node.get();
+        // TODO(Takagi, Isamu): check namespace
+        // node->target = widgets.count(node->name) ? widgets.at(node->name) : nullptr;
+        // node->target = streams.count(node->name) ? streams.at(node->name) : nullptr;
       }
+    }
+    for (const auto & node : nodes_)
+    {
+      // node->ResolveTarget();
     }
 
     // merge topic settings
