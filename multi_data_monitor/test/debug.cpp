@@ -22,4 +22,10 @@ int main(int argc, char ** argv)
 
   multi_data_monitor::Loader loader(nullptr, node);
   loader.Reload("multi_data_monitor", "config/version1.yaml");
+
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+  executor.spin();
+  executor.remove_node(node);
+  rclcpp::shutdown();
 }

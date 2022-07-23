@@ -28,12 +28,16 @@ using std::endl;
 namespace multi_data_monitor
 {
 
-struct Topic::Field
+Field::Field(const FieldConfig & config, const generic_type_support::GenericMessage & support)
 {
-  std::string data_;
-  std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access_;
-  std::vector<Stream *> callbacks_;
-};
+  data_ = config.data;
+  access_ = support.GetAccess(config.data);
+}
+
+void Field::Callback(const YAML::Node & yaml)
+{
+  cout << data_ << ": " << access_->Access(yaml) << endl;
+}
 
 Topic::Topic(const TopicConfig & config) : qos_(config.depth)
 {
@@ -50,23 +54,19 @@ Topic::Topic(const TopicConfig & config) : qos_(config.depth)
   support_ = std::make_shared<generic_type_support::GenericMessage>(config.type);
   for (const auto & field : config.fields)
   {
-    const auto access = support_->GetAccess(field.data);
-    fields_.push_back(Field{field.data, access, {}});
+    fields_.push_back(std::make_unique<Field>(field, *support_));
   }
-}
-
-Topic::~Topic()
-{
 }
 
 void Topic::Subscribe(rclcpp::Node::SharedPtr node)
 {
   const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> message)
   {
+    cout << "========== " << name_ << endl;
     const auto yaml = support_->ConvertYAML(*message);
-    for (const auto & field : fields_)
+    for (auto & field : fields_)
     {
-      cout << field.data_ << ": " << field.access_->Access(yaml) << endl;
+      field->Callback(yaml);
     }
   };
   subscription_ = node->create_generic_subscription(name_, type_, qos_, callback);

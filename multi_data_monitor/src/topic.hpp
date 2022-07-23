@@ -25,17 +25,32 @@
 namespace multi_data_monitor
 {
 
-class Stream;
+class FieldConfig;
 class TopicConfig;
+class Stream;
+
+class Field  // TODO(Takagi, Isamu): stream
+{
+public:
+  Field(const FieldConfig & config, const generic_type_support::GenericMessage & support);
+  void Callback(const YAML::Node & yaml);
+  void Register(Stream * output);
+  std::string GetData() const { return data_; }
+
+private:
+  std::string data_;
+  std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access_;
+  std::vector<Stream *> callbacks_;
+};
 
 class Topic
 {
 public:
   explicit Topic(const TopicConfig & config);
-  ~Topic();
   void Subscribe(rclcpp::Node::SharedPtr node);
   void Unsubscribe();
-  void Register(const std::string & field, Stream * output);
+  std::vector<std::unique_ptr<Field>> & GetFields() { return fields_; }
+  std::string GetName() const { return name_; }
 
 private:
   std::string name_;
@@ -43,9 +58,7 @@ private:
   std::shared_ptr<generic_type_support::GenericMessage> support_;
   rclcpp::QoS qos_;
   rclcpp::GenericSubscription::ConstSharedPtr subscription_;
-
-  class Field;
-  std::vector<Field> fields_;
+  std::vector<std::unique_ptr<Field>> fields_;
 };
 
 }  // namespace multi_data_monitor

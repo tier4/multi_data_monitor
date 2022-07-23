@@ -41,7 +41,7 @@ struct TopicConfig
 
 struct NodeConfig
 {
-  NodeConfig(YAML::Node yaml, const std::string & path);
+  NodeConfig(YAML::Node yaml, const std::string & path, const std::string & mode);
   ConfigError Error(const std::string message);
   YAML::Node TakeNode(const std::string & name, bool optional = false);
   void CheckUnknownKeys();
@@ -50,6 +50,7 @@ struct NodeConfig
 
   YAML::Node yaml;
   std::string path;
+  std::string mode;
   std::string type;
   std::string name;
   std::string data;
@@ -67,7 +68,7 @@ public:
   const std::vector<std::unique_ptr<NodeConfig>> & GetNodes() const;
 
 private:
-  NodeConfig * Parse(YAML::Node yaml, const std::string & path);
+  NodeConfig * Parse(YAML::Node yaml, const std::string & path, const std::string & mode);
   std::vector<TopicConfig> topics_;
   std::vector<std::unique_ptr<NodeConfig>> nodes_;
 };

@@ -16,6 +16,7 @@
 #include "config.hpp"
 #include "stream.hpp"
 #include "topic.hpp"
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
@@ -53,7 +54,7 @@ void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children 
   {
     const auto ptr1 = fmt::format("{}", static_cast<void *>(node.get()));
     const auto ptr2 = fmt::format("{}", static_cast<void *>(node->target));
-    const auto info = fmt::format("{}, {}, {}", node->type, node->name, node->data);
+    const auto info = fmt::format("{}, {}, {}, {}", node->mode, node->type, node->name, node->data);
     cout << fmt::format("{:50} [{} => {}] ({})", node->path, ptr1, ptr2, info) << endl;
     if (children)
     {
@@ -73,13 +74,23 @@ void Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
 
-  // std::unordered_map<NodeConfig *, Topic *>;
-  for (auto & config : config.GetTopics())
+  // std::unordered_map<NodeCnfig *, Topic *> topics;
+  Dump(config.GetNodes());
+
+  std::unordered_map<std::string, std::unordered_map<std::string, Field *>> field_streams;
+  for (const auto & config : config.GetTopics())
   {
-    impl_->topics.emplace_back(std::make_unique<Topic>(config))->Subscribe(node_);
+    Topic * topic = impl_->topics.emplace_back(std::make_unique<Topic>(config)).get();
+    for (auto & field : topic->GetFields())
+    {
+      field_streams[topic->GetName()][field->GetData()] = field.get();
+    }
   }
 
-  Dump(config.GetNodes());
+  for (auto & topic : impl_->topics)
+  {
+    topic->Subscribe(node_);
+  }
 }
 
 }  // namespace multi_data_monitor

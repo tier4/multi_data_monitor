@@ -177,16 +177,18 @@ TopicConfig TopicMerge::Convert()
   return {name, type, depth, reliability, durability, fields};
 }
 
-NodeConfig::NodeConfig(YAML::Node yaml, const std::string & path)
+NodeConfig::NodeConfig(YAML::Node yaml, const std::string & path, const std::string & mode)
 {
   if (yaml.IsScalar())
   {
+    this->mode = mode;
     this->path = path;
     this->yaml["class"] = "target";
     this->yaml["name"] = yaml;
   }
   else
   {
+    this->mode = mode;
     this->path = path;
     this->yaml.reset(yaml);
   }
@@ -276,7 +278,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     for (const auto & pair : yaml["widgets"])
     {
       const auto name = pair.first.as<std::string>();
-      const auto node = Parse(pair.second, name);
+      const auto node = Parse(pair.second, name, "view");
       widgets.emplace(name, node);
     }
 
@@ -285,7 +287,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     for (const auto & pair : yaml["streams"])
     {
       const auto name = pair.first.as<std::string>();
-      const auto node = Parse(pair.second, name);
+      const auto node = Parse(pair.second, name, "data");
       streams.emplace(name, node);
     }
 
@@ -359,10 +361,10 @@ const std::vector<std::unique_ptr<NodeConfig>> & ConfigFile::GetNodes() const
   return nodes_;
 }
 
-NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
+NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path, const std::string & mode)
 {
   // create config node
-  const auto node = nodes_.emplace_back(std::make_unique<NodeConfig>(yaml, path)).get();
+  const auto node = nodes_.emplace_back(std::make_unique<NodeConfig>(yaml, path, mode)).get();
   if (!node->yaml.IsMap())
   {
     throw ConfigError(node->path + " is not a dict");
@@ -386,11 +388,11 @@ NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
   const auto input = node->TakeNode("input", true);
   if (input)
   {
-    node->stream = Parse(input, node->path + ".input");
+    node->stream = Parse(input, node->path + ".input", "data");
   }
 
   // parse child nodes
-  for (const std::string field : {"children", "rules"})
+  const auto parse_children = [this](NodeConfig * node, const std::string & field, const std::string & mode)
   {
     const auto children = node->TakeNode(field, true);
     if (children)
@@ -402,10 +404,12 @@ NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path)
       }
       for (size_t i = 0, n = children.size(); i < n; ++i)
       {
-        node->children.push_back(Parse(children[i], fmt::format("{}[{}]", path, i)));
+        node->children.push_back(Parse(children[i], fmt::format("{}[{}]", path, i), mode));
       }
     }
-  }
+  };
+  parse_children(node, "rules", "rule");
+  parse_children(node, "children", "view");
   return node;
 }
 
