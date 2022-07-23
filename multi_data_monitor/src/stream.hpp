@@ -21,6 +21,8 @@
 namespace multi_data_monitor
 {
 
+class Design;
+
 struct Stream
 {
 public:
@@ -42,10 +44,11 @@ protected:
 class WidgetStream : public Stream
 {
 public:
+  explicit WidgetStream(Design * design);
   void Callback(const YAML::Node & yaml) override;
 
 private:
-  // widget
+  Design * design_;
 };
 
 class FilterStream : public OutputStream

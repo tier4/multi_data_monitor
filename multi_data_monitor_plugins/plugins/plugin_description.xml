@@ -1,0 +1,5 @@
+<library path="multi_data_monitor_plugins">
+  <class type="multi_data_monitor::Simple" base_class_type="multi_data_monitor::Design"/>
+  <class type="multi_data_monitor::Matrix" base_class_type="multi_data_monitor::Design"/>
+  <class type="multi_data_monitor::TestFilter" base_class_type="multi_data_monitor::Filter"/>
+</library>

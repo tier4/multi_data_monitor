@@ -43,6 +43,11 @@ void OutputStream::Register(Stream * stream)
   streams_.push_back(stream);
 }
 
+WidgetStream::WidgetStream(Design * design)
+{
+  design_ = design;
+}
+
 void WidgetStream::Callback(const YAML::Node & yaml)
 {
   cout << "========== widget ==========" << endl;

@@ -65,7 +65,7 @@ class ConfigFile
 public:
   ConfigFile(const std::string & package, const std::string & file);
   const NodeConfig * GetRoot() const;
-  const std::vector<std::unique_ptr<NodeConfig>> & GetNodes() const;
+  const std::vector<NodeConfig *> GetNodes(const std::string & mode = "") const;
   const std::vector<TopicConfig> & GetTopics() const;
 
 private:

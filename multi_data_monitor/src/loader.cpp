@@ -33,17 +33,54 @@ using std::endl;
 namespace multi_data_monitor
 {
 
+struct DesignInstance
+{
+  DesignInstance(QWidget * parent, QLayout * layout, QWidget * widget)
+  {
+    this->layout = layout;
+    this->widget = widget;
+
+    if (layout)
+    {
+      layout->setParent(parent);
+    }
+    if (widget)
+    {
+      widget->setParent(parent);
+    }
+
+    if (layout == nullptr && widget == nullptr)
+    {
+      throw LogicError("design create 1");  // TODO(Takagi, Isamu): message
+    }
+    if (layout != nullptr && widget != nullptr)
+    {
+      throw LogicError("design create 2");  // TODO(Takagi, Isamu): message
+    }
+  }
+
+  QLayout * layout;
+  QWidget * widget;
+};
+
 struct Loader::Impl
 {
+  std::unique_ptr<pluginlib::ClassLoader<Design>> design_loader;
   std::vector<std::unique_ptr<Topic>> topics;
   std::vector<std::unique_ptr<Stream>> streams;
+  // filters
+  std::vector<std::unique_ptr<Design>> designs;
 };
 
 Loader::Loader(QWidget * rviz, rclcpp::Node::SharedPtr node)
 {
+  constexpr char package[] = "multi_data_monitor";
+  constexpr char design[] = "multi_data_monitor::Design";
+
   impl_ = std::make_unique<Impl>();
   rviz_ = rviz;
   node_ = node;
+  impl_->design_loader = std::make_unique<pluginlib::ClassLoader<Design>>(package, design);
 }
 
 Loader::~Loader()
@@ -82,8 +119,6 @@ void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children 
 void Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
-  // extract view and data
-  // extract rule
 
   // create field stream
   std::unordered_map<std::string, std::unordered_map<std::string, Field *>> subscriptions;
@@ -96,45 +131,41 @@ void Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
-  // create plugin loader
-  pluginlib::ClassLoader<Filter> filter_loader("multi_data_monitor", "multi_data_monitor::Filter");
-  pluginlib::ClassLoader<Design> design_loader("multi_data_monitor", "multi_data_monitor::Design");
-
   // create streams
   std::unordered_map<NodeConfig *, Stream *> streams;
-  std::unordered_map<NodeConfig *, Filter *> filters;
-  for (const auto & node : config.GetNodes())
+  for (const auto & node : config.GetNodes("data"))
   {
-    if (node->mode == "data")
+    if (node->type == "topic")
     {
-      if (node->type == "topic")
-      {
-        streams[node.get()] = subscriptions[node->name][node->data];
-      }
-      if (node->type == "filter")
-      {
-        Stream * stream = impl_->streams.emplace_back(std::make_unique<FilterStream>()).get();
-        streams[node.get()] = stream;
-      }
+      streams[node] = subscriptions[node->name][node->data];
     }
-
-    if (node->mode == "view")
+    if (node->type == "filter")
     {
-      // TODO(Takagi, Isamu): create widget
-      cout << node->type << endl;
-      design_loader.createUniqueInstance(node->type);
-      if (node->stream)
-      {
-        Stream * stream = impl_->streams.emplace_back(std::make_unique<WidgetStream>()).get();
-        streams[node.get()] = stream;
-      }
+      auto stream = std::make_unique<FilterStream>();
+      streams[node] = impl_->streams.emplace_back(std::move(stream)).get();
     }
+  }
 
-    if (node->mode == "rule")
+  // pluginlib::ClassLoader<Filter> filter_loader("multi_data_monitor", "multi_data_monitor::Filter");
+  // std::unordered_map<NodeConfig *, Filter *> filters;
+  for (const auto & node : config.GetNodes("rule"))
+  {
+    // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
+    // cout << "TestFilter: " << rule.get() << endl;
+    // cout << rule->Apply(YAML::Node(123)) << endl;
+  }
+
+  // create designs
+  std::unordered_map<NodeConfig *, Design *> designs;
+  for (const auto & node : config.GetNodes("view"))
+  {
+    auto design = std::unique_ptr<Design>(impl_->design_loader->createUnmanagedInstance(node->type));
+    designs[node] = impl_->designs.emplace_back(std::move(design)).get();
+
+    if (node->stream)
     {
-      // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
-      // cout << "TestFilter: " << rule.get() << endl;
-      // cout << rule->Apply(YAML::Node(123)) << endl;
+      auto stream = std::make_unique<WidgetStream>(designs[node]);
+      streams[node] = impl_->streams.emplace_back(std::move(stream)).get();
     }
   }
 
@@ -144,7 +175,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
     if (node->stream)
     {
       Stream * src = streams[node->stream];
-      Stream * dst = streams[node.get()];
+      Stream * dst = streams[node];
       if (src == nullptr || dst == nullptr)
       {
         throw LogicError("connect streams");
@@ -153,6 +184,37 @@ void Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
+  // place the root in stack memory to automatically release Qt objects
+  QWidget dummy_root_widget;
+
+  // build widget
+
+  std::unordered_map<NodeConfig *, DesignInstance> instances;
+  for (const auto & [node, design] : designs)
+  {
+    auto * layout = design->CreateLayout(node->yaml);
+    auto * widget = design->CreateWidget(node->yaml);
+    instances.emplace(node, DesignInstance(&dummy_root_widget, layout, widget));
+  }
+
+  for (const auto & [node, instance] : instances)
+  {
+    cout << instance.layout << endl;
+    if (instance.layout)
+    {
+      instance.layout->dumpObjectInfo();
+      rviz_->setLayout(instance.layout);
+      break;
+    }
+  }
+  dummy_root_widget.dumpObjectTree();
+
+  /*
+  mainWidget->layout()->removeWidget( your_widget );
+  delete mainWidget->layout();
+  */
+
+  // start subscription
   for (auto & topic : impl_->topics)
   {
     topic->Subscribe(node_);

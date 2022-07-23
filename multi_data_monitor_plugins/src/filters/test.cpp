@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,35 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "monitor.hpp"
+#include <multi_data_monitor/filter.hpp>
 #include <string>
 
 namespace multi_data_monitor
 {
 
-Monitor::Monitor(const ObjectConfig & config)
+class TestFilter : public multi_data_monitor::Filter
 {
-  config_ = config;
-}
+public:
+  YAML::Node Apply(const YAML::Node value) override;
+};
 
-/*
-void NodeBase::AddChild(QWidget * parent, const std::unique_ptr<NodeBase> & base)
+YAML::Node TestFilter::Apply(const YAML::Node value)
 {
-  auto layout = base->GetLayout();
-  auto widget = base->GetWidget();
-  std::cout << widget << " " << layout << std::endl;
-
-  if (layout)
-  {
-    parent->setLayout(layout);
-  }
+  return YAML::Node("[" + value.as<std::string>() + "]");
 }
-
-void NodeBase::AddChild(QLayout * parent, const std::unique_ptr<NodeBase> & base)
-{
-  (void)parent;
-  (void)base;
-}
-*/
 
 }  // namespace multi_data_monitor
+
+#include <pluginlib/class_list_macros.hpp>
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::TestFilter, multi_data_monitor::Filter)

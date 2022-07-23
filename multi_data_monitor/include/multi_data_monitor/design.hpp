@@ -31,10 +31,12 @@ public:
   virtual QWidget * CreateWidget(const YAML::Node) { return nullptr; }
   virtual QLayout * CreateLayout(const YAML::Node) { return nullptr; }
   virtual void AddWidget(QWidget *, const YAML::Node)
-  { /* throw ImplementError */
+  {
+    // throw ImplementError
   }
   virtual void AddLayout(QLayout *, const YAML::Node)
-  { /* throw ImplementError */
+  {
+    // throw ImplementError
   }
 };
 

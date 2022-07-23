@@ -364,9 +364,17 @@ const std::vector<TopicConfig> & ConfigFile::GetTopics() const
   return topics_;
 }
 
-const std::vector<std::unique_ptr<NodeConfig>> & ConfigFile::GetNodes() const
+const std::vector<NodeConfig *> ConfigFile::GetNodes(const std::string & mode) const
 {
-  return nodes_;
+  std::vector<NodeConfig *> nodes;
+  for (const auto & node : nodes_)
+  {
+    if (mode.empty() || mode == node->mode)
+    {
+      nodes.push_back(node.get());
+    }
+  }
+  return nodes;
 }
 
 NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path, const std::string & mode)
