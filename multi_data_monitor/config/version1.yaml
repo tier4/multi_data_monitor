@@ -48,6 +48,10 @@ widgets:
     class: widget::multi_data_monitor::Title
     input: stream3
 
+  widget4:
+    class: widget::multi_data_monitor::Title
+    input: stream7
+
 # --------------------------------------------------
 # streams
 # --------------------------------------------------:

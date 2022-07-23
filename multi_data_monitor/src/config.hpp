@@ -43,8 +43,9 @@ struct NodeConfig
 {
   NodeConfig(YAML::Node yaml, const std::string & path);
   ConfigError Error(const std::string message);
-  void CheckUnknownKeys();
   YAML::Node TakeNode(const std::string & name, bool optional = false);
+  void CheckUnknownKeys();
+  void RefreshTarget();
   NodeConfig * ResolveTarget();
 
   YAML::Node yaml;

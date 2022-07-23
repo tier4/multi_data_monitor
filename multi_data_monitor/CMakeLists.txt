@@ -38,6 +38,13 @@ target_link_libraries(${PROJECT_NAME}
 )
 pluginlib_export_plugin_description_file(rviz_common plugins/plugin_description.xml)
 
+
+ament_auto_add_executable(debug
+  test/debug.cpp
+)
+target_link_libraries(debug ${PROJECT_NAME})
+
+
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()

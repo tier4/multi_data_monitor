@@ -15,11 +15,62 @@
 #include "config.hpp"
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
-#include <fmt/format.h>
 #include <filesystem>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
+#include <utility>
+
+// clang-format off
+#include <fstream>
+#include <fmt/format.h>
+
+namespace multi_data_monitor
+{
+void WriteFile(const std::string & path, std::vector<std::string> & lines)
+{
+  std::ofstream ofs(path);
+  for (const auto & line : lines)
+  {
+    ofs << line << std::endl;
+  }
+}
+
+void WriteConfig(const std::string & path, const std::vector<std::unique_ptr<NodeConfig>> & nodes)
+{
+  std::vector<std::string> plant;
+  plant.push_back("@startuml");
+  for (const auto & node : nodes)
+  {
+    const auto ptr = static_cast<void *>(node.get());
+    std::string type = node->type;
+    if (type == "target") { type = "[" + node->name + "]"; }
+    plant.push_back(fmt::format("card \"{}\" as {}", type, ptr));
+  }
+  for (const auto & node : nodes)
+  {
+    const auto src = static_cast<void *>(node.get());
+    if (node->stream)
+    {
+      const auto dst = static_cast<void *>(node->stream);
+      plant.push_back(fmt::format("{} --> {}", src, dst));
+    }
+    if (src != node->target)
+    {
+      const auto dst = static_cast<void *>(node->target);
+      plant.push_back(fmt::format("{} --> {}", src, dst));
+    }
+    for (const auto & child : node->children)
+    {
+      const auto dst = static_cast<void *>(child);
+      plant.push_back(fmt::format("{} --> {}", src, dst));
+    }
+  }
+  plant.push_back("@enduml");
+  WriteFile(path, plant);
+}
+}  // namespace multi_data_monitor
+// clang-format on
 
 namespace multi_data_monitor
 {
@@ -174,6 +225,18 @@ YAML::Node NodeConfig::TakeNode(const std::string & name, bool optional)
   throw Error(fmt::format("has no '{}'", name));
 }
 
+void NodeConfig::RefreshTarget()
+{
+  if (stream)
+  {
+    stream = stream->target;
+  }
+  for (auto & node : children)
+  {
+    node = node->target;
+  }
+}
+
 NodeConfig * NodeConfig::ResolveTarget()
 {
   if (target != target->target)
@@ -187,7 +250,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
 {
   try
   {
-    // resolve file path
+    // resolve package
     auto file_path = std::filesystem::path();
     if (!package.empty())
     {
@@ -226,20 +289,41 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
       streams.emplace(name, node);
     }
 
-    // resolve targets
+    // connect targets
     for (const auto & node : nodes_)
     {
+      // TODO(Takagi, Isamu): check namespace
       if (node->type == "target")
       {
-        // TODO(Takagi, Isamu): check namespace
-        // node->target = widgets.count(node->name) ? widgets.at(node->name) : nullptr;
-        // node->target = streams.count(node->name) ? streams.at(node->name) : nullptr;
+        // clang-format off
+        if (widgets.count(node->name)) { node->target = widgets.at(node->name); }
+        if (streams.count(node->name)) { node->target = streams.at(node->name); }
+        // clang-format on
       }
+    }
+    WriteConfig("graph1.plantuml", nodes_);
+
+    // resolve targets
+    std::vector<std::unique_ptr<NodeConfig>> temporary;
+    for (const auto & node : nodes_)
+    {
+      node->ResolveTarget();
     }
     for (const auto & node : nodes_)
     {
-      // node->ResolveTarget();
+      node->RefreshTarget();
     }
+    for (auto & node : nodes_)
+    {
+      if (node->type != "target")
+      {
+        std::unique_ptr<NodeConfig> t;
+        node.swap(t);
+        temporary.push_back(std::move(t));
+      }
+    }
+    nodes_.swap(temporary);
+    WriteConfig("graph2.plantuml", nodes_);
 
     // merge topic settings
     std::unordered_map<std::string, TopicMerge> topics;
