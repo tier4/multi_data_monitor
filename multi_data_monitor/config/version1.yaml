@@ -2,7 +2,6 @@
 # metadata
 # --------------------------------------------------
 version: 1
-root: layout_main
 
 # --------------------------------------------------
 # defaults
@@ -13,28 +12,31 @@ defaults: ~
 # widgets
 # --------------------------------------------------
 widgets:
-  layout_main:
-    class: layout::multi_data_monitor::Matrix
+  root: main
+  main: hoge
+  hoge: fuga
+  fuga:
+    class: multi_data_monitor::Matrix
     param: { cols: 3, rows: 2 }
     children:
       - widget1
       - widget2
-      - class: layout::multi_data_monitor::Matrix
+      - class: multi_data_monitor::Matrix
         param: { cols: 1, rows: 1 }
         children:
-          - class: widget::multi_data_monitor::Title
+          - class: multi_data_monitor::Simple
             param: { title: Second }
             input:
               class: filter
               input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header, qos: RV1 }
 
   widget1:
-    class: widget::multi_data_monitor::Title
+    class: multi_data_monitor::Simple
     param: { title: Second }
     input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header, qos: RV1 }
 
   widget2:
-    class: widget::multi_data_monitor::Title
+    class: multi_data_monitor::Simple
     param: { title: Nanosecond }
     input:
       class: filter
@@ -45,11 +47,11 @@ widgets:
         - { class: ccc }
 
   widget3:
-    class: widget::multi_data_monitor::Title
+    class: multi_data_monitor::Simple
     input: stream3
 
   widget4:
-    class: widget::multi_data_monitor::Title
+    class: multi_data_monitor::Simple
     input: stream7
 
 # --------------------------------------------------

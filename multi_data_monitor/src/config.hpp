@@ -64,13 +64,15 @@ class ConfigFile
 {
 public:
   ConfigFile(const std::string & package, const std::string & file);
-  const std::vector<TopicConfig> & GetTopics() const;
+  const NodeConfig * GetRoot() const;
   const std::vector<std::unique_ptr<NodeConfig>> & GetNodes() const;
+  const std::vector<TopicConfig> & GetTopics() const;
 
 private:
   NodeConfig * Parse(YAML::Node yaml, const std::string & path, const std::string & mode);
-  std::vector<TopicConfig> topics_;
+  NodeConfig * root_;
   std::vector<std::unique_ptr<NodeConfig>> nodes_;
+  std::vector<TopicConfig> topics_;
 };
 
 }  // namespace multi_data_monitor

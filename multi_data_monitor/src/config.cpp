@@ -22,6 +22,7 @@
 #include <utility>
 
 // clang-format off
+#include <iostream>
 #include <fstream>
 #include <fmt/format.h>
 
@@ -315,6 +316,9 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     {
       node->RefreshTarget();
     }
+    root_ = widgets["root"]->target;
+
+    // release targets
     for (auto & node : nodes_)
     {
       if (node->type != "target")
@@ -349,6 +353,10 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
   {
     throw SystemError(error.what());
   }
+}
+const NodeConfig * ConfigFile::GetRoot() const
+{
+  return root_;
 }
 
 const std::vector<TopicConfig> & ConfigFile::GetTopics() const

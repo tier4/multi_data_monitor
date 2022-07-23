@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MATRIX_HPP_
-#define MATRIX_HPP_
+#ifndef MULTI_DATA_MONITOR__FILTER_HPP_
+#define MULTI_DATA_MONITOR__FILTER_HPP_
 
-#include "monitor.hpp"
-
-class QGridLayout;
+#include <yaml-cpp/yaml.h>
 
 namespace multi_data_monitor
 {
 
-class Matrix : public Monitor
+class Filter
 {
 public:
-  using Monitor::Monitor;
-  void Build(MonitorDict & monitors) override;
-
-private:
-  QGridLayout * grid;
+  virtual ~Filter() = default;
+  virtual YAML::Node Apply(const YAML::Node value) = 0;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MATRIX_HPP_
+#endif  // MULTI_DATA_MONITOR__FILTER_HPP_

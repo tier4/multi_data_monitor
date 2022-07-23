@@ -16,6 +16,9 @@
 #include "config.hpp"
 #include "stream.hpp"
 #include "topic.hpp"
+#include <multi_data_monitor/design.hpp>
+#include <multi_data_monitor/filter.hpp>
+#include <pluginlib/class_loader.hpp>
 #include <unordered_map>
 #include <utility>
 #include <vector>
@@ -79,7 +82,6 @@ void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children 
 void Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
-
   // extract view and data
   // extract rule
 
@@ -94,8 +96,13 @@ void Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
+  // create plugin loader
+  pluginlib::ClassLoader<Filter> filter_loader("multi_data_monitor", "multi_data_monitor::Filter");
+  pluginlib::ClassLoader<Design> design_loader("multi_data_monitor", "multi_data_monitor::Design");
+
   // create streams
   std::unordered_map<NodeConfig *, Stream *> streams;
+  std::unordered_map<NodeConfig *, Filter *> filters;
   for (const auto & node : config.GetNodes())
   {
     if (node->mode == "data")
@@ -114,13 +121,21 @@ void Loader::Reload(const std::string & package, const std::string & path)
     if (node->mode == "view")
     {
       // TODO(Takagi, Isamu): create widget
+      cout << node->type << endl;
+      design_loader.createUniqueInstance(node->type);
       if (node->stream)
       {
         Stream * stream = impl_->streams.emplace_back(std::make_unique<WidgetStream>()).get();
         streams[node.get()] = stream;
       }
     }
-    // rule
+
+    if (node->mode == "rule")
+    {
+      // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
+      // cout << "TestFilter: " << rule.get() << endl;
+      // cout << rule->Apply(YAML::Node(123)) << endl;
+    }
   }
 
   // connect streams
@@ -138,12 +153,18 @@ void Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
-  cout << "===============================" << endl;
-
   for (auto & topic : impl_->topics)
   {
     topic->Subscribe(node_);
   }
+
+  // TODO(Takagi, Isamu): handle exception
+  /*
+  catch(pluginlib::PluginlibException& ex)
+  {
+    printf("The plugin failed to load for some reason. Error: %s\n", ex.what());
+  }
+  */
 }
 
 }  // namespace multi_data_monitor

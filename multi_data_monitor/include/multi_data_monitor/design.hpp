@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,37 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef SIMPLE_HPP_
-#define SIMPLE_HPP_
+#ifndef MULTI_DATA_MONITOR__DESIGN_HPP_
+#define MULTI_DATA_MONITOR__DESIGN_HPP_
 
-#include "monitor.hpp"
-
-// TODO: style class
-#include <map>
-#include <string>
-#include <vector>
-
-class QLabel;
+#include <QLayout>
+#include <QWidget>
+#include <yaml-cpp/yaml.h>
 
 namespace multi_data_monitor
 {
 
-class Simple : public Monitor
+// default style
+
+class Design
 {
 public:
-  using Monitor::Monitor;
-  void Build(MonitorDict & monitors) override;
-  void Callback(const YAML::Node & field) override;
-
-private:
-  QLabel * label;
-  StyleDefinition style_;  // TODO: move base class
-  std::string prev_;
-  std::string title_;
-public:
-  static StyleDefinition default_style_;  // TODO: private and setter
+  virtual ~Design() = default;
+  virtual QWidget * CreateWidget(const YAML::Node) { return nullptr; }
+  virtual QLayout * CreateLayout(const YAML::Node) { return nullptr; }
+  virtual void AddWidget(QWidget *, const YAML::Node)
+  { /* throw ImplementError */
+  }
+  virtual void AddLayout(QLayout *, const YAML::Node)
+  { /* throw ImplementError */
+  }
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // SIMPLE_HPP_
+#endif  // MULTI_DATA_MONITOR__DESIGN_HPP_
