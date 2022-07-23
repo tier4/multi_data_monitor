@@ -14,7 +14,6 @@
 
 #include "topic.hpp"
 #include "config.hpp"
-#include "stream.hpp"
 #include <memory>
 #include <string>
 
@@ -36,7 +35,8 @@ Field::Field(const FieldConfig & config, const generic_type_support::GenericMess
 
 void Field::Callback(const YAML::Node & yaml)
 {
-  cout << data_ << ": " << access_->Access(yaml) << endl;
+  const auto node = access_->Access(yaml);
+  OutputStream::Callback(node);
 }
 
 Topic::Topic(const TopicConfig & config) : qos_(config.depth)
@@ -62,7 +62,6 @@ void Topic::Subscribe(rclcpp::Node::SharedPtr node)
 {
   const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> message)
   {
-    cout << "========== " << name_ << endl;
     const auto yaml = support_->ConvertYAML(*message);
     for (auto & field : fields_)
     {

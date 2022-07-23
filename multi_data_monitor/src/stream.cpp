@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "stream.hpp"
+#include "errors.hpp"
 
 // clang-format off
 #include <iostream>
@@ -23,5 +24,35 @@ using std::endl;
 
 namespace multi_data_monitor
 {
+
+void Stream::Register([[maybe_unused]] Stream * stream)
+{
+  throw LogicError("Stream::Register");
+}
+
+void OutputStream::Callback(const YAML::Node & yaml)
+{
+  for (auto & stream : streams_)
+  {
+    stream->Callback(yaml);
+  }
+}
+
+void OutputStream::Register(Stream * stream)
+{
+  streams_.push_back(stream);
+}
+
+void WidgetStream::Callback(const YAML::Node & yaml)
+{
+  cout << "========== widget ==========" << endl;
+  cout << yaml << endl;
+}
+
+void FilterStream::Callback(const YAML::Node & yaml)
+{
+  cout << "========== filter ==========" << endl;
+  cout << yaml << endl;
+}
 
 }  // namespace multi_data_monitor

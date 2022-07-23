@@ -48,13 +48,19 @@ Loader::~Loader()
   // define the destructor here for unique_ptr.
 }
 
+template <class NodeT>
+std::string NodeInfo(const NodeT & node)
+{
+  return fmt::format("{}, {}, {}, {}", node->mode, node->type, node->name, node->data);
+}
+
 void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children = false)
 {
   for (const auto & node : nodes)
   {
     const auto ptr1 = fmt::format("{}", static_cast<void *>(node.get()));
     const auto ptr2 = fmt::format("{}", static_cast<void *>(node->target));
-    const auto info = fmt::format("{}, {}, {}, {}", node->mode, node->type, node->name, node->data);
+    const auto info = NodeInfo(node);
     cout << fmt::format("{:50} [{} => {}] ({})", node->path, ptr1, ptr2, info) << endl;
     if (children)
     {
@@ -74,18 +80,65 @@ void Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
 
-  // std::unordered_map<NodeCnfig *, Topic *> topics;
-  Dump(config.GetNodes());
+  // extract view and data
+  // extract rule
 
-  std::unordered_map<std::string, std::unordered_map<std::string, Field *>> field_streams;
+  // create field stream
+  std::unordered_map<std::string, std::unordered_map<std::string, Field *>> subscriptions;
   for (const auto & config : config.GetTopics())
   {
     Topic * topic = impl_->topics.emplace_back(std::make_unique<Topic>(config)).get();
     for (auto & field : topic->GetFields())
     {
-      field_streams[topic->GetName()][field->GetData()] = field.get();
+      subscriptions[topic->GetName()][field->GetData()] = field.get();
     }
   }
+
+  // create streams
+  std::unordered_map<NodeConfig *, Stream *> streams;
+  for (const auto & node : config.GetNodes())
+  {
+    if (node->mode == "data")
+    {
+      if (node->type == "topic")
+      {
+        streams[node.get()] = subscriptions[node->name][node->data];
+      }
+      if (node->type == "filter")
+      {
+        Stream * stream = impl_->streams.emplace_back(std::make_unique<FilterStream>()).get();
+        streams[node.get()] = stream;
+      }
+    }
+
+    if (node->mode == "view")
+    {
+      // TODO(Takagi, Isamu): create widget
+      if (node->stream)
+      {
+        Stream * stream = impl_->streams.emplace_back(std::make_unique<WidgetStream>()).get();
+        streams[node.get()] = stream;
+      }
+    }
+    // rule
+  }
+
+  // connect streams
+  for (const auto & node : config.GetNodes())
+  {
+    if (node->stream)
+    {
+      Stream * src = streams[node->stream];
+      Stream * dst = streams[node.get()];
+      if (src == nullptr || dst == nullptr)
+      {
+        throw LogicError("connect streams");
+      }
+      src->Register(dst);
+    }
+  }
+
+  cout << "===============================" << endl;
 
   for (auto & topic : impl_->topics)
   {

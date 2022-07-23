@@ -23,18 +23,38 @@ namespace multi_data_monitor
 
 struct Stream
 {
+public:
   virtual ~Stream() = default;
   virtual void Callback(const YAML::Node & yaml) = 0;
+  virtual void Register(Stream * stream);
 };
 
-class FilterStream : public Stream
+struct OutputStream : public Stream
 {
 public:
   void Callback(const YAML::Node & yaml) override;
-  void Register(Stream * output);
+  void Register(Stream * stream) override;
+
+protected:
+  std::vector<Stream *> streams_;
+};
+
+class WidgetStream : public Stream
+{
+public:
+  void Callback(const YAML::Node & yaml) override;
 
 private:
-  std::vector<Stream *> callbacks;
+  // widget
+};
+
+class FilterStream : public OutputStream
+{
+public:
+  void Callback(const YAML::Node & yaml) override;
+
+private:
+  // rules
 };
 
 }  // namespace multi_data_monitor

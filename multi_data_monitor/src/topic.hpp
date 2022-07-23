@@ -15,6 +15,7 @@
 #ifndef TOPIC_HPP_
 #define TOPIC_HPP_
 
+#include "stream.hpp"
 #include <generic_type_support/generic_type_support.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <yaml-cpp/yaml.h>
@@ -27,22 +28,21 @@ namespace multi_data_monitor
 
 class FieldConfig;
 class TopicConfig;
-class Stream;
 
-class Field  // TODO(Takagi, Isamu): stream
+// TODO(Takagi, Isamu): This class can be unified with filters.
+class Field : public OutputStream
 {
 public:
   Field(const FieldConfig & config, const generic_type_support::GenericMessage & support);
-  void Callback(const YAML::Node & yaml);
-  void Register(Stream * output);
+  void Callback(const YAML::Node & yaml) override;
   std::string GetData() const { return data_; }
 
 private:
   std::string data_;
   std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access_;
-  std::vector<Stream *> callbacks_;
 };
 
+// TODO(Takagi, Isamu): This class can inherit from output stream.
 class Topic
 {
 public:
