@@ -15,9 +15,9 @@
 #ifndef IMPL__UTIL__TYPES_HPP_
 #define IMPL__UTIL__TYPES_HPP_
 
-#include <stdexcept>
 #include <rosidl_typesupport_introspection_cpp/message_introspection.hpp>
 #include <rosidl_typesupport_introspection_cpp/service_introspection.hpp>
+#include <stdexcept>
 
 namespace generic_type_support
 {
@@ -33,7 +33,7 @@ class TypeSupportField;
 
 class TypeSupportIdentifierError : public std::runtime_error
 {
-    using std::runtime_error::runtime_error;
+  using std::runtime_error::runtime_error;
 };
 
 }  // namespace generic_type_support

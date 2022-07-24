@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #include <generic_type_support/generic_type_support.hpp>
-#include <iostream>
 #include <rclcpp/rclcpp.hpp>
+#include <iostream>
 
 using GenericMessage = generic_type_support::GenericMessage;
 using GenericAccess = generic_type_support::GenericMessage::GenericAccess;
@@ -44,7 +44,7 @@ private:
   rclcpp::GenericSubscription::SharedPtr sub_;
 };
 
-int main(int argc, char **argv)
+int main(int argc, char ** argv)
 {
   rclcpp::init(argc, argv);
   auto node = std::make_shared<SampleNode>();

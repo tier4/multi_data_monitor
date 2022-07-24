@@ -25,8 +25,8 @@ namespace generic_type_support
 class TypeSupportMessage
 {
 public:
-  TypeSupportMessage(const IntrospectionMessage * message);
-  TypeSupportMessage(const IntrospectionHandle * handle);
+  explicit TypeSupportMessage(const IntrospectionMessage * message);
+  explicit TypeSupportMessage(const IntrospectionHandle * handle);
   ~TypeSupportMessage();
   const std::string GetTypeName() const;
   const std::vector<TypeSupportField> & GetFields() const;

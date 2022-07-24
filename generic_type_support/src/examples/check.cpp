@@ -25,7 +25,7 @@ int main()
     const auto message_ = std::make_shared<GenericMessage>("std_msgs/msg/Header");
     const auto access_ = message_->GetAccess("stamp.msec");
   }
-  catch(const FieldError & error)
+  catch (const FieldError & error)
   {
     std::cout << "ERROR: " << error.what() << std::endl;
   }

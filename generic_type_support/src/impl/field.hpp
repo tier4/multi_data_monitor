@@ -25,7 +25,7 @@ namespace generic_type_support
 class TypeSupportField
 {
 public:
-  TypeSupportField(const IntrospectionField * field);
+  explicit TypeSupportField(const IntrospectionField * field);
   const std::string GetDataName() const;
   const std::string GetTypeName() const;
   uint32_t GetMemoryOffset() const;

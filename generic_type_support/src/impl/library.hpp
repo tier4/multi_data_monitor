@@ -16,8 +16,10 @@
 #define IMPL__LIBRARY_HPP_
 
 #include "util/types.hpp"
-#include <rclcpp/typesupport_helpers.hpp>
 #include <rclcpp/serialization.hpp>
+#include <rclcpp/typesupport_helpers.hpp>
+#include <memory>
+#include <string>
 
 namespace generic_type_support
 {

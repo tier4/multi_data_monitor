@@ -31,7 +31,7 @@ const std::string TypeSupportField::GetDataName() const
 
 const std::string TypeSupportField::GetTypeName() const
 {
-  using namespace rosidl_typesupport_introspection_cpp;
+  using namespace rosidl_typesupport_introspection_cpp;  // NOLINT(build/namespaces)
 
   switch (GetTypeID())
   {

@@ -15,7 +15,6 @@
 #include "message.hpp"
 #include "field.hpp"
 #include <generic_type_support/errors.hpp>
-#include <iostream>
 
 namespace generic_type_support
 {

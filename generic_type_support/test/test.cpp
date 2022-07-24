@@ -12,9 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-
-#include <gtest/gtest.h>
 #include <generic_type_support/generic_type_support.hpp>
+#include <gtest/gtest.h>
 
 /*
 TEST(generic_type_support, test1)
