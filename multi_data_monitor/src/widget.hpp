@@ -16,41 +16,16 @@
 #define WIDGET_HPP_
 
 #include "loader.hpp"
-#include <QGridLayout>  // TODO(Takagi, Isamu): debug
-#include <QLabel>       // TODO(Takagi, Isamu): debug
 #include <rviz_common/panel.hpp>
 #include <memory>
 #include <string>
 
 class QMouseEvent;
 class QLineEdit;
-
-// TODO(Takagi, Isamu): debug
-struct MyLabel : public QLabel
-{
-  Q_OBJECT
-  using QLabel::QLabel;
-  // ~MyLabel() { printf("Delete MyLabel\n"); }
-};
-
-// TODO(Takagi, Isamu): debug
-struct MyGrid : public QGridLayout
-{
-  Q_OBJECT
-  using QGridLayout::QGridLayout;
-  // ~MyGrid() { printf("Delete MyGrid\n"); }
-};
+class QPushButton;
 
 namespace multi_data_monitor
 {
-
-class MonitorWidget : public QWidget
-{
-  Q_OBJECT
-
-public:
-  explicit MonitorWidget(rviz_common::Panel * panel);
-};
 
 class SettingWidget : public QWidget
 {
@@ -66,6 +41,7 @@ public:
 private:
   QLineEdit * package_;
   QLineEdit * path_;
+  QPushButton * button_;
 };
 
 class MultiDataMonitor : public rviz_common::Panel
@@ -84,6 +60,8 @@ private:
   std::unique_ptr<Loader> loader_;
   QWidget * monitor_;
   SettingWidget * setting_;
+  std::string package_;  // TODO(Takagi, Isamu): temporary
+  std::string path_;     // TODO(Takagi, Isamu): temporary
 };
 
 }  // namespace multi_data_monitor

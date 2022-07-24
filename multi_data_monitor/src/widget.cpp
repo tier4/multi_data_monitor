@@ -14,11 +14,11 @@
 
 #include "widget.hpp"
 #include <QDockWidget>
-#include <QFormLayout>  // debug
 #include <QGridLayout>
-#include <QLabel>  // debug
+#include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
+#include <QPushButton>
 #include <QStackedLayout>
 #include <QVBoxLayout>
 #include <rviz_common/display_context.hpp>
@@ -29,31 +29,20 @@
 namespace multi_data_monitor
 {
 
-MonitorWidget::MonitorWidget(rviz_common::Panel * panel) : QWidget(panel)
-{
-  constexpr auto kStyleSheet = "border-width: 1px 1px 1px 1px; border-style: solid;";
-  const auto layout = new MyGrid();
-  for (size_t i = 0; i < 6; ++i)
-  {
-    const auto widget = new MyLabel(std::to_string(i + 1).c_str());
-    widget->setAlignment(Qt::AlignCenter);
-    widget->setStyleSheet(kStyleSheet);
-    layout->addWidget(widget, i / 3, i % 3);
-  }
-  layout->setContentsMargins(3, 1, 3, 1);
-  setLayout(layout);
-}
-
 SettingWidget::SettingWidget(rviz_common::Panel * panel) : QWidget(panel)
 {
-  const auto layout = new QFormLayout();
+  const auto layout = new QGridLayout();
   package_ = new QLineEdit();
   path_ = new QLineEdit();
+  button_ = new QPushButton("Reload");
   connect(package_, &QLineEdit::editingFinished, panel, &MultiDataMonitor::configChanged);
   connect(path_, &QLineEdit::editingFinished, panel, &MultiDataMonitor::configChanged);
 
-  layout->addRow("Package", package_);
-  layout->addRow("Path", path_);
+  layout->addWidget(new QLabel("Package"), 0, 0);
+  layout->addWidget(new QLabel("Path"), 1, 0);
+  layout->addWidget(package_, 0, 1);
+  layout->addWidget(path_, 1, 1);
+  layout->addWidget(button_, 2, 0, 1, 2);
   setLayout(layout);
 }
 
@@ -82,25 +71,27 @@ std::string SettingWidget::getPath() const
 MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent)
 {
   const auto stacked = new QStackedLayout();
-  monitor_ = new MonitorWidget(this);
-  setting_ = new SettingWidget(this);
-
-  stacked->addWidget(setting_);
-  stacked->addWidget(monitor_);
-  stacked->setCurrentWidget(monitor_);
+  monitor_ = nullptr;
+  // setting_ = new SettingWidget(this);
+  // stacked->addWidget(setting_);
   setLayout(stacked);
 }
 
 void MultiDataMonitor::save(rviz_common::Config config) const
 {
   Panel::save(config);
-  setting_->save(config);
+  // setting_->save(config);
 }
 
 void MultiDataMonitor::load(const rviz_common::Config & config)
 {
   Panel::load(config);
-  setting_->load(config);
+
+  // TODO(Takagi, Isamu): temporary
+  package_ = config.mapGetChild("Package").getValue().toString().toStdString();
+  path_ = config.mapGetChild("Path").getValue().toString().toStdString();
+
+  // setting_->load(config);
   reload();
 }
 
@@ -123,6 +114,7 @@ void MultiDataMonitor::onInitialize()
 
 void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 {
+  /*
   if (event->modifiers() & Qt::ControlModifier)
   {
     const auto layout = dynamic_cast<QStackedLayout *>(this->layout());
@@ -131,6 +123,7 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
       layout->setCurrentIndex(1 - layout->currentIndex());
     }
   }
+  */
 
   if (event->modifiers() & Qt::ShiftModifier)
   {
@@ -145,7 +138,8 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 
 void MultiDataMonitor::reload()
 {
-  QWidget * widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
+  // QWidget * widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
+  QWidget * widget = loader_->Reload(package_, path_);
   if (widget)
   {
     QStackedLayout * stacked = dynamic_cast<QStackedLayout *>(layout());
