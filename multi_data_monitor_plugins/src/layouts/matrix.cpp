@@ -20,21 +20,18 @@ namespace multi_data_monitor
 
 class Matrix : public multi_data_monitor::Design
 {
+private:
+  QGridLayout * layout_;
+
 public:
   QLayout * CreateLayout(const YAML::Node) override
   {
     layout_ = new QGridLayout();
     return layout_;
   }
-
   void AddWidget(QWidget * widget, const YAML::Node) override { layout_->addWidget(widget); }
-
   void AddLayout(QLayout * layout, const YAML::Node) override { layout_->addLayout(layout, 1, 1); }
-
   void Callback(const MonitorValues &) override {}
-
-private:
-  QGridLayout * layout_;
 };
 
 /*

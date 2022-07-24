@@ -62,7 +62,6 @@ struct Loader::Impl
   std::unique_ptr<pluginlib::ClassLoader<Design>> design_loader;
   std::vector<std::unique_ptr<Topic>> topics;
   std::vector<std::unique_ptr<Stream>> streams;
-  // filters
   std::vector<std::unique_ptr<Design>> designs;
 };
 
@@ -140,6 +139,7 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
       for (const auto & rule : node->children)
       {
         auto action = std::unique_ptr<Action>(impl_->action_loader->createUnmanagedInstance(rule->type));
+        action->Initialize(rule->yaml);
         actions.push_back(std::move(action));
       }
       auto stream = std::make_unique<FilterStream>(std::move(actions));

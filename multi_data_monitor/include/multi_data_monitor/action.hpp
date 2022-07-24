@@ -24,6 +24,7 @@ class Action
 {
 public:
   virtual ~Action() = default;
+  virtual void Initialize(const YAML::Node & yaml) = 0;
   virtual MonitorValues Apply(const MonitorValues & input) = 0;
 };
 

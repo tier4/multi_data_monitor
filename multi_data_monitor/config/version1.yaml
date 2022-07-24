@@ -26,7 +26,16 @@ widgets:
   widget1:
     class: multi_data_monitor::Simple
     param: { title: Frame }
-    input: { class: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
+    input:
+      class: filter
+      input: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+      rules:
+        - class: multi_data_monitor::Switch
+          default: { value: ERROR, attrs: { background-color: "" } }
+          mapping:
+            1: { value: A, attrs: { background-color: green } }
+            2: { value: B, attrs: { background-color: yellow } }
+            3: { value: C, attrs: { background-color: red } }
 
   widget2:
     class: multi_data_monitor::Simple
@@ -40,4 +49,4 @@ widgets:
       class: filter
       input: { class: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
       rules:
-        - { class: multi_data_monitor::TestFilter }
+        - { class: multi_data_monitor::Format, type: double, format: "{:.3f}" }

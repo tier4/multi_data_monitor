@@ -17,11 +17,15 @@ find_package(Qt5 ${rviz_QT_VERSION} REQUIRED Core Widgets)
 set(QT_LIBRARIES Qt5::Widgets)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/widgets/simple.cpp
+  src/actions/format.cpp
+  src/actions/switch.cpp
+  src/actions/lines.cpp
+  src/actions/units.cpp
   src/layouts/matrix.cpp
-  src/filters/test.cpp
+  src/widgets/simple.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}

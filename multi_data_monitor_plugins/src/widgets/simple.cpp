@@ -13,14 +13,19 @@
 // limitations under the License.
 
 #include <QLabel>
+#include <QStyle>    // TODO(Takagi, Isamu): debug
 #include <QVariant>  // TODO(Takagi, Isamu): debug
 #include <multi_data_monitor/design.hpp>
+#include <iostream>  // TODO(Takagi, Isamu): debug
 
 namespace multi_data_monitor
 {
 
 class Simple : public multi_data_monitor::Design
 {
+private:
+  QLabel * label_;
+
 public:
   QWidget * CreateWidget(const YAML::Node) override
   {
@@ -35,14 +40,15 @@ public:
   {
     label_->setText(QString::fromStdString(input.value.as<std::string>()));
 
+    // TODO(Takagi, Isamu): move base class and execute only when changed
     for (const auto & [name, attr] : input.attrs)
     {
+      std::cout << name << " " << attr << std::endl;
       label_->setProperty(name.c_str(), QVariant(attr.c_str()));
     }
+    label_->style()->unpolish(label_);
+    label_->style()->polish(label_);
   }
-
-private:
-  QLabel * label_;
 };
 
 }  // namespace multi_data_monitor
