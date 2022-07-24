@@ -126,15 +126,6 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
-  // std::unordered_map<const NodeConfig *, Filter *> filters;
-  for (const auto & node : config.GetNodes("rule"))
-  {
-    (void)node;
-    // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
-    // cout << "TestFilter: " << rule.get() << endl;
-    // cout << rule->Apply(YAML::Node(123)) << endl;
-  }
-
   // create streams
   std::unordered_map<const NodeConfig *, Stream *> streams;
   for (const auto & node : config.GetNodes("data"))
