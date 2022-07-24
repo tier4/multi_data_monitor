@@ -35,19 +35,10 @@ namespace multi_data_monitor
 
 struct DesignInstance
 {
-  DesignInstance(QWidget * parent, QLayout * layout, QWidget * widget)
+  DesignInstance(QLayout * layout, QWidget * widget)
   {
     this->layout = layout;
     this->widget = widget;
-
-    if (layout)
-    {
-      layout->setParent(parent);
-    }
-    if (widget)
-    {
-      widget->setParent(parent);
-    }
 
     if (layout == nullptr && widget == nullptr)
     {
@@ -72,13 +63,12 @@ struct Loader::Impl
   std::vector<std::unique_ptr<Design>> designs;
 };
 
-Loader::Loader(QWidget * rviz, rclcpp::Node::SharedPtr node)
+Loader::Loader(rclcpp::Node::SharedPtr node)
 {
   constexpr char package[] = "multi_data_monitor";
   constexpr char design[] = "multi_data_monitor::Design";
 
   impl_ = std::make_unique<Impl>();
-  rviz_ = rviz;
   node_ = node;
   impl_->design_loader = std::make_unique<pluginlib::ClassLoader<Design>>(package, design);
 }
@@ -116,7 +106,7 @@ void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children 
   }
 }
 
-void Loader::Reload(const std::string & package, const std::string & path)
+QWidget * Loader::Reload(const std::string & package, const std::string & path)
 {
   const auto config = ConfigFile(package, path);
 
@@ -132,7 +122,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
   }
 
   // create streams
-  std::unordered_map<NodeConfig *, Stream *> streams;
+  std::unordered_map<const NodeConfig *, Stream *> streams;
   for (const auto & node : config.GetNodes("data"))
   {
     if (node->type == "topic")
@@ -147,7 +137,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
   }
 
   // pluginlib::ClassLoader<Filter> filter_loader("multi_data_monitor", "multi_data_monitor::Filter");
-  // std::unordered_map<NodeConfig *, Filter *> filters;
+  // std::unordered_map<const NodeConfig *, Filter *> filters;
   for (const auto & node : config.GetNodes("rule"))
   {
     // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
@@ -156,7 +146,7 @@ void Loader::Reload(const std::string & package, const std::string & path)
   }
 
   // create designs
-  std::unordered_map<NodeConfig *, Design *> designs;
+  std::unordered_map<const NodeConfig *, Design *> designs;
   for (const auto & node : config.GetNodes("view"))
   {
     auto design = std::unique_ptr<Design>(impl_->design_loader->createUnmanagedInstance(node->type));
@@ -184,41 +174,80 @@ void Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
-  // place the root in stack memory to automatically release Qt objects
-  QWidget dummy_root_widget;
-
-  // build widget
-
-  std::unordered_map<NodeConfig *, DesignInstance> instances;
+  // create widgets
+  std::unordered_map<const NodeConfig *, DesignInstance> instances;
   for (const auto & [node, design] : designs)
   {
     auto * layout = design->CreateLayout(node->yaml);
     auto * widget = design->CreateWidget(node->yaml);
-    instances.emplace(node, DesignInstance(&dummy_root_widget, layout, widget));
+    instances.emplace(node, DesignInstance(layout, widget));
   }
 
-  for (const auto & [node, instance] : instances)
+  // connect widgets
+  for (const auto [node, design] : designs)
   {
-    cout << instance.layout << endl;
-    if (instance.layout)
+    cout << node->type << endl;
+    for (const auto child : node->children)
     {
-      instance.layout->dumpObjectInfo();
-      rviz_->setLayout(instance.layout);
-      break;
+      const auto instance = instances.at(child);
+      cout << "  " << child->type << " " << instance.layout << " " << instance.widget << endl;
+
+      if (instance.layout)
+      {
+        design->AddLayout(instance.layout, YAML::Node());
+      }
+      if (instance.widget)
+      {
+        design->AddWidget(instance.widget, YAML::Node());
+      }
     }
   }
-  dummy_root_widget.dumpObjectTree();
 
-  /*
-  mainWidget->layout()->removeWidget( your_widget );
-  delete mainWidget->layout();
-  */
+  DesignInstance root_instance = instances.at(config.GetRoot());
+  QWidget * root = root_instance.widget;
+  if (root == nullptr)
+  {
+    root = new QWidget();
+    root->setLayout(root_instance.layout);
+  }
+
+  // place the dummy root object in stack memory to automatically release Qt objects
+  {
+    QWidget dummy_root_widget;
+    root->setParent(&dummy_root_widget);
+
+    for (const auto [node, instance] : instances)
+    {
+      cout << "  " << instance.layout << " " << instance.widget << endl;
+      if (instance.layout && instance.layout->parent() == nullptr)
+      {
+        instance.layout->setParent(&dummy_root_widget);
+      }
+      if (instance.widget && instance.widget->parent() == nullptr)
+      {
+        instance.widget->setParent(&dummy_root_widget);
+      }
+    }
+
+    cout << "============ dummy ============" << endl;
+    dummy_root_widget.dumpObjectTree();
+    cout << "============ dummy ============" << endl;
+    root->setParent(nullptr);
+    dummy_root_widget.dumpObjectTree();
+    cout << "============ root ============" << endl;
+    root->dumpObjectTree();
+    cout << "==============================" << endl;
+  }
+  cout << "==============================" << endl;
 
   // start subscription
   for (auto & topic : impl_->topics)
   {
     topic->Subscribe(node_);
   }
+
+  return root;
+  throw LogicError("design create 3");  // TODO(Takagi, Isamu): message
 
   // TODO(Takagi, Isamu): handle exception
   /*

@@ -23,6 +23,7 @@ class Matrix : public multi_data_monitor::Design
 public:
   QLayout * CreateLayout(const YAML::Node) override;
   void AddWidget(QWidget *, const YAML::Node) override;
+  void AddLayout(QLayout *, const YAML::Node) override;
 
 private:
   QGridLayout * layout_;
@@ -37,6 +38,12 @@ QLayout * Matrix::CreateLayout(const YAML::Node)
 void Matrix::AddWidget(QWidget * widget, const YAML::Node)
 {
   layout_->addWidget(widget);
+}
+
+void Matrix::AddLayout(QLayout * layout, const YAML::Node)
+{
+  (void)layout;
+  layout_->addLayout(layout, 1, 1);
 }
 
 /*

@@ -32,11 +32,11 @@ public:
   virtual QLayout * CreateLayout(const YAML::Node) { return nullptr; }
   virtual void AddWidget(QWidget *, const YAML::Node)
   {
-    // throw ImplementError
+    throw std::runtime_error("Design::AddWidget");  // TODO(Takagi, Isamu): change exception
   }
   virtual void AddLayout(QLayout *, const YAML::Node)
   {
-    // throw ImplementError
+    throw std::runtime_error("Design::AddWidget");  // TODO(Takagi, Isamu): change exception
   }
 };
 

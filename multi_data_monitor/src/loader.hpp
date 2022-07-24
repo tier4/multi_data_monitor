@@ -28,9 +28,9 @@ namespace multi_data_monitor
 class Loader
 {
 public:
-  Loader(QWidget * rviz, rclcpp::Node::SharedPtr node);
+  explicit Loader(rclcpp::Node::SharedPtr node);
   ~Loader();
-  void Reload(const std::string & package, const std::string & path);
+  QWidget * Reload(const std::string & package, const std::string & path);
 
 private:
   struct Impl;

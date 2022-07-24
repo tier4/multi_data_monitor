@@ -20,7 +20,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   const auto node = std::make_shared<rclcpp::Node>("test");
 
-  multi_data_monitor::Loader loader(nullptr, node);
+  multi_data_monitor::Loader loader(node);
   loader.Reload("multi_data_monitor", "config/version1.yaml");
 
   rclcpp::executors::SingleThreadedExecutor executor;

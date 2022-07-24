@@ -32,10 +32,10 @@ namespace multi_data_monitor
 MonitorWidget::MonitorWidget(rviz_common::Panel * panel) : QWidget(panel)
 {
   constexpr auto kStyleSheet = "border-width: 1px 1px 1px 1px; border-style: solid;";
-  const auto layout = new QGridLayout();
+  const auto layout = new MyGrid();
   for (size_t i = 0; i < 6; ++i)
   {
-    const auto widget = new QLabel(std::to_string(i + 1).c_str());
+    const auto widget = new MyLabel(std::to_string(i + 1).c_str());
     widget->setAlignment(Qt::AlignCenter);
     widget->setStyleSheet(kStyleSheet);
     layout->addWidget(widget, i / 3, i % 3);
@@ -85,8 +85,9 @@ MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent
   monitor_ = new MonitorWidget(this);
   setting_ = new SettingWidget(this);
 
-  stacked->addWidget(monitor_);
   stacked->addWidget(setting_);
+  stacked->addWidget(monitor_);
+  stacked->setCurrentWidget(monitor_);
   setLayout(stacked);
 }
 
@@ -117,7 +118,7 @@ void MultiDataMonitor::onInitialize()
   }
 
   auto rviz_node = getDisplayContext()->getRosNodeAbstraction().lock();
-  loader_ = std::make_unique<Loader>(this, rviz_node->get_raw_node());
+  loader_ = std::make_unique<Loader>(rviz_node->get_raw_node());
 }
 
 void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
@@ -144,7 +145,17 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 
 void MultiDataMonitor::reload()
 {
-  loader_->Reload(setting_->getPackage(), setting_->getPath());
+  QWidget * widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
+  if (widget)
+  {
+    QStackedLayout * stacked = dynamic_cast<QStackedLayout *>(layout());
+    delete monitor_;
+    monitor_ = widget;
+    stacked->addWidget(monitor_);
+    stacked->setCurrentWidget(monitor_);
+    setLayout(stacked);
+    this->dumpObjectTree();
+  }
 }
 
 }  // namespace multi_data_monitor

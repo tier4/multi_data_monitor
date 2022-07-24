@@ -16,12 +16,28 @@
 #define WIDGET_HPP_
 
 #include "loader.hpp"
+#include <QGridLayout>  // debug
+#include <QLabel>       // debug
 #include <rviz_common/panel.hpp>
 #include <memory>
 #include <string>
 
 class QMouseEvent;
 class QLineEdit;
+
+struct MyLabel : public QLabel
+{
+  Q_OBJECT
+  using QLabel::QLabel;
+  ~MyLabel() { printf("Delete MyLabel\n"); }
+};
+
+struct MyGrid : public QGridLayout
+{
+  Q_OBJECT
+  using QGridLayout::QGridLayout;
+  ~MyGrid() { printf("Delete MyGrid\n"); }
+};
 
 namespace multi_data_monitor
 {
@@ -64,7 +80,7 @@ public:
 
 private:
   std::unique_ptr<Loader> loader_;
-  MonitorWidget * monitor_;
+  QWidget * monitor_;
   SettingWidget * setting_;
 };
 
