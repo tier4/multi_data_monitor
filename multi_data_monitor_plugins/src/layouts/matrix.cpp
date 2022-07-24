@@ -24,7 +24,7 @@ private:
   QGridLayout * layout_;
 
 public:
-  QLayout * CreateLayout(const YAML::Node) override
+  Instance Create(const YAML::Node) override
   {
     layout_ = new QGridLayout();
     return layout_;

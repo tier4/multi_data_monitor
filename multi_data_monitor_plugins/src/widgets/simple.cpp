@@ -27,7 +27,7 @@ private:
   QLabel * label_;
 
 public:
-  QWidget * CreateWidget(const YAML::Node) override
+  Instance Create(const YAML::Node) override
   {
     label_ = new QLabel(QString::fromStdString("Simple"));
     label_->setAlignment(Qt::AlignCenter);

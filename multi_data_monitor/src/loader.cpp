@@ -35,27 +35,6 @@ using std::endl;
 namespace multi_data_monitor
 {
 
-struct DesignInstance
-{
-  DesignInstance(QLayout * layout, QWidget * widget)
-  {
-    this->layout = layout;
-    this->widget = widget;
-
-    if (layout == nullptr && widget == nullptr)
-    {
-      throw LogicError("design create 1");  // TODO(Takagi, Isamu): message
-    }
-    if (layout != nullptr && widget != nullptr)
-    {
-      throw LogicError("design create 2");  // TODO(Takagi, Isamu): message
-    }
-  }
-
-  QLayout * layout;
-  QWidget * widget;
-};
-
 struct Loader::Impl
 {
   std::unique_ptr<pluginlib::ClassLoader<Action>> action_loader;
@@ -177,17 +156,17 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
   }
 
   // create widgets
-  std::unordered_map<const NodeConfig *, DesignInstance> instances;
+  std::unordered_map<const NodeConfig *, Design::Instance> instances;
   for (const auto & [node, design] : designs)
   {
-    const auto stylesheet = config.GetStyleSheet(node->type);
-    auto * layout = design->CreateLayout(node->yaml);
-    auto * widget = design->CreateWidget(node->yaml);
-    if (widget)
+    const auto instance = design->Create(node->yaml);
+    if (std::holds_alternative<QWidget *>(instance))
     {
-      widget->setStyleSheet(QString::fromStdString(stylesheet));
+      // TODO(Takagi, Isamu): warning when layout
+      const auto stylesheet = config.GetStyleSheet(node->type);
+      std::get<QWidget *>(instance)->setStyleSheet(QString::fromStdString(stylesheet));
     }
-    instances.emplace(node, DesignInstance(layout, widget));
+    instances.emplace(node, instance);
   }
 
   // connect widgets
@@ -195,47 +174,48 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
   {
     for (const auto child : node->children)
     {
+      struct AddInstance
+      {
+        void operator()(QLayout * layout) { design->AddLayout(layout, YAML::Node()); }
+        void operator()(QWidget * widget) { design->AddWidget(widget, YAML::Node()); }
+        Design * design;
+      };
       const auto instance = instances.at(child);
-      if (instance.layout)
-      {
-        design->AddLayout(instance.layout, YAML::Node());
-      }
-      if (instance.widget)
-      {
-        design->AddWidget(instance.widget, YAML::Node());
-      }
+      std::visit(AddInstance{design}, instance);
     }
   }
 
-  DesignInstance root_instance = instances.at(config.GetRoot());
   QWidget * root = nullptr;
-
-  if (root_instance.layout)
   {
-    root = new QWidget();
-    root->setLayout(root_instance.layout);
+    Design::Instance instance = instances.at(config.GetRoot());
+    struct CreateRootWidget
+    {
+      QWidget * operator()(QLayout * layout)
+      {
+        QWidget * widget = new QWidget();
+        widget->setLayout(layout);
+        return widget;
+      }
+      QWidget * operator()(QWidget * widget) { return widget; }
+    };
+    const auto stylesheet = config.GetStyleSheet();
+    root = std::visit(CreateRootWidget{}, instance);
+    root->setStyleSheet(QString::fromStdString(stylesheet));
   }
-  if (root_instance.widget)
-  {
-    root = root_instance.widget;
-  }
-
-  const auto stylesheet = config.GetStyleSheet();
-  root->setStyleSheet(QString::fromStdString(stylesheet));
 
   // place the dummy root object in stack memory to automatically release Qt objects
   {
-    QWidget dummy_root_widget;
+    QWidget dummy;
+    const auto connect = [&dummy](auto & instance)
+    {
+      if (instance->parent() == nullptr)
+      {
+        instance->setParent(&dummy);
+      }
+    };
     for (const auto [node, instance] : instances)
     {
-      if (instance.layout && instance.layout->parent() == nullptr)
-      {
-        instance.layout->setParent(&dummy_root_widget);
-      }
-      if (instance.widget && instance.widget->parent() == nullptr)
-      {
-        instance.widget->setParent(&dummy_root_widget);
-      }
+      std::visit(connect, instance);
     }
     root->setParent(nullptr);
   }

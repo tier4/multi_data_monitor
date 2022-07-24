@@ -16,6 +16,7 @@
 #define MULTI_DATA_MONITOR__DESIGN_HPP_
 
 #include <multi_data_monitor/values.hpp>
+#include <variant>
 
 class QWidget;
 class QLayout;
@@ -26,9 +27,9 @@ namespace multi_data_monitor
 class Design
 {
 public:
+  using Instance = std::variant<QWidget *, QLayout *>;
   virtual ~Design() = default;
-  virtual QWidget * CreateWidget(const YAML::Node) { return nullptr; }
-  virtual QLayout * CreateLayout(const YAML::Node) { return nullptr; }
+  virtual Instance Create(const YAML::Node) = 0;
   virtual void AddWidget(QWidget *, const YAML::Node)
   {
     throw std::runtime_error("Design::AddWidget");  // TODO(Takagi, Isamu): change exception
