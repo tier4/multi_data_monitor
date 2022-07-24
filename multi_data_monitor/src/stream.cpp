@@ -14,6 +14,8 @@
 
 #include "stream.hpp"
 #include "errors.hpp"
+#include <multi_data_monitor/action.hpp>
+#include <multi_data_monitor/design.hpp>
 
 // clang-format off
 #include <iostream>
@@ -30,11 +32,11 @@ void Stream::Register([[maybe_unused]] Stream * stream)
   throw LogicError("Stream::Register");
 }
 
-void OutputStream::Callback(const YAML::Node & yaml)
+void OutputStream::Callback(const MonitorValues & input)
 {
   for (auto & stream : streams_)
   {
-    stream->Callback(yaml);
+    stream->Callback(input);
   }
 }
 
@@ -48,16 +50,35 @@ WidgetStream::WidgetStream(Design * design)
   design_ = design;
 }
 
-void WidgetStream::Callback(const YAML::Node & yaml)
+void WidgetStream::Callback(const MonitorValues & input)
 {
   cout << "========== widget ==========" << endl;
-  cout << yaml << endl;
+  cout << input.value << endl;
+
+  design_->Callback(input);
 }
 
-void FilterStream::Callback(const YAML::Node & yaml)
+FilterStream::FilterStream(std::vector<std::unique_ptr<Action>> && actions)
+{
+  actions_.swap(actions);
+}
+
+FilterStream::~FilterStream()
+{
+  // because of the forward declaration
+}
+
+void FilterStream::Callback(const MonitorValues & input)
 {
   cout << "========== filter ==========" << endl;
-  cout << yaml << endl;
+  cout << input.value << endl;
+
+  MonitorValues output = input.Clone();
+  for (const auto & action : actions_)
+  {
+    output = action->Apply(output);
+  }
+  OutputStream::Callback(output);
 }
 
 }  // namespace multi_data_monitor

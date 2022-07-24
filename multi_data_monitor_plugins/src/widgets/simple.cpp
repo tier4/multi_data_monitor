@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include <QLabel>
+#include <QVariant>  // TODO(Takagi, Isamu): debug
 #include <multi_data_monitor/design.hpp>
 
 namespace multi_data_monitor
@@ -21,42 +22,28 @@ namespace multi_data_monitor
 class Simple : public multi_data_monitor::Design
 {
 public:
-  QWidget * CreateWidget(const YAML::Node) override;
+  QWidget * CreateWidget(const YAML::Node) override
+  {
+    label_ = new QLabel(QString::fromStdString("Simple"));
+    label_->setAlignment(Qt::AlignCenter);
+    // title_ = config_.custom["title"].as<std::string>("");
+    // label->setToolTip("Simple Widget");
+    return label_;
+  }
+
+  void Callback(const MonitorValues & input) override
+  {
+    label_->setText(QString::fromStdString(input.value.as<std::string>()));
+
+    for (const auto & [name, attr] : input.attrs)
+    {
+      label_->setProperty(name.c_str(), QVariant(attr.c_str()));
+    }
+  }
 
 private:
+  QLabel * label_;
 };
-
-QWidget * Simple::CreateWidget(const YAML::Node)
-{
-  // title_ = config_.custom["title"].as<std::string>("");
-  const auto label = new QLabel(QString::fromStdString("Simple"));
-  label->setAlignment(Qt::AlignCenter);
-  /*
-  label->setToolTip("Simple Widget");
-  label->setStyleSheet(kStyleSheet);
-  label->setProperty("color", QVariant("red"));
-  label->setProperty("class", QVariant("multi_data_monitor::Simple"));
-  */
-  return label;
-}
-
-/*
-void Simple::Callback(const YAML::Node & field)
-{
-  const auto data = YAML::Clone(field);
-  const auto text = data.as<std::string>();
-  if (prev_ != text)
-  {
-    FunctionResult result = rules_.Apply(FunctionResult{data, style_});
-
-    label->setText(QString::fromStdString(title_ + result.value.as<std::string>()));
-    label->setStyleSheet(QString::fromStdString(kStyleSheet + result.style.GetStyleSheet()));  // TODO: workload
-reduction
-
-    prev_ = text;
-  }
-}
-*/
 
 }  // namespace multi_data_monitor
 

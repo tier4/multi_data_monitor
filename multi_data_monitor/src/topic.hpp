@@ -34,7 +34,7 @@ class Field : public OutputStream
 {
 public:
   Field(const FieldConfig & config, const generic_type_support::GenericMessage & support);
-  void Callback(const YAML::Node & yaml) override;
+  void Callback(const MonitorValues & input) override;
   std::string GetData() const { return data_; }
 
 private:

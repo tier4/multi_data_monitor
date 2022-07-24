@@ -12,23 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <multi_data_monitor/action.hpp>
-#include <string>
+#ifndef MULTI_DATA_MONITOR__ACTION_HPP_
+#define MULTI_DATA_MONITOR__ACTION_HPP_
+
+#include <multi_data_monitor/values.hpp>
 
 namespace multi_data_monitor
 {
 
-class TestFilter : public multi_data_monitor::Action
+class Action
 {
 public:
-  MonitorValues Apply(const MonitorValues & input) override
-  {
-    const auto text = "[" + input.value.as<std::string>() + "]";
-    return MonitorValues{YAML::Node(text), input.attrs};
-  }
+  virtual ~Action() = default;
+  virtual MonitorValues Apply(const MonitorValues & input) = 0;
 };
 
 }  // namespace multi_data_monitor
 
-#include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::TestFilter, multi_data_monitor::Action)
+#endif  // MULTI_DATA_MONITOR__ACTION_HPP_

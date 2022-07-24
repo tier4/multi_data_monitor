@@ -33,10 +33,10 @@ Field::Field(const FieldConfig & config, const generic_type_support::GenericMess
   access_ = support.GetAccess(config.data);
 }
 
-void Field::Callback(const YAML::Node & yaml)
+void Field::Callback(const MonitorValues & input)
 {
-  const auto node = access_->Access(yaml);
-  OutputStream::Callback(node);
+  const auto node = access_->Access(input.value);
+  OutputStream::Callback(MonitorValues{node, input.attrs});
 }
 
 Topic::Topic(const TopicConfig & config) : qos_(config.depth)
@@ -65,7 +65,7 @@ void Topic::Subscribe(rclcpp::Node::SharedPtr node)
     const auto yaml = support_->ConvertYAML(*message);
     for (auto & field : fields_)
     {
-      field->Callback(yaml);
+      field->Callback(MonitorValues{yaml, {}});
     }
   };
   subscription_ = node->create_generic_subscription(name_, type_, qos_, callback);

@@ -15,14 +15,13 @@
 #ifndef MULTI_DATA_MONITOR__DESIGN_HPP_
 #define MULTI_DATA_MONITOR__DESIGN_HPP_
 
-#include <QLayout>
-#include <QWidget>
-#include <yaml-cpp/yaml.h>
+#include <multi_data_monitor/values.hpp>
+
+class QWidget;
+class QLayout;
 
 namespace multi_data_monitor
 {
-
-// default style
 
 class Design
 {
@@ -38,6 +37,7 @@ public:
   {
     throw std::runtime_error("Design::AddWidget");  // TODO(Takagi, Isamu): change exception
   }
+  virtual void Callback(const MonitorValues & input) = 0;
 };
 
 }  // namespace multi_data_monitor

@@ -12,21 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__FILTER_HPP_
-#define MULTI_DATA_MONITOR__FILTER_HPP_
+#ifndef MULTI_DATA_MONITOR__VALUES_HPP_
+#define MULTI_DATA_MONITOR__VALUES_HPP_
 
 #include <yaml-cpp/yaml.h>
+#include <string>
+#include <unordered_map>
 
 namespace multi_data_monitor
 {
 
-class Filter
+struct MonitorValues
 {
-public:
-  virtual ~Filter() = default;
-  virtual YAML::Node Apply(const YAML::Node value) = 0;
+  MonitorValues Clone() const { return MonitorValues{YAML::Clone(value), attrs}; }
+  YAML::Node value;
+  std::unordered_map<std::string, std::string> attrs;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__FILTER_HPP_
+#endif  // MULTI_DATA_MONITOR__VALUES_HPP_

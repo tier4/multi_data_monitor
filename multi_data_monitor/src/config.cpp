@@ -329,7 +329,6 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     WriteConfig("graph1.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
 
     // resolve targets
-    std::vector<std::unique_ptr<NodeConfig>> temporary;
     for (const auto & node : nodes_)
     {
       node->ResolveTarget();
@@ -340,7 +339,8 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     }
     root_ = widgets["root"]->target;
 
-    // release targets
+    // release unused nodes
+    std::vector<std::unique_ptr<NodeConfig>> temporary;
     for (auto & node : nodes_)
     {
       if (node->type != "target")
@@ -352,6 +352,8 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     }
     nodes_.swap(temporary);
     WriteConfig("graph2.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
+
+    // TODO(Takagi, Isamu): check tree
 
     // merge topic settings
     std::unordered_map<std::string, TopicMerge> topics;

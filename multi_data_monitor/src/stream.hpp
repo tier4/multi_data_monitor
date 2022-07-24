@@ -15,26 +15,29 @@
 #ifndef STREAM_HPP_
 #define STREAM_HPP_
 
+#include <multi_data_monitor/values.hpp>
 #include <yaml-cpp/yaml.h>
+#include <memory>
 #include <vector>
 
 namespace multi_data_monitor
 {
 
+class Action;
 class Design;
 
 struct Stream
 {
 public:
   virtual ~Stream() = default;
-  virtual void Callback(const YAML::Node & yaml) = 0;
+  virtual void Callback(const MonitorValues & input) = 0;
   virtual void Register(Stream * stream);
 };
 
 struct OutputStream : public Stream
 {
 public:
-  void Callback(const YAML::Node & yaml) override;
+  void Callback(const MonitorValues & input) override;
   void Register(Stream * stream) override;
 
 protected:
@@ -45,7 +48,7 @@ class WidgetStream : public Stream
 {
 public:
   explicit WidgetStream(Design * design);
-  void Callback(const YAML::Node & yaml) override;
+  void Callback(const MonitorValues & input) override;
 
 private:
   Design * design_;
@@ -54,10 +57,12 @@ private:
 class FilterStream : public OutputStream
 {
 public:
-  void Callback(const YAML::Node & yaml) override;
+  explicit FilterStream(std::vector<std::unique_ptr<Action>> && actions);
+  ~FilterStream();
+  void Callback(const MonitorValues & input) override;
 
 private:
-  // rules
+  std::vector<std::unique_ptr<Action>> actions_;
 };
 
 }  // namespace multi_data_monitor

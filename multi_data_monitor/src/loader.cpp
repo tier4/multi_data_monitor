@@ -16,8 +16,10 @@
 #include "config.hpp"
 #include "stream.hpp"
 #include "topic.hpp"
+#include <QLayout>
+#include <QWidget>
+#include <multi_data_monitor/action.hpp>
 #include <multi_data_monitor/design.hpp>
-#include <multi_data_monitor/filter.hpp>
 #include <pluginlib/class_loader.hpp>
 #include <unordered_map>
 #include <utility>
@@ -56,6 +58,7 @@ struct DesignInstance
 
 struct Loader::Impl
 {
+  std::unique_ptr<pluginlib::ClassLoader<Action>> action_loader;
   std::unique_ptr<pluginlib::ClassLoader<Design>> design_loader;
   std::vector<std::unique_ptr<Topic>> topics;
   std::vector<std::unique_ptr<Stream>> streams;
@@ -66,16 +69,18 @@ struct Loader::Impl
 Loader::Loader(rclcpp::Node::SharedPtr node)
 {
   constexpr char package[] = "multi_data_monitor";
+  constexpr char action[] = "multi_data_monitor::Action";
   constexpr char design[] = "multi_data_monitor::Design";
 
   impl_ = std::make_unique<Impl>();
   node_ = node;
+  impl_->action_loader = std::make_unique<pluginlib::ClassLoader<Action>>(package, action);
   impl_->design_loader = std::make_unique<pluginlib::ClassLoader<Design>>(package, design);
 }
 
 Loader::~Loader()
 {
-  // define the destructor here for unique_ptr.
+  // because of the forward declaration
 }
 
 template <class NodeT>
@@ -121,6 +126,15 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
     }
   }
 
+  // std::unordered_map<const NodeConfig *, Filter *> filters;
+  for (const auto & node : config.GetNodes("rule"))
+  {
+    (void)node;
+    // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
+    // cout << "TestFilter: " << rule.get() << endl;
+    // cout << rule->Apply(YAML::Node(123)) << endl;
+  }
+
   // create streams
   std::unordered_map<const NodeConfig *, Stream *> streams;
   for (const auto & node : config.GetNodes("data"))
@@ -131,19 +145,15 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
     }
     if (node->type == "filter")
     {
-      auto stream = std::make_unique<FilterStream>();
+      std::vector<std::unique_ptr<Action>> actions;
+      for (const auto & rule : node->children)
+      {
+        auto action = std::unique_ptr<Action>(impl_->action_loader->createUnmanagedInstance(rule->type));
+        actions.push_back(std::move(action));
+      }
+      auto stream = std::make_unique<FilterStream>(std::move(actions));
       streams[node] = impl_->streams.emplace_back(std::move(stream)).get();
     }
-  }
-
-  // pluginlib::ClassLoader<Filter> filter_loader("multi_data_monitor", "multi_data_monitor::Filter");
-  // std::unordered_map<const NodeConfig *, Filter *> filters;
-  for (const auto & node : config.GetNodes("rule"))
-  {
-    (void)node;
-    // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
-    // cout << "TestFilter: " << rule.get() << endl;
-    // cout << rule->Apply(YAML::Node(123)) << endl;
   }
 
   // create designs

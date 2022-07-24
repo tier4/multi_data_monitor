@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <QLabel>
+#include <QGridLayout>
 #include <multi_data_monitor/design.hpp>
 
 namespace multi_data_monitor
@@ -21,30 +21,21 @@ namespace multi_data_monitor
 class Matrix : public multi_data_monitor::Design
 {
 public:
-  QLayout * CreateLayout(const YAML::Node) override;
-  void AddWidget(QWidget *, const YAML::Node) override;
-  void AddLayout(QLayout *, const YAML::Node) override;
+  QLayout * CreateLayout(const YAML::Node) override
+  {
+    layout_ = new QGridLayout();
+    return layout_;
+  }
+
+  void AddWidget(QWidget * widget, const YAML::Node) override { layout_->addWidget(widget); }
+
+  void AddLayout(QLayout * layout, const YAML::Node) override { layout_->addLayout(layout, 1, 1); }
+
+  void Callback(const MonitorValues &) override {}
 
 private:
   QGridLayout * layout_;
 };
-
-QLayout * Matrix::CreateLayout(const YAML::Node)
-{
-  layout_ = new QGridLayout();
-  return layout_;
-}
-
-void Matrix::AddWidget(QWidget * widget, const YAML::Node)
-{
-  layout_->addWidget(widget);
-}
-
-void Matrix::AddLayout(QLayout * layout, const YAML::Node)
-{
-  (void)layout;
-  layout_->addLayout(layout, 1, 1);
-}
 
 /*
 void Matrix::Build(MonitorDict & monitors)
