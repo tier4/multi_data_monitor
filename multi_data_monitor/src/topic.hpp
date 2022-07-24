@@ -47,7 +47,7 @@ class Topic
 {
 public:
   explicit Topic(const TopicConfig & config);
-  void Subscribe(rclcpp::Node::SharedPtr node);
+  void Subscribe(rclcpp::Node::SharedPtr & node);
   void Unsubscribe();
   std::vector<std::unique_ptr<Field>> & GetFields() { return fields_; }
   std::string GetName() const { return name_; }

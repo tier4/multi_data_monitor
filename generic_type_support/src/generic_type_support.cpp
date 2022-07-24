@@ -109,7 +109,7 @@ GenericAccessElement::GenericAccessElement(const std::string & element)
 
 struct GenericMessage::GenericAccess::Data
 {
-  TypeSupportField field = nullptr;  // TODO(Takagi, Isamu): check
+  TypeSupportField field = TypeSupportField(nullptr);  // TODO(Takagi, Isamu): check
   std::vector<GenericAccessElement> elements;
 };
 

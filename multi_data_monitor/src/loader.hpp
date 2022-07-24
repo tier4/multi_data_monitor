@@ -28,15 +28,15 @@ namespace multi_data_monitor
 class Loader
 {
 public:
-  explicit Loader(rclcpp::Node::SharedPtr node);
+  Loader();
   ~Loader();
   QWidget * Reload(const std::string & package, const std::string & path);
+  void Subscribe(rclcpp::Node::SharedPtr & node);
+  void Unsubscribe();
 
 private:
   struct Impl;
   std::unique_ptr<Impl> impl_;
-  QWidget * rviz_;
-  rclcpp::Node::SharedPtr node_;
 };
 
 }  // namespace multi_data_monitor

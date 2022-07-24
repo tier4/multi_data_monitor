@@ -44,14 +44,13 @@ struct Loader::Impl
   std::vector<std::unique_ptr<Design>> designs;
 };
 
-Loader::Loader(rclcpp::Node::SharedPtr node)
+Loader::Loader()
 {
   constexpr char package[] = "multi_data_monitor";
   constexpr char action[] = "multi_data_monitor::Action";
   constexpr char design[] = "multi_data_monitor::Design";
 
   impl_ = std::make_unique<Impl>();
-  node_ = node;
   impl_->action_loader = std::make_unique<pluginlib::ClassLoader<Action>>(package, action);
   impl_->design_loader = std::make_unique<pluginlib::ClassLoader<Design>>(package, design);
 }
@@ -220,16 +219,26 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
     root->setParent(nullptr);
   }
 
-  // start subscription
-  for (auto & topic : impl_->topics)
-  {
-    topic->Subscribe(node_);
-  }
-
   return root;
 
   // TODO(Takagi, Isamu): handle exception
   // catch(pluginlib::PluginlibException& ex)
+}
+
+void Loader::Subscribe(rclcpp::Node::SharedPtr & node)
+{
+  for (auto & topic : impl_->topics)
+  {
+    topic->Subscribe(node);
+  }
+}
+
+void Loader::Unsubscribe()
+{
+  for (auto & topic : impl_->topics)
+  {
+    topic->Unsubscribe();
+  }
 }
 
 }  // namespace multi_data_monitor

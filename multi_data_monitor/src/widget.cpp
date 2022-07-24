@@ -81,17 +81,21 @@ void MultiDataMonitor::save(rviz_common::Config config) const
 {
   Panel::save(config);
   // setting_->save(config);
+
+  // TODO(Takagi, Isamu): temporary
+  config.mapSetValue("Package", QString::fromStdString(package_));
+  config.mapSetValue("Path", QString::fromStdString(path_));
 }
 
 void MultiDataMonitor::load(const rviz_common::Config & config)
 {
   Panel::load(config);
+  // setting_->load(config);
 
   // TODO(Takagi, Isamu): temporary
   package_ = config.mapGetChild("Package").getValue().toString().toStdString();
   path_ = config.mapGetChild("Path").getValue().toString().toStdString();
 
-  // setting_->load(config);
   reload();
 }
 
@@ -108,8 +112,8 @@ void MultiDataMonitor::onInitialize()
     parent->setTitleBarWidget(widget);
   }
 
-  auto rviz_node = getDisplayContext()->getRosNodeAbstraction().lock();
-  loader_ = std::make_unique<Loader>(rviz_node->get_raw_node());
+  rviz_node_ = getDisplayContext()->getRosNodeAbstraction().lock()->get_raw_node();
+  loader_ = std::make_unique<Loader>();
 }
 
 void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
@@ -138,8 +142,19 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 
 void MultiDataMonitor::reload()
 {
-  // QWidget * widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
-  QWidget * widget = loader_->Reload(package_, path_);
+  QWidget * widget = nullptr;
+  try
+  {
+    // widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
+    widget = loader_->Reload(package_, path_);
+    loader_->Subscribe(rviz_node_);
+  }
+  catch (const std::exception & error)
+  {
+    widget = new QLabel(error.what());
+    RCLCPP_ERROR_STREAM(rviz_node_->get_logger(), error.what());
+  }
+
   if (widget)
   {
     QStackedLayout * stacked = dynamic_cast<QStackedLayout *>(layout());
@@ -147,7 +162,6 @@ void MultiDataMonitor::reload()
     monitor_ = widget;
     stacked->addWidget(monitor_);
     stacked->setCurrentWidget(monitor_);
-    setLayout(stacked);
   }
 }
 

@@ -58,7 +58,7 @@ Topic::Topic(const TopicConfig & config) : qos_(config.depth)
   }
 }
 
-void Topic::Subscribe(rclcpp::Node::SharedPtr node)
+void Topic::Subscribe(rclcpp::Node::SharedPtr & node)
 {
   const auto callback = [this](const std::shared_ptr<rclcpp::SerializedMessage> message)
   {

@@ -57,6 +57,7 @@ public:
   void reload();
 
 private:
+  rclcpp::Node::SharedPtr rviz_node_;
   std::unique_ptr<Loader> loader_;
   QWidget * monitor_;
   SettingWidget * setting_;
