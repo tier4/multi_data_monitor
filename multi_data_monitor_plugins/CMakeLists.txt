@@ -26,6 +26,7 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/actions/units.cpp
   src/layouts/matrix.cpp
   src/widgets/simple.cpp
+  src/widgets/title.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}

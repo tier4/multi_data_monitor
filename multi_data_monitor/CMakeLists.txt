@@ -32,6 +32,7 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/stream.cpp
   src/topic.hpp
   src/topic.cpp
+  src/header/design.cpp
 )
 target_link_libraries(${PROJECT_NAME}
   ${QT_LIBRARIES}

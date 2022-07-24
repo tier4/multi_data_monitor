@@ -22,47 +22,40 @@ class Matrix : public multi_data_monitor::Design
 {
 private:
   QGridLayout * layout_;
+  int cols_;
+  int rows_;
+  int x_;
+  int y_;
+  void Increment()
+  {
+    x_ += 1;
+    y_ += x_ / cols_;
+    x_ %= cols_;
+    y_ %= rows_;
+  }
 
 public:
-  Instance Create(const YAML::Node) override
+  Instance Create(const YAML::Node yaml) override
   {
+    cols_ = yaml["cols"].as<int>();
+    rows_ = yaml["rows"].as<int>();
+    x_ = 0;
+    y_ = 0;
     layout_ = new QGridLayout();
     return layout_;
   }
-  void AddWidget(QWidget * widget, const YAML::Node) override { layout_->addWidget(widget); }
-  void AddLayout(QLayout * layout, const YAML::Node) override { layout_->addLayout(layout, 1, 1); }
-  void Callback(const MonitorValues &) override {}
-};
-
-/*
-void Matrix::Build(MonitorDict & monitors)
-{
-  layout_ = grid = new QGridLayout();
-
-  int cols = config_.custom["cols"].as<int>();
-  int rows = config_.custom["rows"].as<int>();
-  int x = 0;
-  int y = 0;
-
-  for (const auto & node : config_.custom["children"])
+  void AddWidget(QWidget * widget, const YAML::Node) override
   {
-    const auto & child = monitors[node.as<std::string>()];
-    if (child)
-    {
-      child->Build(monitors);
-      const auto widget = child->GetWidget();
-      const auto layout = child->GetLayout();
-      if (widget) { grid->addWidget(widget, y, x); }
-      if (layout) { grid->addLayout(layout, y, x); }
-    }
-
-    x += 1;
-    y += x / cols;
-    x %= cols;
-    y %= rows;
+    layout_->addWidget(widget, y_, x_);
+    Increment();
   }
-}
-*/
+  void AddLayout(QLayout * layout, const YAML::Node) override
+  {
+    layout_->addLayout(layout, y_, x_);
+    Increment();
+  }
+  void Callback(const MonitorValues &) override {}  // TODO(Takagi, Isamu): remove
+};
 
 }  // namespace multi_data_monitor
 

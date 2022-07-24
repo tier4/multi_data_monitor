@@ -10,6 +10,7 @@ stylesheets:
   - { path: /home/isamu-takagi/working/multi_data_monitor/multi_data_monitor/config/css/default.css }
   - { path: /home/isamu-takagi/working/multi_data_monitor/multi_data_monitor/config/css/colors.css }
   - { package: multi_data_monitor, path: config/css/plugins/simple.css, target: multi_data_monitor::Simple }
+  - { package: multi_data_monitor, path: config/css/plugins/title.css, target: multi_data_monitor::Title }
 
 # --------------------------------------------------
 # widgets
@@ -17,15 +18,20 @@ stylesheets:
 widgets:
   root:
     class: multi_data_monitor::Matrix
-    param: { cols: 3, rows: 2 }
+    cols: 3
+    rows: 2
     children:
       - widget1
       - widget2
       - widget3
+      - { class: multi_data_monitor::Simple }
+      - { class: multi_data_monitor::Simple }
+      - { class: multi_data_monitor::Simple }
 
   widget1:
-    class: multi_data_monitor::Simple
-    param: { title: Frame }
+    class: multi_data_monitor::Title
+    title: "Text: "
+    notes: The description displayed when mouse over
     input:
       class: filter
       input: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
@@ -38,12 +44,12 @@ widgets:
             3: { value: C, attrs: { background-color: red } }
 
   widget2:
-    class: multi_data_monitor::Simple
+    class: multi_data_monitor::Title
     param: { title: Second }
     input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
 
   widget3:
-    class: multi_data_monitor::Simple
+    class: multi_data_monitor::Title
     param: { title: NanoSecond }
     input:
       class: filter

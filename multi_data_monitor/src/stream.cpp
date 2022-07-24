@@ -52,8 +52,8 @@ WidgetStream::WidgetStream(Design * design)
 
 void WidgetStream::Callback(const MonitorValues & input)
 {
-  cout << "========== widget ==========" << endl;
-  cout << input.value << endl;
+  // cout << "========== widget ==========" << endl;
+  // cout << input.value << endl;
 
   design_->Callback(input);
 }
@@ -70,8 +70,8 @@ FilterStream::~FilterStream()
 
 void FilterStream::Callback(const MonitorValues & input)
 {
-  cout << "========== filter ==========" << endl;
-  cout << input.value << endl;
+  // cout << "========== filter ==========" << endl;
+  // cout << input.value << endl;
 
   MonitorValues output = input.Clone();
   for (const auto & action : actions_)

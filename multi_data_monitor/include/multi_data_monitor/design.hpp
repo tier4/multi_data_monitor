@@ -29,16 +29,11 @@ class Design
 public:
   using Instance = std::variant<QWidget *, QLayout *>;
   virtual ~Design() = default;
-  virtual Instance Create(const YAML::Node) = 0;
-  virtual void AddWidget(QWidget *, const YAML::Node)
-  {
-    throw std::runtime_error("Design::AddWidget");  // TODO(Takagi, Isamu): change exception
-  }
-  virtual void AddLayout(QLayout *, const YAML::Node)
-  {
-    throw std::runtime_error("Design::AddWidget");  // TODO(Takagi, Isamu): change exception
-  }
+  virtual Instance Create(const YAML::Node params) = 0;
+  virtual void AddWidget(QWidget *, const YAML::Node params);
+  virtual void AddLayout(QLayout *, const YAML::Node params);
   virtual void Callback(const MonitorValues & input) = 0;
+  void UpdateProperties(const MonitorValues & input, QWidget * widget);
 };
 
 }  // namespace multi_data_monitor
