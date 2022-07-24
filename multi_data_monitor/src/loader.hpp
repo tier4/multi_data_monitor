@@ -30,7 +30,7 @@ class Loader
 public:
   Loader();
   ~Loader();
-  QWidget * Reload(const std::string & package, const std::string & path);
+  QWidget * Reload(const std::string & path);
   void Subscribe(rclcpp::Node::SharedPtr & node);
   void Unsubscribe();
 

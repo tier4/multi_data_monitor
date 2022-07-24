@@ -88,9 +88,9 @@ void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children 
   }
 }
 
-QWidget * Loader::Reload(const std::string & package, const std::string & path)
+QWidget * Loader::Reload(const std::string & path)
 {
-  const auto config = ConfigFile(package, path);
+  const auto config = ConfigFile(path);
 
   // create field stream
   std::unordered_map<std::string, std::unordered_map<std::string, Field *>> subscriptions;

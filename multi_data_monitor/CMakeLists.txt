@@ -34,17 +34,14 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/topic.cpp
   src/header/design.cpp
 )
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
-)
-pluginlib_export_plugin_description_file(rviz_common plugins/plugin_description.xml)
-
+target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 
 ament_auto_add_executable(debug
-  test/debug.cpp
+  src/debug.cpp
 )
 target_link_libraries(debug ${PROJECT_NAME})
 
+pluginlib_export_plugin_description_file(rviz_common plugins/plugin_description.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

@@ -29,6 +29,7 @@
 namespace multi_data_monitor
 {
 
+/*
 SettingWidget::SettingWidget(rviz_common::Panel * panel) : QWidget(panel)
 {
   const auto layout = new QGridLayout();
@@ -67,6 +68,7 @@ std::string SettingWidget::getPath() const
 {
   return path_->text().toStdString();
 }
+*/
 
 MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent)
 {
@@ -83,7 +85,6 @@ void MultiDataMonitor::save(rviz_common::Config config) const
   // setting_->save(config);
 
   // TODO(Takagi, Isamu): temporary
-  config.mapSetValue("Package", QString::fromStdString(package_));
   config.mapSetValue("Path", QString::fromStdString(path_));
 }
 
@@ -93,7 +94,6 @@ void MultiDataMonitor::load(const rviz_common::Config & config)
   // setting_->load(config);
 
   // TODO(Takagi, Isamu): temporary
-  package_ = config.mapGetChild("Package").getValue().toString().toStdString();
   path_ = config.mapGetChild("Path").getValue().toString().toStdString();
 
   reload();
@@ -146,7 +146,7 @@ void MultiDataMonitor::reload()
   try
   {
     // widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
-    widget = loader_->Reload(package_, path_);
+    widget = loader_->Reload(path_);
     loader_->Subscribe(rviz_node_);
   }
   catch (const std::exception & error)

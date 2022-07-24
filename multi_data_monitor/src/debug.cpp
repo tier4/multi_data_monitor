@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "../src/loader.hpp"
+#include "loader.hpp"
 #include <rclcpp/rclcpp.hpp>
 
 int main(int argc, char ** argv)
@@ -21,7 +21,7 @@ int main(int argc, char ** argv)
   const auto node = std::make_shared<rclcpp::Node>("test");
 
   multi_data_monitor::Loader loader;
-  loader.Reload("multi_data_monitor", "config/version1.yaml");
+  loader.Reload("package://multi_data_monitor/config/version1.yaml");
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);

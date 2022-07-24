@@ -61,8 +61,7 @@ private:
   std::unique_ptr<Loader> loader_;
   QWidget * monitor_;
   SettingWidget * setting_;
-  std::string package_;  // TODO(Takagi, Isamu): temporary
-  std::string path_;     // TODO(Takagi, Isamu): temporary
+  std::string path_;  // TODO(Takagi, Isamu): temporary
 };
 
 }  // namespace multi_data_monitor

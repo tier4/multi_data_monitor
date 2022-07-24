@@ -252,23 +252,47 @@ NodeConfig * NodeConfig::ResolveTarget()
   return target;
 }
 
-std::filesystem::path ResolvePackage(const std::string & package, const std::string & file)
+std::filesystem::path ResolveFileSystemPath(const std::string & path)
 {
-  auto file_path = std::filesystem::path();
-  if (!package.empty())
+  const std::string scheme = "file://";
+  if (path.find(scheme) == 0)
   {
-    file_path.append(ament_index_cpp::get_package_share_directory(package));
+    return std::filesystem::path(path.substr(scheme.size()));
   }
-  file_path.append(file);
-  return file_path;
+  throw SystemError("invalid path: " + path);
 }
 
-ConfigFile::ConfigFile(const std::string & package, const std::string & file)
+std::filesystem::path ResolvePackagePath(const std::string & path)
+{
+  try
+  {
+    const std::string scheme = "package://";
+    if (path.find(scheme) == 0)
+    {
+      size_t pos1 = scheme.size();
+      size_t pos2 = path.find("/", pos1);
+      if (pos2 == std::string::npos)
+      {
+        throw SystemError("invalid path: " + path);
+      }
+      const auto package_name = path.substr(pos1, pos2 - pos1);
+      const auto package_path = ament_index_cpp::get_package_share_directory(package_name);
+      return std::filesystem::path(package_path + path.substr(pos2));
+    }
+    return ResolveFileSystemPath(path);
+  }
+  catch (const ament_index_cpp::PackageNotFoundError & error)
+  {
+    throw SystemError("package not found: " + error.package_name);
+  }
+}
+
+ConfigFile::ConfigFile(const std::string & file)
 {
   try
   {
     // check to distinguish from errors in YAML::LoadFile
-    const auto file_path = ResolvePackage(package, file);
+    const auto file_path = ResolvePackagePath(file);
     if (!std::filesystem::exists(file_path))
     {
       throw SystemError("file not found: " + file_path.string());
@@ -285,11 +309,9 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     for (const auto & style : yaml["stylesheets"])
     {
       NodeConfig config(style, "stylesheets", "stylesheets");
-      const auto package = config.TakeNode("package", true).as<std::string>("");
-      const auto path = config.TakeNode("path").as<std::string>("");
       const auto target = config.TakeNode("target", true).as<std::string>("");
-
-      const auto file = ResolvePackage(package, path);
+      const auto path = config.TakeNode("path").as<std::string>("");
+      const auto file = ResolvePackagePath(path);
       std::ifstream ifs(file);
       std::stringstream buffer;
       buffer << ifs.rdbuf();
@@ -368,10 +390,6 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     {
       topics_.push_back(merge.second.Convert());
     }
-  }
-  catch (const ament_index_cpp::PackageNotFoundError & error)
-  {
-    throw SystemError("package not found: " + package);
   }
   catch (YAML::Exception & error)
   {
