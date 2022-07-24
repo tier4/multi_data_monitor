@@ -154,7 +154,6 @@ void MultiDataMonitor::reload()
     stacked->addWidget(monitor_);
     stacked->setCurrentWidget(monitor_);
     setLayout(stacked);
-    this->dumpObjectTree();
   }
 }
 

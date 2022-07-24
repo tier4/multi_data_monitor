@@ -28,6 +28,8 @@
 
 namespace multi_data_monitor
 {
+
+// TODO(Takagi, Isamu): move to tools
 void WriteFile(const std::string & path, std::vector<std::string> & lines)
 {
   std::ofstream ofs(path);
@@ -37,6 +39,7 @@ void WriteFile(const std::string & path, std::vector<std::string> & lines)
   }
 }
 
+// TODO(Takagi, Isamu): move to tools
 void WriteConfig(const std::string & path, const std::vector<std::unique_ptr<NodeConfig>> & nodes)
 {
   std::vector<std::string> plant;
@@ -249,19 +252,23 @@ NodeConfig * NodeConfig::ResolveTarget()
   return target;
 }
 
+std::filesystem::path ResolvePackage(const std::string & package, const std::string & file)
+{
+  auto file_path = std::filesystem::path();
+  if (!package.empty())
+  {
+    file_path.append(ament_index_cpp::get_package_share_directory(package));
+  }
+  file_path.append(file);
+  return file_path;
+}
+
 ConfigFile::ConfigFile(const std::string & package, const std::string & file)
 {
   try
   {
-    // resolve package
-    auto file_path = std::filesystem::path();
-    if (!package.empty())
-    {
-      file_path.append(ament_index_cpp::get_package_share_directory(package));
-    }
-    file_path.append(file);
-
     // check to distinguish from errors in YAML::LoadFile
+    const auto file_path = ResolvePackage(package, file);
     if (!std::filesystem::exists(file_path))
     {
       throw SystemError("file not found: " + file_path.string());
@@ -272,6 +279,21 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
     if (yaml["version"].as<std::string>("") != "1")
     {
       throw ConfigError("this version is not supported");
+    }
+
+    // laod stylesheets
+    for (const auto & style : yaml["stylesheets"])
+    {
+      NodeConfig config(style, "stylesheets", "stylesheets");
+      const auto package = config.TakeNode("package", true).as<std::string>("");
+      const auto path = config.TakeNode("path").as<std::string>("");
+      const auto target = config.TakeNode("target", true).as<std::string>("");
+
+      const auto file = ResolvePackage(package, path);
+      std::ifstream ifs(file);
+      std::stringstream buffer;
+      buffer << ifs.rdbuf();
+      stylesheets[target] += buffer.str();
     }
 
     // load widgets
@@ -304,7 +326,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
         // clang-format on
       }
     }
-    WriteConfig("graph1.plantuml", nodes_);
+    WriteConfig("graph1.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
 
     // resolve targets
     std::vector<std::unique_ptr<NodeConfig>> temporary;
@@ -329,7 +351,7 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
       }
     }
     nodes_.swap(temporary);
-    WriteConfig("graph2.plantuml", nodes_);
+    WriteConfig("graph2.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
 
     // merge topic settings
     std::unordered_map<std::string, TopicMerge> topics;
@@ -353,28 +375,6 @@ ConfigFile::ConfigFile(const std::string & package, const std::string & file)
   {
     throw SystemError(error.what());
   }
-}
-const NodeConfig * ConfigFile::GetRoot() const
-{
-  return root_;
-}
-
-const std::vector<TopicConfig> & ConfigFile::GetTopics() const
-{
-  return topics_;
-}
-
-const std::vector<NodeConfig *> ConfigFile::GetNodes(const std::string & mode) const
-{
-  std::vector<NodeConfig *> nodes;
-  for (const auto & node : nodes_)
-  {
-    if (mode.empty() || mode == node->mode)
-    {
-      nodes.push_back(node.get());
-    }
-  }
-  return nodes;
 }
 
 NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path, const std::string & mode)
@@ -427,6 +427,34 @@ NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path, const 
   parse_children(node, "rules", "rule");
   parse_children(node, "children", "view");
   return node;
+}
+
+const NodeConfig * ConfigFile::GetRoot() const
+{
+  return root_;
+}
+
+const std::vector<TopicConfig> & ConfigFile::GetTopics() const
+{
+  return topics_;
+}
+
+const std::vector<NodeConfig *> ConfigFile::GetNodes(const std::string & mode) const
+{
+  std::vector<NodeConfig *> nodes;
+  for (const auto & node : nodes_)
+  {
+    if (mode.empty() || mode == node->mode)
+    {
+      nodes.push_back(node.get());
+    }
+  }
+  return nodes;
+}
+
+const std::string ConfigFile::GetStyleSheet(const std::string & target) const
+{
+  return stylesheets.count(target) ? stylesheets.at(target) : std::string();
 }
 
 }  // namespace multi_data_monitor

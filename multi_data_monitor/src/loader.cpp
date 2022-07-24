@@ -140,6 +140,7 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
   // std::unordered_map<const NodeConfig *, Filter *> filters;
   for (const auto & node : config.GetNodes("rule"))
   {
+    (void)node;
     // const auto rule = filter_loader.createUniqueInstance("multi_data_monitor::TestFilter");
     // cout << "TestFilter: " << rule.get() << endl;
     // cout << rule->Apply(YAML::Node(123)) << endl;
@@ -178,20 +179,22 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
   std::unordered_map<const NodeConfig *, DesignInstance> instances;
   for (const auto & [node, design] : designs)
   {
+    const auto stylesheet = config.GetStyleSheet(node->type);
     auto * layout = design->CreateLayout(node->yaml);
     auto * widget = design->CreateWidget(node->yaml);
+    if (widget)
+    {
+      widget->setStyleSheet(QString::fromStdString(stylesheet));
+    }
     instances.emplace(node, DesignInstance(layout, widget));
   }
 
   // connect widgets
   for (const auto [node, design] : designs)
   {
-    cout << node->type << endl;
     for (const auto child : node->children)
     {
       const auto instance = instances.at(child);
-      cout << "  " << child->type << " " << instance.layout << " " << instance.widget << endl;
-
       if (instance.layout)
       {
         design->AddLayout(instance.layout, YAML::Node());
@@ -204,21 +207,26 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
   }
 
   DesignInstance root_instance = instances.at(config.GetRoot());
-  QWidget * root = root_instance.widget;
-  if (root == nullptr)
+  QWidget * root = nullptr;
+
+  if (root_instance.layout)
   {
     root = new QWidget();
     root->setLayout(root_instance.layout);
   }
+  if (root_instance.widget)
+  {
+    root = root_instance.widget;
+  }
+
+  const auto stylesheet = config.GetStyleSheet();
+  root->setStyleSheet(QString::fromStdString(stylesheet));
 
   // place the dummy root object in stack memory to automatically release Qt objects
   {
     QWidget dummy_root_widget;
-    root->setParent(&dummy_root_widget);
-
     for (const auto [node, instance] : instances)
     {
-      cout << "  " << instance.layout << " " << instance.widget << endl;
       if (instance.layout && instance.layout->parent() == nullptr)
       {
         instance.layout->setParent(&dummy_root_widget);
@@ -228,17 +236,8 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
         instance.widget->setParent(&dummy_root_widget);
       }
     }
-
-    cout << "============ dummy ============" << endl;
-    dummy_root_widget.dumpObjectTree();
-    cout << "============ dummy ============" << endl;
     root->setParent(nullptr);
-    dummy_root_widget.dumpObjectTree();
-    cout << "============ root ============" << endl;
-    root->dumpObjectTree();
-    cout << "==============================" << endl;
   }
-  cout << "==============================" << endl;
 
   // start subscription
   for (auto & topic : impl_->topics)
@@ -247,15 +246,9 @@ QWidget * Loader::Reload(const std::string & package, const std::string & path)
   }
 
   return root;
-  throw LogicError("design create 3");  // TODO(Takagi, Isamu): message
 
   // TODO(Takagi, Isamu): handle exception
-  /*
-  catch(pluginlib::PluginlibException& ex)
-  {
-    printf("The plugin failed to load for some reason. Error: %s\n", ex.what());
-  }
-  */
+  // catch(pluginlib::PluginlibException& ex)
 }
 
 }  // namespace multi_data_monitor

@@ -28,13 +28,15 @@ private:
 
 QWidget * Simple::CreateWidget(const YAML::Node)
 {
-  constexpr auto kStyleSheet = "border-width: 1px 1px 1px 1px; border-style: solid;";
-
   // title_ = config_.custom["title"].as<std::string>("");
   const auto label = new QLabel(QString::fromStdString("Simple"));
   label->setAlignment(Qt::AlignCenter);
-  label->setStyleSheet(kStyleSheet);
+  /*
   label->setToolTip("Simple Widget");
+  label->setStyleSheet(kStyleSheet);
+  label->setProperty("color", QVariant("red"));
+  label->setProperty("class", QVariant("multi_data_monitor::Simple"));
+  */
   return label;
 }
 

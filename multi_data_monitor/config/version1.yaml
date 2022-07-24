@@ -4,9 +4,12 @@
 version: 1
 
 # --------------------------------------------------
-# defaults
+# style
 # --------------------------------------------------
-defaults: ~
+stylesheets:
+  - { path: /home/isamu-takagi/working/multi_data_monitor/multi_data_monitor/config/css/default.css }
+  - { path: /home/isamu-takagi/working/multi_data_monitor/multi_data_monitor/config/css/colors.css }
+  - { package: multi_data_monitor, path: config/css/plugins/simple.css, target: multi_data_monitor::Simple }
 
 # --------------------------------------------------
 # widgets

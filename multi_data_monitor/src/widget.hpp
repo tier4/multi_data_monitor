@@ -16,8 +16,8 @@
 #define WIDGET_HPP_
 
 #include "loader.hpp"
-#include <QGridLayout>  // debug
-#include <QLabel>       // debug
+#include <QGridLayout>  // TODO(Takagi, Isamu): debug
+#include <QLabel>       // TODO(Takagi, Isamu): debug
 #include <rviz_common/panel.hpp>
 #include <memory>
 #include <string>
@@ -25,18 +25,20 @@
 class QMouseEvent;
 class QLineEdit;
 
+// TODO(Takagi, Isamu): debug
 struct MyLabel : public QLabel
 {
   Q_OBJECT
   using QLabel::QLabel;
-  ~MyLabel() { printf("Delete MyLabel\n"); }
+  // ~MyLabel() { printf("Delete MyLabel\n"); }
 };
 
+// TODO(Takagi, Isamu): debug
 struct MyGrid : public QGridLayout
 {
   Q_OBJECT
   using QGridLayout::QGridLayout;
-  ~MyGrid() { printf("Delete MyGrid\n"); }
+  // ~MyGrid() { printf("Delete MyGrid\n"); }
 };
 
 namespace multi_data_monitor

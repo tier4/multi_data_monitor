@@ -19,6 +19,7 @@
 #include <yaml-cpp/yaml.h>
 #include <memory>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 namespace multi_data_monitor
@@ -67,12 +68,14 @@ public:
   const NodeConfig * GetRoot() const;
   const std::vector<NodeConfig *> GetNodes(const std::string & mode = "") const;
   const std::vector<TopicConfig> & GetTopics() const;
+  const std::string GetStyleSheet(const std::string & target = "") const;
 
 private:
   NodeConfig * Parse(YAML::Node yaml, const std::string & path, const std::string & mode);
   NodeConfig * root_;
   std::vector<std::unique_ptr<NodeConfig>> nodes_;
   std::vector<TopicConfig> topics_;
+  std::unordered_map<std::string, std::string> stylesheets;
 };
 
 }  // namespace multi_data_monitor
