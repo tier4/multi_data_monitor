@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 project(multi_data_monitor)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -17,36 +17,31 @@ find_package(Qt5 ${rviz_QT_VERSION} REQUIRED Core Widgets)
 set(QT_LIBRARIES Qt5::Widgets)
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
-add_definitions(-DQT_NO_KEYWORDS)
+add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/manager.hpp
-  src/manager.cpp
-  src/panel.hpp
-  src/panel.cpp
-  src/subscription.hpp
-  src/subscription.cpp
-  src/style.hpp
-  src/style.cpp
-  src/function.hpp
-  src/function.cpp
-  src/monitor.hpp
-  src/monitor.cpp
-  src/matrix.hpp
-  src/matrix.cpp
-  src/simple.hpp
-  src/simple.cpp
-  src/titled.hpp
-  src/titled.cpp
-  src/config/loader.hpp
-  src/config/loader.cpp
-  src/config/config.hpp
-  src/config/config.cpp
+  src/widget.hpp
+  src/widget.cpp
+  src/errors.hpp
+  src/errors.cpp
+  src/config.hpp
+  src/config.cpp
+  src/loader.hpp
+  src/loader.cpp
+  src/stream.hpp
+  src/stream.cpp
+  src/topic.hpp
+  src/topic.cpp
+  src/header/design.cpp
 )
-target_link_libraries(${PROJECT_NAME}
-  ${QT_LIBRARIES}
+target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+
+ament_auto_add_executable(debug
+  src/debug.cpp
 )
-pluginlib_export_plugin_description_file(rviz_common plugins/plugin_description.xml)
+target_link_libraries(debug ${PROJECT_NAME})
+
+pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

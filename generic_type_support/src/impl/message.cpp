@@ -14,8 +14,7 @@
 
 #include "message.hpp"
 #include "field.hpp"
-#include "generic_type_support/errors.hpp"
-#include <iostream>
+#include <generic_type_support/errors.hpp>
 
 namespace generic_type_support
 {
@@ -29,7 +28,7 @@ TypeSupportMessage::TypeSupportMessage(const IntrospectionMessage * message)
   }
 }
 
-TypeSupportMessage::TypeSupportMessage(const  IntrospectionHandle * handle)
+TypeSupportMessage::TypeSupportMessage(const IntrospectionHandle * handle)
 {
   message_ = reinterpret_cast<const IntrospectionMessage *>(handle->data);
   for (uint32_t i = 0; i < message_->member_count_; ++i)
@@ -40,7 +39,7 @@ TypeSupportMessage::TypeSupportMessage(const  IntrospectionHandle * handle)
 
 TypeSupportMessage::~TypeSupportMessage()
 {
-  // define the destructor here to delete members.
+  // because of the forward declaration
 }
 
 const std::string TypeSupportMessage::GetTypeName() const
@@ -59,9 +58,12 @@ const TypeSupportField TypeSupportMessage::GetField(const std::string name) cons
 {
   for (const auto field : fields_)
   {
-    if (name == field.GetDataName()) { return field; }
+    if (name == field.GetDataName())
+    {
+      return field;
+    }
   }
-  throw FieldError("Field '" + name +"' is not a member of '" + GetTypeName() + "'");
+  throw FieldError("Field '" + name + "' is not a member of '" + GetTypeName() + "'");
 }
 
 void TypeSupportMessage::CreateMemory(void *& data) const

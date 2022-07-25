@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 project(generic_type_support)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -21,12 +21,12 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/impl/convert.cpp
 )
 
-ament_auto_add_executable(debug1
-  src/debug1.cpp
+ament_auto_add_executable(print
+  src/examples/print.cpp
 )
 
-ament_auto_add_executable(debug2
-  src/debug2.cpp
+ament_auto_add_executable(check
+  src/examples/check.cpp
 )
 
 if(BUILD_TESTING)

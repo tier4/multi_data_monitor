@@ -1,0 +1,14 @@
+メッセージ名ミス
+Something went wrong loading the typesupport library for message type std_msgs/Uint32. Library could not be found.
+
+トピックのタイプ設定忘れ
+
+ルート要素がない
+
+参照ループ
+
+孤立ノード検出（未使用）
+
+スタイルシートのパスが間違っている
+
+間違ったプラグイン名を指定している

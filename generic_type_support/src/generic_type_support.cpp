@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "generic_type_support/generic_type_support.hpp"
-#include "impl/library.hpp"
 #include "impl/convert.hpp"
-#include "impl/message.hpp"
 #include "impl/field.hpp"
+#include "impl/library.hpp"
+#include "impl/message.hpp"
+#include <generic_type_support/generic_type_support.hpp>
 
 namespace generic_type_support
 {
 
 struct GenericMessage::Data
 {
-  Data(const std::string & type_name);
+  explicit Data(const std::string & type_name);
   const TypeSupportLibrary introspection_library;
   const TypeSupportLibrary serialization_library;
   const TypeSupportMessage introspection;
@@ -36,7 +36,6 @@ GenericMessage::Data::Data(const std::string & type_name)
   introspection(introspection_library.GetMessage()),
   serialization(serialization_library.CreateSerialization())
 {
-
 }
 
 GenericMessage::GenericMessage(const std::string & type_name)
@@ -46,7 +45,7 @@ GenericMessage::GenericMessage(const std::string & type_name)
 
 GenericMessage::~GenericMessage()
 {
-  // define the destructor here to delete members.
+  // because of the forward declaration
 }
 
 std::string GenericMessage::GetTypeName() const
@@ -64,19 +63,17 @@ YAML::Node GenericMessage::ConvertYAML(const rclcpp::SerializedMessage & seriali
   return yaml;
 }
 
-GenericMessage::GenericAccess GenericMessage::GetAccess(const std::string & path) const
+std::shared_ptr<GenericMessage::GenericAccess> GenericMessage::GetAccess(const std::string & path) const
 {
-  return GenericAccess(*this, path);
+  return std::make_shared<GenericAccess>(*this, path);
 }
-
-
 
 std::vector<std::string> split(const std::string & input, char delimiter)
 {
   std::vector<std::string> result;
   size_t found = input.find(delimiter);
   size_t start = 0;
-  while(found != std::string::npos)
+  while (found != std::string::npos)
   {
     result.push_back(input.substr(start, found - start));
     start = found + 1;
@@ -98,8 +95,7 @@ std::string join(const std::vector<std::string> & input, const std::string & del
 
 struct GenericAccessElement
 {
-  GenericAccessElement(const std::string & element);
-
+  explicit GenericAccessElement(const std::string & element);
   int index;
   std::string name;
 };
@@ -111,11 +107,9 @@ GenericAccessElement::GenericAccessElement(const std::string & element)
   index = token.size() == 2 ? std::stoi(token[1]) : -1;
 }
 
-
-
 struct GenericMessage::GenericAccess::Data
 {
-  TypeSupportField field = nullptr;  // TODO: check
+  TypeSupportField field = TypeSupportField(nullptr);  // TODO(Takagi, Isamu): check
   std::vector<GenericAccessElement> elements;
 };
 
@@ -127,14 +121,14 @@ GenericMessage::GenericAccess::GenericAccess(const GenericMessage & generic, con
     data_->elements.emplace_back(element);
   }
 
-  // TODO: check array type
+  // TODO(Takagi, Isamu): check array type
   TypeSupportField field = generic.data_->introspection.GetField(data_->elements.at(0).name);
   for (size_t i = 1, n = data_->elements.size(); i < n; ++i)
   {
     const auto & element = data_->elements[i];
     if (!field.IsMessage())
     {
-      throw FieldError("Field '" + element.name +"' is not a member of '" + field.GetTypeName() + "'");
+      throw FieldError("Field '" + element.name + "' is not a member of '" + field.GetTypeName() + "'");
     }
     field = field.GetMessage().GetField(data_->elements[i].name);
   }
@@ -143,7 +137,7 @@ GenericMessage::GenericAccess::GenericAccess(const GenericMessage & generic, con
 
 GenericMessage::GenericAccess::~GenericAccess()
 {
-  // define the destructor here to delete members.
+  // because of the forward declaration
 }
 
 bool GenericMessage::GenericAccess::IsMessage() const

@@ -14,6 +14,7 @@
 
 #include "library.hpp"
 #include "message.hpp"
+#include <string>
 
 namespace generic_type_support
 {
