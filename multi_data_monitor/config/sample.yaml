@@ -1,83 +1,57 @@
 # --------------------------------------------------
-# headers
+# metadata
 # --------------------------------------------------
-version: 0
-root: main
+version: 1
 
 # --------------------------------------------------
-# defaults
+# style
 # --------------------------------------------------
-defaults:
-  - class: simple
-    style: { font-size: 12 }
-
-  - class: titled
-    style:
-      title: { font-size: 12 }
-      value: { font-size: 24 }
+stylesheets:
+  - { path: package://multi_data_monitor/config/css/default.css }
+  - { path: package://multi_data_monitor/config/css/plugins/simple.css, target: multi_data_monitor::Simple }
+  - { path: package://multi_data_monitor/config/css/plugins/title.css, target: multi_data_monitor::Title }
 
 # --------------------------------------------------
-# monitors
+# widgets
 # --------------------------------------------------
-monitors:
-  main:
-    class: matrix
+widgets:
+  root:
+    class: multi_data_monitor::Matrix
     cols: 3
     rows: 2
     children:
-      - data_name_1
-      - data_name_2
-      - data_name_3
-      - data_name_4
-      - data_name_5
-      - data_name_6
+      - widget1
+      - widget2
+      - widget3
+      - { class: multi_data_monitor::Simple }
+      - { class: multi_data_monitor::Simple }
+      - { class: multi_data_monitor::Simple }
 
-  data_name_1:
-    class: titled
-    topic: { name: /monitor/header, type: std_msgs/msg/Header }
-    field: { name: stamp.sec }
-    title: Second
+  widget1:
+    class: multi_data_monitor::Title
+    title: "Text: "
+    notes: The description displayed when mouse over
+    input:
+      class: filter
+      input: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+      rules:
+        - class: multi_data_monitor::Switch
+          default: { value: ERROR, attrs: { background-color: "" } }
+          mapping:
+            1: { value: A, attrs: { background-color: green } }
+            2: { value: B, attrs: { background-color: yellow } }
+            3: { value: C, attrs: { background-color: red } }
 
-  data_name_2:
-    class: titled
-    topic: { name: /monitor/header, type: std_msgs/msg/Header }
-    field: { name: stamp.nanosec }
-    title: Nanosecond
-    style:
-      title: { font-size: 12 }
-      value: { font-size: 24 }
+  widget2:
+    class: multi_data_monitor::Title
+    param: { title: Second }
+    input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
 
-  data_name_3:
-    class: titled
-    topic: { name: /monitor/double, type: std_msgs/msg/Float64 }
-    field: { name: data }
-    title: Float Value
-    rules:
-      - { func: units, args: mps_to_kph }
-      - { func: precision, args: 2 }
-
-  data_name_4:
-    class: simple
-    topic: { name: /monitor/header, type: std_msgs/msg/Header }
-    field: { name: frame_id }
-    rules:
-      - { func: lines, args: 2 }
-
-  data_name_5:
-    class: simple
-    topic: { name: /monitor/int, type: std_msgs/msg/Int32 }
-    field: { name: data }
-    title: "Value: "
-    rules:
-      - func: switch
-        default: { value: ERROR }
-        mapping:
-          1: { value: A, style: { back-color: "#FF00FF" } }
-          2: { value: B, style: { back-color: "#00FF00" } }
-          3: { value: C, style: { back-color: "#00FFFF" } }
-
-  data_name_6:
-    class: simple
-    topic: { name: /monitor/array, type: std_msgs/msg/Int32MultiArray, qos: { durability: transient_local } }
-    field: { name: data@1 }
-    style: { font-size: 24 }
+  widget3:
+    class: multi_data_monitor::Title
+    param: { title: NanoSecond }
+    input:
+      class: filter
+      input: { class: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
+      rules:
+        - { class: multi_data_monitor::Format, type: double, format: "{:.3f}" }

@@ -41,7 +41,7 @@ ament_auto_add_executable(debug
 )
 target_link_libraries(debug ${PROJECT_NAME})
 
-pluginlib_export_plugin_description_file(rviz_common plugins/plugin_description.xml)
+pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

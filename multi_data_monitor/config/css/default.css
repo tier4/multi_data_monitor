@@ -1,3 +1,7 @@
-QLabel {
-  background-color: rgb(174, 233, 169);
+* [color="red"] {
+  color: red;
+}
+
+* [background-color="red"] {
+  color: red;
 }

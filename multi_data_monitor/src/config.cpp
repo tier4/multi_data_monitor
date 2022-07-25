@@ -348,7 +348,7 @@ ConfigFile::ConfigFile(const std::string & file)
         // clang-format on
       }
     }
-    WriteConfig("graph1.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
+    // WriteConfig("graph1.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
 
     // resolve targets
     for (const auto & node : nodes_)
@@ -373,7 +373,7 @@ ConfigFile::ConfigFile(const std::string & file)
       }
     }
     nodes_.swap(temporary);
-    WriteConfig("graph2.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
+    // WriteConfig("graph2.plantuml", nodes_);  // TODO(Takagi, Isamu): remove
 
     // TODO(Takagi, Isamu): check tree
 

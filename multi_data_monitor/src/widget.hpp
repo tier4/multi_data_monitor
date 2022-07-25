@@ -61,9 +61,8 @@ public slots:
 private:
   rclcpp::Node::SharedPtr rviz_node_;
   std::unique_ptr<Loader> loader_;
-  SettingWidget * setting_;
   QWidget * monitor_;
-  std::string path_;  // TODO(Takagi, Isamu): temporary
+  SettingWidget * setting_;
 };
 
 }  // namespace multi_data_monitor
