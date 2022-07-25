@@ -19,8 +19,7 @@
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QPushButton>
-#include <QStackedLayout>
-#include <QVBoxLayout>
+#include <QTextEdit>
 #include <rviz_common/display_context.hpp>
 #include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
 #include <memory>
@@ -29,73 +28,58 @@
 namespace multi_data_monitor
 {
 
-/*
-SettingWidget::SettingWidget(rviz_common::Panel * panel) : QWidget(panel)
+SettingWidget::SettingWidget(MultiDataMonitor * panel) : QWidget(panel)
 {
   const auto layout = new QGridLayout();
-  package_ = new QLineEdit();
-  path_ = new QLineEdit();
   button_ = new QPushButton("Reload");
-  connect(package_, &QLineEdit::editingFinished, panel, &MultiDataMonitor::configChanged);
+  path_ = new QLineEdit();
+  path_->setPlaceholderText("package://<package>/<path>  or  file://<path>");
   connect(path_, &QLineEdit::editingFinished, panel, &MultiDataMonitor::configChanged);
+  connect(button_, &QPushButton::clicked, panel, &MultiDataMonitor::reload);
 
-  layout->addWidget(new QLabel("Package"), 0, 0);
-  layout->addWidget(new QLabel("Path"), 1, 0);
-  layout->addWidget(package_, 0, 1);
-  layout->addWidget(path_, 1, 1);
-  layout->addWidget(button_, 2, 0, 1, 2);
+  layout->addWidget(new QLabel("Path"), 0, 0);
+  layout->addWidget(path_, 0, 1);
+  layout->addWidget(button_, 1, 0, 1, 2);
+  layout->setContentsMargins(0, 0, 0, 0);
   setLayout(layout);
 }
 
 void SettingWidget::save(rviz_common::Config config) const
 {
-  config.mapSetValue("Package", package_->text());
   config.mapSetValue("Path", path_->text());
 }
 
 void SettingWidget::load(const rviz_common::Config & config)
 {
-  package_->setText(config.mapGetChild("Package").getValue().toString());
   path_->setText(config.mapGetChild("Path").getValue().toString());
-}
-
-std::string SettingWidget::getPackage() const
-{
-  return package_->text().toStdString();
 }
 
 std::string SettingWidget::getPath() const
 {
   return path_->text().toStdString();
 }
-*/
 
 MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent)
 {
-  const auto stacked = new QStackedLayout();
-  monitor_ = nullptr;
-  // setting_ = new SettingWidget(this);
-  // stacked->addWidget(setting_);
-  setLayout(stacked);
+  const auto layout = new QGridLayout();
+  setting_ = new SettingWidget(this);
+  monitor_ = new QLabel();
+  monitor_->setVisible(false);
+  layout->addWidget(monitor_);
+  layout->addWidget(setting_);
+  setLayout(layout);
 }
 
 void MultiDataMonitor::save(rviz_common::Config config) const
 {
   Panel::save(config);
-  // setting_->save(config);
-
-  // TODO(Takagi, Isamu): temporary
-  config.mapSetValue("Path", QString::fromStdString(path_));
+  setting_->save(config);
 }
 
 void MultiDataMonitor::load(const rviz_common::Config & config)
 {
   Panel::load(config);
-  // setting_->load(config);
-
-  // TODO(Takagi, Isamu): temporary
-  path_ = config.mapGetChild("Path").getValue().toString().toStdString();
-
+  setting_->load(config);
   reload();
 }
 
@@ -105,7 +89,7 @@ void MultiDataMonitor::onInitialize()
   if (parent)
   {
     const auto widget = new QWidget();
-    const auto layout = new QVBoxLayout();
+    const auto layout = new QGridLayout();
     layout->addWidget(parent->titleBarWidget());
     layout->setMargin(0);
     widget->setLayout(layout);
@@ -118,16 +102,10 @@ void MultiDataMonitor::onInitialize()
 
 void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 {
-  /*
   if (event->modifiers() & Qt::ControlModifier)
   {
-    const auto layout = dynamic_cast<QStackedLayout *>(this->layout());
-    if (layout)
-    {
-      layout->setCurrentIndex(1 - layout->currentIndex());
-    }
+    setting_->setVisible(!setting_->isVisible());
   }
-  */
 
   if (event->modifiers() & Qt::ShiftModifier)
   {
@@ -145,23 +123,28 @@ void MultiDataMonitor::reload()
   QWidget * widget = nullptr;
   try
   {
-    // widget = loader_->Reload(setting_->getPackage(), setting_->getPath());
-    widget = loader_->Reload(path_);
+    // TODO(Takagi, Isamu): subscribe automatically
+    loader_->Unsubscribe();
+    widget = loader_->Reload(setting_->getPath());
     loader_->Subscribe(rviz_node_);
+    setting_->setVisible(false);
   }
   catch (const std::exception & error)
   {
-    widget = new QLabel(error.what());
     RCLCPP_ERROR_STREAM(rviz_node_->get_logger(), error.what());
+    QTextEdit * text = new QTextEdit();
+    text->setReadOnly(true);
+    text->setText(error.what());
+    widget = text;
+    setting_->setVisible(true);
   }
 
   if (widget)
   {
-    QStackedLayout * stacked = dynamic_cast<QStackedLayout *>(layout());
+    layout()->replaceWidget(monitor_, widget);
     delete monitor_;
     monitor_ = widget;
-    stacked->addWidget(monitor_);
-    stacked->setCurrentWidget(monitor_);
+    monitor_->setVisible(true);
   }
 }
 

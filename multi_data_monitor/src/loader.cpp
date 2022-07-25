@@ -37,6 +37,7 @@ namespace multi_data_monitor
 
 struct Loader::Impl
 {
+  Impl();
   std::unique_ptr<pluginlib::ClassLoader<Action>> action_loader;
   std::unique_ptr<pluginlib::ClassLoader<Design>> design_loader;
   std::vector<std::unique_ptr<Topic>> topics;
@@ -44,15 +45,18 @@ struct Loader::Impl
   std::vector<std::unique_ptr<Design>> designs;
 };
 
-Loader::Loader()
+Loader::Impl::Impl()
 {
   constexpr char package[] = "multi_data_monitor";
   constexpr char action[] = "multi_data_monitor::Action";
   constexpr char design[] = "multi_data_monitor::Design";
+  action_loader = std::make_unique<pluginlib::ClassLoader<Action>>(package, action);
+  design_loader = std::make_unique<pluginlib::ClassLoader<Design>>(package, design);
+}
 
+Loader::Loader()
+{
   impl_ = std::make_unique<Impl>();
-  impl_->action_loader = std::make_unique<pluginlib::ClassLoader<Action>>(package, action);
-  impl_->design_loader = std::make_unique<pluginlib::ClassLoader<Design>>(package, design);
 }
 
 Loader::~Loader()
@@ -91,6 +95,9 @@ void Dump(const std::vector<std::unique_ptr<NodeConfig>> & nodes, bool children 
 QWidget * Loader::Reload(const std::string & path)
 {
   const auto config = ConfigFile(path);
+
+  // release old resources
+  impl_ = std::make_unique<Impl>();
 
   // create field stream
   std::unordered_map<std::string, std::unordered_map<std::string, Field *>> subscriptions;

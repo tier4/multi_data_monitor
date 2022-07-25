@@ -27,19 +27,19 @@ class QPushButton;
 namespace multi_data_monitor
 {
 
+class MultiDataMonitor;
+
 class SettingWidget : public QWidget
 {
   Q_OBJECT
 
 public:
-  explicit SettingWidget(rviz_common::Panel * panel);
+  explicit SettingWidget(MultiDataMonitor * panel);
   void save(rviz_common::Config config) const;
   void load(const rviz_common::Config & config);
-  std::string getPackage() const;
   std::string getPath() const;
 
 private:
-  QLineEdit * package_;
   QLineEdit * path_;
   QPushButton * button_;
 };
@@ -54,13 +54,15 @@ public:
   void load(const rviz_common::Config & config) override;
   void onInitialize() override;
   void mousePressEvent(QMouseEvent * event) override;
+
+public slots:
   void reload();
 
 private:
   rclcpp::Node::SharedPtr rviz_node_;
   std::unique_ptr<Loader> loader_;
-  QWidget * monitor_;
   SettingWidget * setting_;
+  QWidget * monitor_;
   std::string path_;  // TODO(Takagi, Isamu): temporary
 };
 
