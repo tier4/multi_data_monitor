@@ -32,8 +32,8 @@ widgets:
     title: "Text: "
     notes: The description displayed when mouse over
     input:
-      class: filter
-      input: { class: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+      model: filter
+      input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
       rules:
         - class: multi_data_monitor::Switch
           default: { value: ERROR, attrs: { background-color: "" } }
@@ -45,13 +45,13 @@ widgets:
   widget2:
     class: multi_data_monitor::Title
     param: { title: Second }
-    input: { class: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
+    input: { model: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
 
   widget3:
     class: multi_data_monitor::Title
     param: { title: NanoSecond }
     input:
-      class: filter
-      input: { class: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
+      model: filter
+      input: { model: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
       rules:
         - { class: multi_data_monitor::Format, type: double, format: "{:.3f}" }

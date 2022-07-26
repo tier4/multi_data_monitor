@@ -407,7 +407,8 @@ NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path, const 
   }
 
   // get class name
-  node->type = node->TakeNode("class").as<std::string>();
+  const auto class_field = (mode == "data") ? "model" : "class";
+  node->type = node->TakeNode(class_field).as<std::string>();
 
   // save the text for reference in some types
   if (node->type == "topic")
