@@ -300,7 +300,7 @@ ConfigFile::ConfigFile(const std::string & file)
 
     // load config and convert version if possible
     const auto yaml = YAML::LoadFile(file_path);
-    if (yaml["version"].as<std::string>("") != "1")
+    if (yaml["version"].as<std::string>("") != "1.0")
     {
       throw ConfigError("this version is not supported");
     }

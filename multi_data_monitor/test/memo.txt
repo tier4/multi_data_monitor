@@ -5,10 +5,13 @@ Something went wrong loading the typesupport library for message type std_msgs/U
 
 ルート要素がない
 
+ウィジェットやストリームの名前を間違えている
+
 参照ループ
 
 孤立ノード検出（未使用）
 
 スタイルシートのパスが間違っている
+スタイルシートのターゲットが間違っている
 
 間違ったプラグイン名を指定している
