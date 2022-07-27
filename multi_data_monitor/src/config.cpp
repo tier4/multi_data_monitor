@@ -313,9 +313,13 @@ ConfigFile::ConfigFile(const std::string & file)
       const auto path = config.TakeNode("path").as<std::string>("");
       const auto file = ResolvePackagePath(path);
       std::ifstream ifs(file);
-      std::stringstream buffer;
-      buffer << ifs.rdbuf();
-      stylesheets[target] += buffer.str();
+      if (ifs)
+      {
+        std::cout << "load: " + file.string() << std::endl;
+        std::stringstream buffer;
+        buffer << ifs.rdbuf();
+        stylesheets[target] += buffer.str();
+      }
     }
 
     // load widgets
