@@ -21,6 +21,7 @@ add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
   src/actions/format.cpp
+  src/actions/precision.cpp
   src/actions/switch.cpp
   src/actions/lines.cpp
   src/actions/units.cpp

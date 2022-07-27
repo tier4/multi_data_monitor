@@ -188,6 +188,7 @@ NodeConfig::NodeConfig(YAML::Node yaml, const std::string & path, const std::str
     this->mode = mode;
     this->path = path;
     this->yaml["class"] = "target";
+    this->yaml["model"] = "target";
     this->yaml["name"] = yaml;
   }
   else

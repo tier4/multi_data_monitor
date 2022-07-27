@@ -9,23 +9,23 @@ widgets:
     cols: 3
     rows: 2
     children:
-      - data1
-      - data2
-      - data3
-      - data4
+      - view1
+      - view2
+      - view3
+      - view4
 
-  data1:
+  view1:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
 
-  data2:
+  view2:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
 
-  data3:
+  view3:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
 
-  data4:
+  view4:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }

@@ -2,7 +2,7 @@
 
 ## コンフィグファイルの読み込み
 
-まずは最も簡単なサンプルを表示させてみましょう。RViz にパネルを追加して package://multi_data_monitor/tutorials/02/display1.yaml と入力します。また、新しく端末を開いて multi data monitor のワークスペースに移動し、以下のコマンドを実行します。
+まずは最も簡単なサンプルを表示させてみましょう。RViz にパネルを追加して [package://multi_data_monitor/tutorials/02/display1.yaml](display1.yaml) と入力します。また、新しく端末を開いて multi data monitor のワークスペースに移動し、以下のコマンドを実行します。
 
 ```bash
 source install/setup.bash
@@ -43,11 +43,11 @@ widgets:
 
 ## ウィジェットの種類
 
-ウィジェットより様々な形式でデータを表示できます。再び RViz を開いて package://multi_data_monitor/tutorials/02/display2.yaml と入力してください。動作確認用のノードも先程と同じように起動します。このファイルでは multi_data_monitor::Title というウィジェットが使われており、データの下にタイトルを表示するデザインになっています。
+ウィジェットより様々な形式でデータを表示できます。再び RViz を開いて [package://multi_data_monitor/tutorials/02/display2.yaml](display2.yaml) と入力してください。動作確認用のノードも先程と同じように起動します。このファイルでは multi_data_monitor::Title というウィジェットが使われており、データの下にタイトルを表示するデザインになっています。
 
 ![display2](display2.png)
 
-また、他のウィジェットを受け取って配置するウィジェットも存在しています。これらのウィジェットにより、複数のデータを並べて表示することができます。同様に package://multi_data_monitor/tutorials/02/display3.yaml を表示してみてください。これは他のウィジェットを格子状に並べるウィジェットで、入力がない代わりに `children` で並べたいウィジェットを指定します。
+また、他のウィジェットを受け取って配置するウィジェットも存在しています。これらのウィジェットにより、複数のデータを並べて表示することができます。同様に [package://multi_data_monitor/tutorials/02/display3.yaml](display3.yaml) を表示してみてください。これに使われている multi_data_monitor::Matrix ウィジェットは `input` がなく `children` に並べたいウィジェットを指定します。
 
 ```yaml
 { class: <plugin>, children: [<widget>, <widget>, ...] }
@@ -57,7 +57,7 @@ widgets:
 
 ## ウィジェットの分割定義
 
-今度は package://multi_data_monitor/tutorials/02/display4.yaml を表示してみてください。先程と同じレイアウトでデータが表示されていますがコンフィグファイルの記述は異なっています。
+今度は [package://multi_data_monitor/tutorials/02/display4.yaml](display4.yaml) を表示してみてください。先程と同じレイアウトでデータが表示されていますがコンフィグファイルの記述は異なっています。
 
 ```yaml
 widgets:
@@ -85,24 +85,24 @@ widgets:
     cols: 3
     rows: 2
     children:
-      - data1
-      - data2
-      - data3
-      - data4
+      - view1
+      - view2
+      - view3
+      - view4
 
-  data1:
+  view1:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
 
-  data2:
+  view2:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
 
-  data3:
+  view3:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
 
-  data4:
+  view4:
     class: multi_data_monitor::Simple
     input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
 ```
