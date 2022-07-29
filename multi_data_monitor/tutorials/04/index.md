@@ -51,7 +51,7 @@ mapping:
   3: { value: THREE, attrs: { test: three } }
 ```
 
-サンプルファイル ([style4.yaml](style4.yaml) / [style4.css](style3.css)) ではアクションの効果が分かりやすいように元の値と並べて表示しています。
+サンプルファイル ([style4.yaml](style4.yaml) / [style4.css](style4.css)) ではアクションの効果が分かりやすいように元の値と並べて表示しています。
 
 ![style4-1](style4-1.png)
 ![style4-2](style4-2.png)
