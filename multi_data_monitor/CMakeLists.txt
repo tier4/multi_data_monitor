@@ -48,4 +48,9 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-ament_auto_package(INSTALL_TO_SHARE config icons plugins)
+install(PROGRAMS
+  scripts/tutorial
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+ament_auto_package(INSTALL_TO_SHARE css icons plugins tutorials)

@@ -3,6 +3,7 @@
   <class type="multi_data_monitor::Title" base_class_type="multi_data_monitor::Design"/>
   <class type="multi_data_monitor::Matrix" base_class_type="multi_data_monitor::Design"/>
   <class type="multi_data_monitor::Format" base_class_type="multi_data_monitor::Action"/>
+  <class type="multi_data_monitor::Precision" base_class_type="multi_data_monitor::Action"/>
   <class type="multi_data_monitor::Switch" base_class_type="multi_data_monitor::Action"/>
   <class type="multi_data_monitor::Units" base_class_type="multi_data_monitor::Action"/>
   <class type="multi_data_monitor::Lines" base_class_type="multi_data_monitor::Action"/>

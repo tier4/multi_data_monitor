@@ -6,9 +6,9 @@ import std_msgs.msg
 from rclpy.qos import QoSDurabilityPolicy, QoSProfile
 
 
-class MyNode(rclpy.node.Node):
+class TestNode(rclpy.node.Node):
     def __init__(self):
-        super().__init__("talker")
+        super().__init__("test")
         qos = QoSProfile(depth=1, durability=QoSDurabilityPolicy.TRANSIENT_LOCAL)
         self.pub_header = self.create_publisher(std_msgs.msg.Header, "/test/header", 1)
         self.pub_double = self.create_publisher(std_msgs.msg.Float64, "/test/double", 1)
@@ -27,7 +27,7 @@ class MyNode(rclpy.node.Node):
     def publish_header(self):
         msg = std_msgs.msg.Header()
         msg.stamp = self.get_clock().now().to_msg()
-        msg.frame_id = f"test {self.count}"
+        msg.frame_id = f"frame {self.count}"
         self.pub_header.publish(msg)
 
     def publish_double(self):
@@ -48,7 +48,7 @@ class MyNode(rclpy.node.Node):
 
 def main(args=None):
     rclpy.init(args=args)
-    node = MyNode()
+    node = TestNode()
     rclpy.spin(node)
     rclpy.shutdown()
 

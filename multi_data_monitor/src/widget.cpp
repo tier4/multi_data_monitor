@@ -15,7 +15,6 @@
 #include "widget.hpp"
 #include <QDockWidget>
 #include <QGridLayout>
-#include <QLabel>
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QPushButton>
@@ -31,15 +30,14 @@ namespace multi_data_monitor
 SettingWidget::SettingWidget(MultiDataMonitor * panel) : QWidget(panel)
 {
   const auto layout = new QGridLayout();
-  button_ = new QPushButton("Reload");
+  button_ = new QPushButton("OK");
   path_ = new QLineEdit();
   path_->setPlaceholderText("package://<package>/<path>  or  file://<path>");
   connect(path_, &QLineEdit::editingFinished, panel, &MultiDataMonitor::configChanged);
   connect(button_, &QPushButton::clicked, panel, &MultiDataMonitor::reload);
 
-  layout->addWidget(new QLabel("Path"), 0, 0);
-  layout->addWidget(path_, 0, 1);
-  layout->addWidget(button_, 1, 0, 1, 2);
+  layout->addWidget(path_, 0, 0);
+  layout->addWidget(button_, 0, 1);
   layout->setContentsMargins(0, 0, 0, 0);
   setLayout(layout);
 }
@@ -63,7 +61,7 @@ MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent
 {
   const auto layout = new QGridLayout();
   setting_ = new SettingWidget(this);
-  monitor_ = new QLabel();
+  monitor_ = new QWidget();
   monitor_->setVisible(false);
   layout->addWidget(monitor_);
   layout->addWidget(setting_);

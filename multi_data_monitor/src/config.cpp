@@ -188,6 +188,7 @@ NodeConfig::NodeConfig(YAML::Node yaml, const std::string & path, const std::str
     this->mode = mode;
     this->path = path;
     this->yaml["class"] = "target";
+    this->yaml["model"] = "target";
     this->yaml["name"] = yaml;
   }
   else
@@ -300,7 +301,7 @@ ConfigFile::ConfigFile(const std::string & file)
 
     // load config and convert version if possible
     const auto yaml = YAML::LoadFile(file_path);
-    if (yaml["version"].as<std::string>("") != "1")
+    if (yaml["version"].as<std::string>("") != "1.0")
     {
       throw ConfigError("this version is not supported");
     }
@@ -313,9 +314,13 @@ ConfigFile::ConfigFile(const std::string & file)
       const auto path = config.TakeNode("path").as<std::string>("");
       const auto file = ResolvePackagePath(path);
       std::ifstream ifs(file);
-      std::stringstream buffer;
-      buffer << ifs.rdbuf();
-      stylesheets[target] += buffer.str();
+      if (ifs)
+      {
+        std::cout << "load: " + file.string() << std::endl;
+        std::stringstream buffer;
+        buffer << ifs.rdbuf();
+        stylesheets[target] += buffer.str();
+      }
     }
 
     // load widgets
@@ -407,7 +412,8 @@ NodeConfig * ConfigFile::Parse(YAML::Node yaml, const std::string & path, const 
   }
 
   // get class name
-  node->type = node->TakeNode("class").as<std::string>();
+  const auto class_field = (mode == "data") ? "model" : "class";
+  node->type = node->TakeNode(class_field).as<std::string>();
 
   // save the text for reference in some types
   if (node->type == "topic")

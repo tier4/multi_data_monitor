@@ -14,14 +14,22 @@
 
 #include "loader.hpp"
 #include <rclcpp/rclcpp.hpp>
+#include <iostream>
 
 int main(int argc, char ** argv)
 {
+  const auto args = rclcpp::remove_ros_arguments(argc, argv);
+  if (args.size() != 2)
+  {
+    std::cout << "usage: command path" << std::endl;
+    return 1;
+  }
+
   rclcpp::init(argc, argv);
   const auto node = std::make_shared<rclcpp::Node>("test");
 
   multi_data_monitor::Loader loader;
-  loader.Reload("package://multi_data_monitor/config/version1.yaml");
+  loader.Reload(args[1]);
 
   rclcpp::executors::SingleThreadedExecutor executor;
   executor.add_node(node);

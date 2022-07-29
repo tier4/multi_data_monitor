@@ -16,6 +16,7 @@
 #include "config.hpp"
 #include "stream.hpp"
 #include "topic.hpp"
+#include <QGridLayout>
 #include <QLayout>
 #include <QWidget>
 #include <multi_data_monitor/action.hpp>
@@ -196,13 +197,20 @@ QWidget * Loader::Reload(const std::string & path)
     Design::Instance instance = instances.at(config.GetRoot());
     struct CreateRootWidget
     {
-      QWidget * operator()(QLayout * layout)
+      QWidget * operator()(QLayout * root)
       {
         QWidget * widget = new QWidget();
+        widget->setLayout(root);
+        return widget;
+      }
+      QWidget * operator()(QWidget * root)
+      {
+        QWidget * widget = new QWidget();
+        QLayout * layout = new QGridLayout();
+        layout->addWidget(root);
         widget->setLayout(layout);
         return widget;
       }
-      QWidget * operator()(QWidget * widget) { return widget; }
     };
     const auto stylesheet = config.GetStyleSheet();
     root = std::visit(CreateRootWidget{}, instance);

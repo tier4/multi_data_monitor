@@ -1,0 +1,31 @@
+version: 1.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: multi_data_monitor::Simple }
+
+widgets:
+  root:
+    class: multi_data_monitor::Matrix
+    cols: 3
+    rows: 2
+    children:
+      - view1
+      - view2
+      - view3
+      - view4
+
+  view1:
+    class: multi_data_monitor::Simple
+    input: { model: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
+
+  view2:
+    class: multi_data_monitor::Simple
+    input: { model: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
+
+  view3:
+    class: multi_data_monitor::Simple
+    input: { model: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
+
+  view4:
+    class: multi_data_monitor::Simple
+    input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
