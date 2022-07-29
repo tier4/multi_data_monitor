@@ -1,0 +1,22 @@
+version: 1.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/tutorials/04/style4.css }
+
+widgets:
+  root:
+    class: multi_data_monitor::Matrix
+    children:
+      - class: multi_data_monitor::Simple
+        input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+      - class: multi_data_monitor::Simple
+        input:
+          model: filter
+          input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+          rules:
+            - class: multi_data_monitor::Switch
+              default: { value: UNKNOWN, attrs: { test: "" } }
+              mapping:
+                1: { value: ONE, attrs: { test: one } }
+                2: { value: TWO, attrs: { test: two } }
+                3: { value: THREE, attrs: { test: three } }
