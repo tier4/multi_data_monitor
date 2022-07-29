@@ -20,19 +20,19 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/widget.hpp
-  src/widget.cpp
-  src/errors.hpp
-  src/errors.cpp
-  src/config.hpp
-  src/config.cpp
-  src/loader.hpp
-  src/loader.cpp
-  src/stream.hpp
-  src/stream.cpp
-  src/topic.hpp
-  src/topic.cpp
   src/header/design.cpp
+  src/kernel/widget.hpp
+  src/kernel/widget.cpp
+  src/kernel/errors.hpp
+  src/kernel/errors.cpp
+  src/kernel/config.hpp
+  src/kernel/config.cpp
+  src/kernel/loader.hpp
+  src/kernel/loader.cpp
+  src/kernel/stream.hpp
+  src/kernel/stream.cpp
+  src/kernel/topic.hpp
+  src/kernel/topic.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 

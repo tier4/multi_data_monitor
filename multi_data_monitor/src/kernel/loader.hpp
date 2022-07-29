@@ -12,40 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef ERRORS_HPP_
-#define ERRORS_HPP_
+#ifndef KERNEL__LOADER_HPP_
+#define KERNEL__LOADER_HPP_
 
-#include <stdexcept>
+#include "config.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <memory>
 #include <string>
+
+class QWidget;
 
 namespace multi_data_monitor
 {
 
-struct BaseError : public std::runtime_error
+class Loader
 {
-  using std::runtime_error::runtime_error;
-};
+public:
+  Loader();
+  ~Loader();
+  QWidget * Reload(const std::string & path);
+  void Subscribe(rclcpp::Node::SharedPtr & node);
+  void Unsubscribe();
 
-struct SystemError : public BaseError
-{
-  explicit SystemError(const std::string & message);
-};
-
-struct ConfigError : public BaseError
-{
-  explicit ConfigError(const std::string & message);
-};
-
-struct LogicError : public BaseError
-{
-  explicit LogicError(const std::string & message);
-};
-
-struct RuntimeError : public BaseError
-{
-  explicit RuntimeError(const std::string & message);
+private:
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // ERRORS_HPP_
+#endif  // KERNEL__LOADER_HPP_

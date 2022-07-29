@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef STREAM_HPP_
-#define STREAM_HPP_
+#ifndef KERNEL__STREAM_HPP_
+#define KERNEL__STREAM_HPP_
 
 #include <multi_data_monitor/values.hpp>
 #include <yaml-cpp/yaml.h>
@@ -67,4 +67,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // STREAM_HPP_
+#endif  // KERNEL__STREAM_HPP_

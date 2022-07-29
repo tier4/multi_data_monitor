@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TOPIC_HPP_
-#define TOPIC_HPP_
+#ifndef KERNEL__TOPIC_HPP_
+#define KERNEL__TOPIC_HPP_
 
 #include "stream.hpp"
 #include <generic_type_support/generic_type_support.hpp>
@@ -63,4 +63,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // TOPIC_HPP_
+#endif  // KERNEL__TOPIC_HPP_

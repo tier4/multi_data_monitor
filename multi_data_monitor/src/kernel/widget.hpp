@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef WIDGET_HPP_
-#define WIDGET_HPP_
+#ifndef KERNEL__WIDGET_HPP_
+#define KERNEL__WIDGET_HPP_
 
 #include "loader.hpp"
 #include <rviz_common/panel.hpp>
@@ -67,4 +67,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // WIDGET_HPP_
+#endif  // KERNEL__WIDGET_HPP_
