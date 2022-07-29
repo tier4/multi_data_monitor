@@ -37,8 +37,8 @@ private:
 public:
   Instance Create(const YAML::Node yaml) override
   {
-    cols_ = yaml["cols"].as<int>();
-    rows_ = yaml["rows"].as<int>();
+    cols_ = yaml["cols"].as<int>(1000);
+    rows_ = yaml["rows"].as<int>(1000);
     x_ = 0;
     y_ = 0;
     layout_ = new QGridLayout();
