@@ -33,6 +33,14 @@ ament_auto_add_library(${PROJECT_NAME} SHARED
   src/kernel/stream.cpp
   src/kernel/topic.hpp
   src/kernel/topic.cpp
+  src/plugin/format.cpp
+  src/plugin/precision.cpp
+  src/plugin/switch.cpp
+  src/plugin/lines.cpp
+  src/plugin/units.cpp
+  src/plugin/matrix.cpp
+  src/plugin/simple.cpp
+  src/plugin/title.cpp
 )
 target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
 
@@ -42,6 +50,7 @@ ament_auto_add_executable(debug
 target_link_libraries(debug ${PROJECT_NAME})
 
 pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
+pluginlib_export_plugin_description_file(multi_data_monitor plugins/self.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
