@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>multi_data_monitor</name>
+  <name>multi_data_monitor_plugins</name>
   <version>0.0.0</version>
-  <description>The multi_data_monitor package</description>
+  <description>The default plugins for multi_data_monitor_plugins</description>
   <maintainer email="isamu.takagi@tier4.jp">Takagi, Isamu</maintainer>
   <license>Apache License 2.0</license>
 
@@ -10,14 +10,11 @@
 
   <depend>ament_index_cpp</depend>
   <depend>fmt</depend>
-  <depend>generic_type_support</depend>
   <depend>libqt5-core</depend>
   <depend>libqt5-gui</depend>
   <depend>libqt5-widgets</depend>
-  <depend>pluginlib</depend>
+  <depend>multi_data_monitor</depend>
   <depend>qtbase5-dev</depend>
-  <depend>rclcpp</depend>
-  <depend>rviz_common</depend>
   <depend>yaml-cpp</depend>
 
   <test_depend>ament_lint_auto</test_depend>

@@ -1,0 +1,9 @@
+version: 1.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/tutorials/04/style3.css, target: multi_data_monitor::Simple }
+
+widgets:
+  root:
+    class: multi_data_monitor::Simple
+    input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }

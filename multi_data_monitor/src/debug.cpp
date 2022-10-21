@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,19 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <generic_type_support/generic_type_support.hpp>
-#include <gtest/gtest.h>
-
-/*
-TEST(generic_type_support, test1)
-{
-  const auto support = generic_type_support::TypeSupportMessage("std_msgs/msg/Header");
-  const auto message = support.GetClass();
-}
-*/
+#include "loader.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <iostream>
 
 int main(int argc, char ** argv)
 {
-  testing::InitGoogleTest(&argc, argv);
-  return RUN_ALL_TESTS();
+  const auto args = rclcpp::remove_ros_arguments(argc, argv);
+  if (args.size() != 2)
+  {
+    std::cout << "usage: command path" << std::endl;
+    return 1;
+  }
+
+  rclcpp::init(argc, argv);
+  const auto node = std::make_shared<rclcpp::Node>("test");
+
+  multi_data_monitor::Loader loader;
+  loader.Reload(args[1]);
+
+  rclcpp::executors::SingleThreadedExecutor executor;
+  executor.add_node(node);
+  executor.spin();
+  executor.remove_node(node);
+  rclcpp::shutdown();
 }

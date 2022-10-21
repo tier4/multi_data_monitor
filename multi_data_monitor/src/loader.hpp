@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
-#define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+#ifndef LOADER_HPP_
+#define LOADER_HPP_
 
-#include <generic_type_support/errors.hpp>
-#include <generic_type_support/message.hpp>
+#include "config.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <memory>
+#include <string>
 
-#endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+class QWidget;
+
+namespace multi_data_monitor
+{
+
+class Loader
+{
+public:
+  Loader();
+  ~Loader();
+  QWidget * Reload(const std::string & path);
+  void Subscribe(rclcpp::Node::SharedPtr & node);
+  void Unsubscribe();
+
+private:
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
+};
+
+}  // namespace multi_data_monitor
+
+#endif  // LOADER_HPP_

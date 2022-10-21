@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
-#define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+#ifndef MULTI_DATA_MONITOR__ACTION_HPP_
+#define MULTI_DATA_MONITOR__ACTION_HPP_
 
-#include <generic_type_support/errors.hpp>
-#include <generic_type_support/message.hpp>
+#include <multi_data_monitor/values.hpp>
 
-#endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+namespace multi_data_monitor
+{
+
+class Action
+{
+public:
+  virtual ~Action() = default;
+  virtual void Initialize(const YAML::Node & yaml) = 0;
+  virtual MonitorValues Apply(const MonitorValues & input) = 0;
+};
+
+}  // namespace multi_data_monitor
+
+#endif  // MULTI_DATA_MONITOR__ACTION_HPP_

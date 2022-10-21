@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.14)
 project(generic_type_support)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -14,13 +14,19 @@ find_package(ament_cmake_auto REQUIRED)
 ament_auto_find_build_dependencies()
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/message.cpp
-  src/access.cpp
-  src/typesupport.cpp
+  src/generic_type_support.cpp
+  src/impl/library.cpp
+  src/impl/message.cpp
+  src/impl/field.cpp
+  src/impl/convert.cpp
 )
 
-ament_auto_add_executable(debug
-  src/debug.cpp
+ament_auto_add_executable(print
+  src/examples/print.cpp
+)
+
+ament_auto_add_executable(check
+  src/examples/check.cpp
 )
 
 if(BUILD_TESTING)

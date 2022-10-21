@@ -12,10 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
-#define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+#ifndef IMPL__CONVERT_HPP_
+#define IMPL__CONVERT_HPP_
 
-#include <generic_type_support/errors.hpp>
-#include <generic_type_support/message.hpp>
+#include "util/types.hpp"
+#include <yaml-cpp/yaml.h>
 
-#endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+namespace generic_type_support
+{
+
+YAML::Node GetMessageYAML(const TypeSupportMessage & message, const void * data);
+YAML::Node GetFieldYAML(const TypeSupportField & field, const void * data);
+YAML::Node GetFieldArray(const TypeSupportField & field, const void * data);
+YAML::Node GetFieldValue(const TypeSupportField & field, const void * data);
+
+}  // namespace generic_type_support
+
+#endif  // IMPL__CONVERT_HPP_

@@ -12,10 +12,19 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
-#define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+#ifndef GENERIC_TYPE_SUPPORT__ERRORS_HPP_
+#define GENERIC_TYPE_SUPPORT__ERRORS_HPP_
 
-#include <generic_type_support/errors.hpp>
-#include <generic_type_support/message.hpp>
+#include <stdexcept>
 
-#endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+namespace generic_type_support
+{
+
+class FieldError : public std::runtime_error
+{
+  using std::runtime_error::runtime_error;
+};
+
+}  // namespace generic_type_support
+
+#endif  // GENERIC_TYPE_SUPPORT__ERRORS_HPP_

@@ -15,27 +15,44 @@
 #ifndef GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
 #define GENERIC_TYPE_SUPPORT__MESSAGE_HPP_
 
-#include "typesupport.hpp"
-
+#include <rclcpp/serialization.hpp>
 #include <yaml-cpp/yaml.h>
 #include <memory>
-#include <vector>
+#include <string>
 
 namespace generic_type_support
 {
 
-class GenericMessageSupport
+class GenericMessage
 {
 public:
-  GenericMessageSupport(const std::string & type);
-  YAML::Node DeserializeYAML(const rclcpp::SerializedMessage & serialized) const;
-  std::string GetTypeName() const { return type_; }
-  TypeSupportClass GetClass() const { return introspection_.GetClass(); }
+  explicit GenericMessage(const std::string & type_name);
+  ~GenericMessage();
+  std::string GetTypeName() const;
+  YAML::Node ConvertYAML(const rclcpp::SerializedMessage & serialized) const;
+
+  class GenericAccess;
+  std::shared_ptr<GenericAccess> GetAccess(const std::string & path) const;
 
 private:
-  const std::string type_;
-  const TypeSupportMessage introspection_;
-  const TypeSupportSerialization serialization_;
+  struct Data;
+  std::shared_ptr<Data> data_;
+};
+
+class GenericMessage::GenericAccess
+{
+public:
+  GenericAccess(const GenericMessage & generic, const std::string & path);
+  ~GenericAccess();
+  const YAML::Node Access(const YAML::Node & yaml) const;
+
+  bool IsMessage() const;
+  std::string GetTypeName() const;
+  std::string GetFullPath() const;
+
+public:
+  struct Data;
+  std::shared_ptr<Data> data_;
 };
 
 }  // namespace generic_type_support

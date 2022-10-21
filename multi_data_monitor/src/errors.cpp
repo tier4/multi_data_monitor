@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,25 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
-#define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+#include "errors.hpp"
 
-#include <generic_type_support/errors.hpp>
-#include <generic_type_support/message.hpp>
+namespace multi_data_monitor
+{
 
-#endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+SystemError::SystemError(const std::string & message) : BaseError("Failed to load config (" + message + ").")
+{
+}
+
+ConfigError::ConfigError(const std::string & message) : BaseError("Failed to parse config (" + message + ").")
+{
+}
+
+LogicError::LogicError(const std::string & message) : BaseError(message)
+{
+}
+
+RuntimeError::RuntimeError(const std::string & message) : BaseError(message)
+{
+}
+
+}  // namespace multi_data_monitor

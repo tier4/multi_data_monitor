@@ -1,4 +1,4 @@
-// Copyright 2021 Takagi, Isamu
+// Copyright 2022 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,10 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
-#define GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+#ifndef MULTI_DATA_MONITOR__VALUES_HPP_
+#define MULTI_DATA_MONITOR__VALUES_HPP_
 
-#include <generic_type_support/errors.hpp>
-#include <generic_type_support/message.hpp>
+#include <yaml-cpp/yaml.h>
+#include <string>
+#include <unordered_map>
 
-#endif  // GENERIC_TYPE_SUPPORT__GENERIC_TYPE_SUPPORT_HPP_
+namespace multi_data_monitor
+{
+
+struct MonitorValues
+{
+  MonitorValues Clone() const { return MonitorValues{YAML::Clone(value), attrs}; }
+  YAML::Node value;
+  std::unordered_map<std::string, std::string> attrs;
+};
+
+}  // namespace multi_data_monitor
+
+#endif  // MULTI_DATA_MONITOR__VALUES_HPP_

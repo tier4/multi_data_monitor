@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.14)
-project(multi_data_monitor)
+project(multi_data_monitor_plugins)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 17)
@@ -20,37 +20,23 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/widget.hpp
-  src/widget.cpp
-  src/errors.hpp
-  src/errors.cpp
-  src/config.hpp
-  src/config.cpp
-  src/loader.hpp
-  src/loader.cpp
-  src/stream.hpp
-  src/stream.cpp
-  src/topic.hpp
-  src/topic.cpp
-  src/header/design.cpp
+  src/actions/format.cpp
+  src/actions/precision.cpp
+  src/actions/switch.cpp
+  src/actions/lines.cpp
+  src/actions/units.cpp
+  src/layouts/matrix.cpp
+  src/widgets/simple.cpp
+  src/widgets/title.cpp
 )
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
-
-ament_auto_add_executable(debug
-  src/debug.cpp
+target_link_libraries(${PROJECT_NAME}
+  ${QT_LIBRARIES}
 )
-target_link_libraries(debug ${PROJECT_NAME})
-
-pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
+pluginlib_export_plugin_description_file(multi_data_monitor plugins/plugin_description.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
 endif()
 
-install(PROGRAMS
-  scripts/tutorial
-  DESTINATION lib/${PROJECT_NAME}
-)
-
-ament_auto_package(INSTALL_TO_SHARE css icons plugins tutorials)
+ament_auto_package(INSTALL_TO_SHARE plugins)
