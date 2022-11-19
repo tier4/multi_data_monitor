@@ -20,19 +20,19 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_library(${PROJECT_NAME} SHARED
+  src/core/widget.hpp
+  src/core/widget.cpp
+  src/core/errors.hpp
+  src/core/errors.cpp
+  src/core/config.hpp
+  src/core/config.cpp
+  src/core/loader.hpp
+  src/core/loader.cpp
+  src/core/stream.hpp
+  src/core/stream.cpp
+  src/core/topic.hpp
+  src/core/topic.cpp
   src/header/design.cpp
-  src/kernel/widget.hpp
-  src/kernel/widget.cpp
-  src/kernel/errors.hpp
-  src/kernel/errors.cpp
-  src/kernel/config.hpp
-  src/kernel/config.cpp
-  src/kernel/loader.hpp
-  src/kernel/loader.cpp
-  src/kernel/stream.hpp
-  src/kernel/stream.cpp
-  src/kernel/topic.hpp
-  src/kernel/topic.cpp
   src/plugin/format.cpp
   src/plugin/precision.cpp
   src/plugin/switch.cpp

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef KERNEL__LOADER_HPP_
-#define KERNEL__LOADER_HPP_
+#ifndef CORE__LOADER_HPP_
+#define CORE__LOADER_HPP_
 
 #include "config.hpp"
 #include <rclcpp/rclcpp.hpp>
@@ -41,4 +41,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // KERNEL__LOADER_HPP_
+#endif  // CORE__LOADER_HPP_

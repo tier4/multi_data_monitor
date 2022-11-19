@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "kernel/loader.hpp"
+#include "core/loader.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
 

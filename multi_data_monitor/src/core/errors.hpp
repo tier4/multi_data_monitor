@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef KERNEL__ERRORS_HPP_
-#define KERNEL__ERRORS_HPP_
+#ifndef CORE__ERRORS_HPP_
+#define CORE__ERRORS_HPP_
 
 #include <stdexcept>
 #include <string>
@@ -48,4 +48,4 @@ struct RuntimeError : public BaseError
 
 }  // namespace multi_data_monitor
 
-#endif  // KERNEL__ERRORS_HPP_
+#endif  // CORE__ERRORS_HPP_
