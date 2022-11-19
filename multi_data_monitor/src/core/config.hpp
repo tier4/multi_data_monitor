@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CONFIG_HPP_
-#define CONFIG_HPP_
+#ifndef CORE__CONFIG_HPP_
+#define CORE__CONFIG_HPP_
 
 #include "errors.hpp"
 #include <yaml-cpp/yaml.h>
@@ -80,4 +80,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // CONFIG_HPP_
+#endif  // CORE__CONFIG_HPP_

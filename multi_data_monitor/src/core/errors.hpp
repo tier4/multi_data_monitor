@@ -12,33 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef LOADER_HPP_
-#define LOADER_HPP_
+#ifndef CORE__ERRORS_HPP_
+#define CORE__ERRORS_HPP_
 
-#include "config.hpp"
-#include <rclcpp/rclcpp.hpp>
-#include <memory>
+#include <stdexcept>
 #include <string>
-
-class QWidget;
 
 namespace multi_data_monitor
 {
 
-class Loader
+struct BaseError : public std::runtime_error
 {
-public:
-  Loader();
-  ~Loader();
-  QWidget * Reload(const std::string & path);
-  void Subscribe(rclcpp::Node::SharedPtr & node);
-  void Unsubscribe();
+  using std::runtime_error::runtime_error;
+};
 
-private:
-  struct Impl;
-  std::unique_ptr<Impl> impl_;
+struct SystemError : public BaseError
+{
+  explicit SystemError(const std::string & message);
+};
+
+struct ConfigError : public BaseError
+{
+  explicit ConfigError(const std::string & message);
+};
+
+struct LogicError : public BaseError
+{
+  explicit LogicError(const std::string & message);
+};
+
+struct RuntimeError : public BaseError
+{
+  explicit RuntimeError(const std::string & message);
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // LOADER_HPP_
+#endif  // CORE__ERRORS_HPP_
