@@ -50,7 +50,7 @@ ament_auto_add_executable(debug
 target_link_libraries(debug ${PROJECT_NAME})
 
 pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
-pluginlib_export_plugin_description_file(multi_data_monitor plugins/self.xml)
+pluginlib_export_plugin_description_file(multi_data_monitor plugins/builtins.xml)
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
