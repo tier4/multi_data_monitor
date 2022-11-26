@@ -27,7 +27,7 @@ using std::endl;
 namespace multi_data_monitor
 {
 
-Field::Field(const FieldConfig & config, const generic_type_support::GenericMessage & support)
+Field::Field(const FieldConfig & config, const generic_type_utility::GenericMessage & support)
 {
   data_ = config.data;
   access_ = support.GetAccess(config.data);
@@ -51,7 +51,7 @@ Topic::Topic(const TopicConfig & config) : qos_(config.depth)
   if (config.durability == "T") { qos_.transient_local(); }
   // clang-format on
 
-  support_ = std::make_shared<generic_type_support::GenericMessage>(config.type);
+  support_ = std::make_shared<generic_type_utility::GenericMessage>(config.type);
   for (const auto & field : config.fields)
   {
     fields_.push_back(std::make_unique<Field>(field, *support_));

@@ -10,7 +10,7 @@
 
   <depend>ament_index_cpp</depend>
   <depend>fmt</depend>
-  <depend>generic_type_support</depend>
+  <depend>generic_type_utility</depend>
   <depend>libqt5-core</depend>
   <depend>libqt5-gui</depend>
   <depend>libqt5-widgets</depend>
