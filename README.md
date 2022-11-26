@@ -1,6 +1,14 @@
 # Multi Data Monitor
 
-The rviz2 plugin to monitor topics and the library to access generic messages.
+This is an rviz2 plugin to monitor topics. [See here for package details.](./multi_data_monitor/README.md)
 
-- [multi_data_monitor](./multi_data_monitor/README.md)
-- [generic_type_support](./generic_type_support/README.md)
+## Installation
+
+```bash
+mkdir -p multi_data_monitor_ws/src
+cd multi_data_monitor_ws/src
+git clone https://github.com/tier4/multi_data_monitor.git
+git clone https://github.com/tier4/generic_type_utility.git
+cd ..
+colcon build --symlink-install
+```

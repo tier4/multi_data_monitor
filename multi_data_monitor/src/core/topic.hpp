@@ -16,7 +16,7 @@
 #define CORE__TOPIC_HPP_
 
 #include "stream.hpp"
-#include <generic_type_support/generic_type_support.hpp>
+#include <generic_type_utility/generic_type_utility.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <yaml-cpp/yaml.h>
 #include <memory>
@@ -33,13 +33,13 @@ class TopicConfig;
 class Field : public OutputStream
 {
 public:
-  Field(const FieldConfig & config, const generic_type_support::GenericMessage & support);
+  Field(const FieldConfig & config, const generic_type_utility::GenericMessage & support);
   void Callback(const MonitorValues & input) override;
   std::string GetData() const { return data_; }
 
 private:
   std::string data_;
-  std::shared_ptr<generic_type_support::GenericMessage::GenericAccess> access_;
+  std::shared_ptr<generic_type_utility::GenericMessage::GenericAccess> access_;
 };
 
 // TODO(Takagi, Isamu): This class can inherit from output stream.
@@ -55,7 +55,7 @@ public:
 private:
   std::string name_;
   std::string type_;
-  std::shared_ptr<generic_type_support::GenericMessage> support_;
+  std::shared_ptr<generic_type_utility::GenericMessage> support_;
   rclcpp::QoS qos_;
   rclcpp::GenericSubscription::ConstSharedPtr subscription_;
   std::vector<std::unique_ptr<Field>> fields_;
