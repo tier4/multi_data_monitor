@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE2__CONFIG__UTILS_HPP_
-#define CORE2__CONFIG__UTILS_HPP_
+#ifndef CORE__CONFIG__UTILS_HPP_
+#define CORE__CONFIG__UTILS_HPP_
 
 #include <string>
 
@@ -24,4 +24,4 @@ const std::string resolve(const std::string & path);
 
 }  // namespace multi_data_monitor::path
 
-#endif  // CORE2__CONFIG__UTILS_HPP_
+#endif  // CORE__CONFIG__UTILS_HPP_

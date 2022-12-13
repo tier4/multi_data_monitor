@@ -27,6 +27,26 @@ int main(int argc, char ** argv)
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
 
-  auto loader = mdm::ConfigLoader(scheme + "://" + config);
-  loader.parse();
+  auto step1 = mdm::ConfigLoader();
+  auto step2 = mdm::NodeConstructor();
+  auto step3 = mdm::NodeTransformer();
+
+  const auto data0 = scheme + "://" + config;
+  const auto data1 = step1(data0);
+  const auto data2 = step2(data1);
+  const auto data3 = step3(data2);
+
+  std::cout << "========================================" << std::endl;
+  for (const auto & stream : data2.streams)
+  {
+    stream->dump();
+  }
+  std::cout << "========================================" << std::endl;
+  for (const auto & stream : data3.streams)
+  {
+    stream->dump();
+    stream->yaml.SetStyle(YAML::EmitterStyle::Flow);
+    std::cout << " - yaml : " << YAML::Dump(stream->yaml) << std::endl;
+  }
+  std::cout << "========================================" << std::endl;
 }

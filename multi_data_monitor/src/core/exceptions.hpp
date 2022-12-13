@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE2__EXCEPTIONS_HPP_
-#define CORE2__EXCEPTIONS_HPP_
+#ifndef CORE__EXCEPTIONS_HPP_
+#define CORE__EXCEPTIONS_HPP_
 
 #include <stdexcept>
 
@@ -32,4 +32,4 @@ struct ConfigError : public std::runtime_error
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE2__EXCEPTIONS_HPP_
+#endif  // CORE__EXCEPTIONS_HPP_

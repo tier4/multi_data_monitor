@@ -15,6 +15,7 @@ widgets:
 
 streams:
   - { class: subscription, topic: /test/header, field: stamp.sec, qos: dt1, label: test-test }
+  - { class: subscription, topic: /test/header, field: stamp.sec }
   - class: field
     name: stamp.nanosec
     input:

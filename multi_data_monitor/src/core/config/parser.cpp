@@ -35,19 +35,16 @@ YAML::Node take_required(YAML::Node & yaml, const std::string & name)
   const auto node = yaml[name];
   if (!node)
   {
+    // TODO(Takagi, Isamu): add debug info
     throw ConfigError("required key: " + name);
   }
   yaml.remove(name);
   return node;
 }
 
-ConfigLoader::ConfigLoader(const std::string & path) : path_(path)
+ConfigFile ConfigLoader::operator()(const std::string & input)
 {
-}
-
-void ConfigLoader::parse()
-{
-  const auto path = std::filesystem::path(path::resolve(path_));
+  const auto path = std::filesystem::path(path::resolve(input));
   if (!std::filesystem::exists(path))
   {
     throw FilePathError("file not found '" + path.string() + "'");
@@ -63,24 +60,30 @@ void ConfigLoader::parse()
     throw ConfigError("not supported version '" + version + "'");
   }
 
-  auto streams = take_optional(yaml, "streams");
+  const auto streams = take_optional(yaml, "streams");
   if (!streams.IsSequence())
   {
-    // TODO(Takagi, Isamu): error message
-    throw ConfigError("IsSequence");
+    throw ConfigError("streams config is node sequence");
   }
   for (const auto & stream : streams)
+  {
+    output_.streams.push_back(stream);
+  }
+
+  return output_;
+}
+
+ConfigData NodeConstructor::operator()(const ConfigFile & input)
+{
+  for (const auto & stream : input.streams)
   {
     parse_stream_yaml(stream);
   }
 
-  for (const auto & stream : config_.streams)
-  {
-    stream->dump();
-  }
+  return output_;
 }
 
-StreamLink ConfigLoader::parse_stream_yaml(YAML::Node yaml)
+StreamLink NodeConstructor::parse_stream_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
   {
@@ -95,7 +98,7 @@ StreamLink ConfigLoader::parse_stream_yaml(YAML::Node yaml)
   throw ConfigError("unexpected stream format");
 }
 
-StreamLink ConfigLoader::parse_stream_dict(YAML::Node yaml)
+StreamLink NodeConstructor::parse_stream_dict(YAML::Node yaml)
 {
   const auto klass = take_required(yaml, "class").as<std::string>("");
   const auto label = take_optional(yaml, "label").as<std::string>("");
@@ -110,8 +113,48 @@ StreamLink ConfigLoader::parse_stream_dict(YAML::Node yaml)
   }
 
   const auto data = std::make_shared<StreamData>(StreamData{klass, label, link, yaml});
-  config_.streams.push_back(data);
+  output_.streams.push_back(data);
   return StreamLink{"", data, {}};
+}
+
+ConfigData NodeTransformer::operator()(const ConfigData & input)
+{
+  for (const auto & stream : input.streams)
+  {
+    transform_stream_common(stream);
+  }
+  return output_;
+}
+
+void NodeTransformer::transform_stream_common(const std::shared_ptr<StreamData> & stream)
+{
+  if (stream->klass == "subscription")
+  {
+    return transform_stream_subscription(stream);
+  }
+  output_.streams.push_back(stream);
+}
+
+void NodeTransformer::transform_stream_subscription(const std::shared_ptr<StreamData> & stream)
+{
+  std::shared_ptr<StreamData> topic;
+  {
+    YAML::Node yaml;
+    yaml["name"] = take_required(stream->yaml, "topic");
+    yaml["qos"] = take_optional(stream->yaml, "qos");
+    topic = std::make_shared<StreamData>(StreamData{"topic", "", std::nullopt, yaml});
+  }
+
+  std::shared_ptr<StreamData> field;
+  {
+    YAML::Node yaml;
+    yaml["name"] = take_required(stream->yaml, "field");
+    const auto link = StreamLink{"", topic, {}};
+    field = std::make_shared<StreamData>(StreamData{"field", stream->label, link, yaml});
+  }
+
+  output_.streams.push_back(topic);
+  output_.streams.push_back(field);
 }
 
 }  // namespace multi_data_monitor

@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE2__CONFIG__TYPES_HPP_
-#define CORE2__CONFIG__TYPES_HPP_
+#ifndef CORE__CONFIG__TYPES_HPP_
+#define CORE__CONFIG__TYPES_HPP_
 
 #include <yaml-cpp/yaml.h>
 #include <memory>
@@ -54,6 +54,7 @@ using WidgetLink = NodeLink<WidgetData>;
 struct StreamData
 {
   void dump() const;
+
   const NodeClass klass;
   const NodeLabel label;
   std::optional<StreamLink> input;
@@ -77,11 +78,14 @@ struct FieldData
   std::string type;
 };
 
-struct ConfigData
+class StyleSheetConfig
 {
-  std::vector<std::shared_ptr<StreamData>> streams;
+};
+
+class StyleSheetStore
+{
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE2__CONFIG__TYPES_HPP_
+#endif  // CORE__CONFIG__TYPES_HPP_
