@@ -1,0 +1,33 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: multi_data_monitor::Simple }
+
+widgets:
+  - class: Simple
+    input: { topic: /test/header, field: stamp.sec }
+  - class: multi_data_monitor::Simple
+    input: { topic: /test/header, field: stamp.sec }
+  - class: multi_data_monitor::Simple
+    input: { class: topic-field, topic: /test/header, field: stamp.sec }
+  - class: multi_data_monitor::Simple
+    input: { class: topic-field, name: [/test/header, stamp.sec], qos: dt1 }
+
+streams:
+  - { class: subscription, topic: /test/header, field: stamp.sec, qos: dt1, label: test-test }
+  - class: field
+    name: stamp.nanosec
+    input:
+      class: topic
+      name: /test/header
+      type: std_msgs/msg/Header
+
+topics:
+  - name: /test/header
+    type: std_msgs/msg/Header
+    fields:
+      - { name: stamp.sec }
+      - { name: stamp.nanosec }
+  - name: /test/uint32
+    fields:
+      - { name: data }

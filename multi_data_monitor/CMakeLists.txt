@@ -19,6 +19,17 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
+ament_auto_add_executable(loader
+  src/core2/loader.cpp
+  src/core2/config/parser.hpp
+  src/core2/config/parser.cpp
+  src/core2/config/types.hpp
+  src/core2/config/types.cpp
+  src/core2/config/utils.hpp
+  src/core2/config/utils.cpp
+)
+target_include_directories(loader PRIVATE src/core2)
+
 ament_auto_add_library(${PROJECT_NAME} SHARED
   src/core/widget.hpp
   src/core/widget.cpp
