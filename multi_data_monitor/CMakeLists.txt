@@ -27,6 +27,7 @@ ament_auto_add_executable(loader
   src/core/config/types.cpp
   src/core/config/utils.hpp
   src/core/config/utils.cpp
+  src/core/debug/plantuml.cpp
 )
 target_include_directories(loader PRIVATE src/core)
 

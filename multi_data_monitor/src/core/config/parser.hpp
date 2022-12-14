@@ -16,27 +16,11 @@
 #define CORE__CONFIG__PARSER_HPP_
 
 #include "types.hpp"
-#include <yaml-cpp/yaml.h>
 #include <memory>
 #include <string>
-#include <vector>
 
 namespace multi_data_monitor
 {
-
-struct ConfigFile
-{
-  std::string version;
-  std::vector<YAML::Node> stylesheets;
-  std::vector<YAML::Node> widgets;
-  std::vector<YAML::Node> streams;
-  std::vector<YAML::Node> subscriptions;
-};
-
-struct ConfigData
-{
-  std::vector<std::shared_ptr<StreamData>> streams;
-};
 
 class ConfigLoader
 {

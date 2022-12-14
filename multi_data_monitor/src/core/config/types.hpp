@@ -86,6 +86,20 @@ class StyleSheetStore
 {
 };
 
+struct ConfigFile
+{
+  std::string version;
+  std::vector<YAML::Node> stylesheets;
+  std::vector<YAML::Node> widgets;
+  std::vector<YAML::Node> streams;
+  std::vector<YAML::Node> subscriptions;
+};
+
+struct ConfigData
+{
+  std::vector<std::shared_ptr<StreamData>> streams;
+};
+
 }  // namespace multi_data_monitor
 
 #endif  // CORE__CONFIG__TYPES_HPP_

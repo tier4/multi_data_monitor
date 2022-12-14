@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "config/parser.hpp"
+#include "debug/plantuml.hpp"
 #include <iostream>
 
 int main(int argc, char ** argv)
@@ -45,8 +46,9 @@ int main(int argc, char ** argv)
   for (const auto & stream : data3.streams)
   {
     stream->dump();
-    stream->yaml.SetStyle(YAML::EmitterStyle::Flow);
-    std::cout << " - yaml : " << YAML::Dump(stream->yaml) << std::endl;
   }
   std::cout << "========================================" << std::endl;
+
+  auto diagram = mdm::plantuml::Diagram();
+  diagram.write(data3, "diagram.plantuml");
 }
