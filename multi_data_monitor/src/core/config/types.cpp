@@ -18,6 +18,12 @@
 namespace multi_data_monitor
 {
 
+StreamLink StreamData::Create(const NodeClass & klass)
+{
+  const auto data = StreamData{klass, "", YAML::Node(), nullptr, nullptr};
+  return std::make_shared<StreamData>(data);
+}
+
 StreamLink StreamData::Create(const NodeClass & klass, YAML::Node yaml)
 {
   const auto data = StreamData{klass, "", yaml, nullptr, nullptr};

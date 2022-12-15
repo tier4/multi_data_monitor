@@ -21,6 +21,7 @@ add_compile_definitions(FMT_HEADER_ONLY)
 
 ament_auto_add_executable(loader
   src/loader.cpp
+  src/core/common/yaml.cpp
   src/core/config/parser.hpp
   src/core/config/parser.cpp
   src/core/config/types.hpp
@@ -28,6 +29,7 @@ ament_auto_add_executable(loader
   src/core/config/utils.hpp
   src/core/config/utils.cpp
   src/core/debug/plantuml.cpp
+  src/core/parser/subscription.cpp
 )
 target_include_directories(loader PRIVATE src/core)
 

@@ -14,14 +14,17 @@
 
 #include "config/parser.hpp"
 #include "debug/plantuml.hpp"
+#include "parser/subscription.hpp"
 #include <iostream>
 
 void load(const std::string & input)
 {
+  auto diagram = multi_data_monitor::plantuml::Diagram();
+
   auto step0 = multi_data_monitor::ConfigLoader();
   auto data0 = step0(input);
 
-  auto step1a = multi_data_monitor::ConstructSubscriptions();
+  auto step1a = multi_data_monitor::ConstructSubscription();
   auto step1b = multi_data_monitor::ConstructStream();
   auto data1a = step1a(data0);
   auto data1b = step1b(data0);
@@ -30,31 +33,15 @@ void load(const std::string & input)
   data1.insert(data1.end(), data1a.begin(), data1a.end());
   data1.insert(data1.end(), data1b.begin(), data1b.end());
 
-  // auto step2 = multi_data_monitor::NodeTransformer();
+  auto step2 = multi_data_monitor::CheckSpecialClass();
+  auto step3 = multi_data_monitor::MergeSubscription();
   // auto step3 = multi_data_monitor::InterfaceHandler();
   // auto step4 = multi_data_monitor::ResolveConnection();
 
-  // const auto data2 = step2(data1);
-  // const auto data3 = step3(data2);
-
-  const auto & debug1 = data1;
-  const auto & debug2 = data1b;
-
-  std::cout << "========================================" << std::endl;
-  for (const auto & stream : debug1)
-  {
-    stream->dump();
-  }
-  std::cout << "========================================" << std::endl;
-  for (const auto & stream : debug2)
-  {
-    stream->dump();
-  }
-  std::cout << "========================================" << std::endl;
-
-  auto diagram = multi_data_monitor::plantuml::Diagram();
-  diagram.write(debug1, "diagram1.plantuml");
-  diagram.write(debug2, "diagram2.plantuml");
+  diagram.write(data1, "diagram1.plantuml");
+  const auto data2 = step2(data1);
+  const auto data3 = step3(data2);
+  diagram.write(data3, "diagram2.plantuml");
 }
 
 int main(int argc, char ** argv)

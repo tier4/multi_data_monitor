@@ -15,6 +15,7 @@
 #ifndef CORE__CONFIG__PARSER_HPP_
 #define CORE__CONFIG__PARSER_HPP_
 
+#include "common/exceptions.hpp"
 #include "types.hpp"
 #include <memory>
 #include <string>
@@ -31,7 +32,7 @@ private:
   ConfigFile output_;
 };
 
-class ConstructSubscriptions
+class ConstructSubscription
 {
 public:
   StreamList operator()(const ConfigFile & input);
@@ -53,15 +54,10 @@ private:
   StreamList output_;
 };
 
-class NodeTransformer
+class CheckSpecialClass
 {
 public:
   StreamList operator()(const StreamList & input);
-
-private:
-  void transform_stream_common(const std::shared_ptr<StreamData> & stream);
-  void transform_stream_subscription(const std::shared_ptr<StreamData> & stream);
-  StreamList output_;
 };
 
 class InterfaceHandler
@@ -70,7 +66,7 @@ public:
   StreamList operator()(const StreamList & input);
 
 private:
-  void handle_stream(const std::shared_ptr<StreamData> & stream);
+  void handle_stream(const StreamLink & stream);
   StreamList output_;
 };
 

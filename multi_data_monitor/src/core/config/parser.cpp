@@ -13,7 +13,8 @@
 // limitations under the License.
 
 #include "parser.hpp"
-#include "exceptions.hpp"
+#include "common/exceptions.hpp"
+#include "common/yaml.hpp"
 #include "types.hpp"
 #include "utils.hpp"
 #include <filesystem>
@@ -25,44 +26,6 @@
 
 namespace multi_data_monitor
 {
-
-YAML::Node take_optional(YAML::Node & yaml, const std::string & name)
-{
-  const auto node = yaml[name];
-  yaml.remove(name);
-  return node;
-}
-
-YAML::Node take_required(YAML::Node & yaml, const std::string & name)
-{
-  const auto node = yaml[name];
-  if (!node)
-  {
-    // TODO(Takagi, Isamu): add debug info
-    throw ConfigError("required key: " + name);
-  }
-  yaml.remove(name);
-  return node;
-}
-
-void check_empty(YAML::Node & yaml)
-{
-  std::vector<std::string> fields;
-  for (const auto pair : yaml)
-  {
-    fields.push_back(pair.first.as<std::string>());
-  }
-  if (!fields.empty())
-  {
-    // TODO(Takagi, Isamu): use join
-    std::string text;
-    for (const auto & field : fields)
-    {
-      text += " " + field;
-    }
-    throw ConfigError("not empty:" + text);
-  }
-}
 
 ConfigFile ConfigLoader::operator()(const std::string & input)
 {
@@ -76,13 +39,13 @@ ConfigFile ConfigLoader::operator()(const std::string & input)
   auto yaml = YAML::LoadFile(path);
 
   // Check version.
-  const auto version = take_optional(yaml, "version").as<std::string>("undefined");
+  const auto version = yaml::take_optional(yaml, "version").as<std::string>("undefined");
   if (version != "2.0")
   {
     throw ConfigError("not supported version '" + version + "'");
   }
 
-  const auto streams = take_optional(yaml, "streams");
+  const auto streams = yaml::take_optional(yaml, "streams");
   if (!streams.IsSequence())
   {
     throw ConfigError("streams config is not sequence");
@@ -92,7 +55,7 @@ ConfigFile ConfigLoader::operator()(const std::string & input)
     output_.streams.push_back(stream);
   }
 
-  const auto subscriptions = take_optional(yaml, "subscriptions");
+  const auto subscriptions = yaml::take_optional(yaml, "subscriptions");
   if (!subscriptions.IsSequence())
   {
     throw ConfigError("subscriptions config is not sequence");
@@ -105,7 +68,7 @@ ConfigFile ConfigLoader::operator()(const std::string & input)
   return output_;
 }
 
-StreamList ConstructSubscriptions::operator()(const ConfigFile & input)
+StreamList ConstructSubscription::operator()(const ConfigFile & input)
 {
   for (const auto & node : input.subscriptions)
   {
@@ -114,7 +77,7 @@ StreamList ConstructSubscriptions::operator()(const ConfigFile & input)
   return output_;
 }
 
-void ConstructSubscriptions::parse_subscription(YAML::Node topic)
+void ConstructSubscription::parse_subscription(YAML::Node topic)
 {
   if (!topic.IsMap())
   {
@@ -122,24 +85,24 @@ void ConstructSubscriptions::parse_subscription(YAML::Node topic)
     throw ConfigError("is not map");
   }
 
-  const auto fields = take_optional(topic, "fields");
+  const auto fields = yaml::take_optional(topic, "fields");
   if (!fields.IsSequence())
   {
     // TODO(Takagi, Isamu): error message
     throw ConfigError("is not sequence");
   }
 
-  const auto topic_name = take_required(topic, "name");
-  const auto topic_type = take_optional(topic, "type");
-  const auto topic_qos = take_optional(topic, "qos");
-  check_empty(topic);
+  const auto topic_name = yaml::take_required(topic, "name");
+  const auto topic_type = yaml::take_optional(topic, "type");
+  const auto topic_qos = yaml::take_optional(topic, "qos");
+  yaml::check_empty(topic);
 
   for (YAML::Node field : fields)
   {
-    const auto label = take_optional(field, "label").as<std::string>("");
-    const auto field_name = take_required(field, "name");
-    const auto field_type = take_optional(field, "type");
-    check_empty(field);
+    const auto label = yaml::take_optional(field, "label").as<std::string>("");
+    const auto field_name = yaml::take_required(field, "name");
+    const auto field_type = yaml::take_optional(field, "type");
+    yaml::check_empty(field);
 
     YAML::Node yaml;
     yaml["topic"] = topic_name;
@@ -148,7 +111,7 @@ void ConstructSubscriptions::parse_subscription(YAML::Node topic)
     yaml["field-type"] = field_type;
     yaml["qos"] = topic_qos;
 
-    output_.emplace_back(StreamData::Create(builtin::subscription, label, yaml));
+    output_.push_back(StreamData::Create(builtin::subscription, label, yaml));
   }
 }
 
@@ -179,12 +142,12 @@ StreamLink ConstructStream::parse_stream_yaml(YAML::Node yaml)
 
 StreamLink ConstructStream::parse_stream_dict(YAML::Node yaml)
 {
-  const auto klass = take_required(yaml, "class").as<std::string>("");
-  const auto label = take_optional(yaml, "label").as<std::string>("");
-  const auto input = take_optional(yaml, "input");
+  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
+  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
+  const auto input = yaml::take_optional(yaml, "input");
 
   StreamLink node = StreamData::Create(klass, label, yaml);
-  output_.emplace_back(node);
+  output_.push_back(node);
 
   if (input)
   {
@@ -193,47 +156,17 @@ StreamLink ConstructStream::parse_stream_dict(YAML::Node yaml)
   return node;
 }
 
-StreamList NodeTransformer::operator()(const StreamList & input)
+StreamList CheckSpecialClass::operator()(const StreamList & input)
 {
   for (const auto & stream : input)
   {
-    transform_stream_common(stream);
+    const auto & klass = stream->klass;
+    if (!klass.empty() && klass[0] == '@')
+    {
+      throw ConfigError("class name is reserved: " + klass);
+    }
   }
-  return output_;
-}
-
-void NodeTransformer::transform_stream_common(const std::shared_ptr<StreamData> & stream)
-{
-  if (stream->klass == "subscription")
-  {
-    return transform_stream_subscription(stream);
-  }
-  output_.push_back(stream);
-}
-
-void NodeTransformer::transform_stream_subscription(const std::shared_ptr<StreamData> & stream)
-{
-  StreamLink topic;
-  {
-    YAML::Node yaml;
-    yaml["name"] = take_required(stream->yaml, "topic");
-    yaml["qos"] = take_optional(stream->yaml, "qos");
-    topic = StreamData::Create("topic", yaml);
-  }
-
-  StreamLink field;
-  {
-    YAML::Node yaml;
-    yaml["name"] = take_required(stream->yaml, "field");
-    yaml["label"] = stream->label;
-    field = StreamData::Create("field", stream->label, yaml);
-  }
-
-  stream->refer = field;
-  field->input = topic;
-  output_.push_back(stream);
-  output_.push_back(topic);
-  output_.push_back(field);
+  return input;
 }
 
 StreamList InterfaceHandler::operator()(const StreamList & input)

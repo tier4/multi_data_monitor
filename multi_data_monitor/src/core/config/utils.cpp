@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "utils.hpp"
-#include "exceptions.hpp"
+#include "common/exceptions.hpp"
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
 #include <string>

@@ -12,24 +12,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__EXCEPTIONS_HPP_
-#define CORE__EXCEPTIONS_HPP_
-
-#include <stdexcept>
+#ifndef CORE__PARSER__ABSTRUCT_HPP_
+#define CORE__PARSER__ABSTRUCT_HPP_
 
 namespace multi_data_monitor
 {
 
-struct FilePathError : public std::runtime_error
-{
-  using std::runtime_error::runtime_error;
-};
-
-struct ConfigError : public std::runtime_error
-{
-  using std::runtime_error::runtime_error;
-};
-
 }  // namespace multi_data_monitor
 
-#endif  // CORE__EXCEPTIONS_HPP_
+#endif  // CORE__PARSER__ABSTRUCT_HPP_

@@ -40,6 +40,7 @@ using StreamList = std::vector<StreamLink>;
 
 struct StreamData
 {
+  static StreamLink Create(const NodeClass & klass);
   static StreamLink Create(const NodeClass & klass, YAML::Node yaml);
   static StreamLink Create(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml);
   void dump() const;
