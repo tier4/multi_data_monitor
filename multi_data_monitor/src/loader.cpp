@@ -31,24 +31,27 @@ int main(int argc, char ** argv)
   auto step1 = mdm::ConfigLoader();
   auto step2 = mdm::NodeConstructor();
   auto step3 = mdm::NodeTransformer();
+  auto step4 = mdm::InterfaceHandler();
 
   const auto data0 = scheme + "://" + config;
   const auto data1 = step1(data0);
   const auto data2 = step2(data1);
   const auto data3 = step3(data2);
+  const auto data4 = step4(data3);
 
-  std::cout << "========================================" << std::endl;
-  for (const auto & stream : data2.streams)
-  {
-    stream->dump();
-  }
   std::cout << "========================================" << std::endl;
   for (const auto & stream : data3.streams)
   {
     stream->dump();
   }
   std::cout << "========================================" << std::endl;
+  for (const auto & stream : data4.streams)
+  {
+    stream->dump();
+  }
+  std::cout << "========================================" << std::endl;
 
   auto diagram = mdm::plantuml::Diagram();
-  diagram.write(data3, "diagram.plantuml");
+  diagram.write(data3, "diagram1.plantuml");
+  diagram.write(data4, "diagram2.plantuml");
 }

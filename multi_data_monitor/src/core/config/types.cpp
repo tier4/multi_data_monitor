@@ -18,9 +18,16 @@
 namespace multi_data_monitor
 {
 
-void NodeData::dump() const
+StreamLink StreamData::Create(const NodeClass & klass, YAML::Node yaml)
 {
-  std::cout << index << ": " << klass << " " << label << std::endl;
+  const auto data = StreamData{klass, "", yaml, nullptr, nullptr};
+  return std::make_shared<StreamData>(data);
+}
+
+StreamLink StreamData::Create(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
+{
+  const auto data = StreamData{klass, label, yaml, nullptr, nullptr};
+  return std::make_shared<StreamData>(data);
 }
 
 void StreamData::dump() const
@@ -32,7 +39,7 @@ void StreamData::dump() const
   }
   if (input)
   {
-    std::cout << " - input: " << input.value().link << std::endl;
+    std::cout << " - input: " << input << std::endl;
   }
 }
 

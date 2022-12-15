@@ -24,41 +24,23 @@
 namespace multi_data_monitor
 {
 
-using NodeIndex = size_t;
 using NodeClass = std::string;
 using NodeLabel = std::string;
 
-struct NodeData
-{
-  void dump() const;
-  static inline NodeIndex serial = 0;
-  static inline NodeIndex NewIndex() { return ++serial; }
-  const NodeIndex index;
-  const NodeClass klass;
-  const NodeLabel label;
-};
-
-template <class DataType>
-struct NodeLink
-{
-  NodeLabel label;
-  std::shared_ptr<DataType> link;
-  YAML::Node yaml;
-};
-
 struct StreamData;
-struct WidgetData;
-using StreamLink = NodeLink<StreamData>;
-using WidgetLink = NodeLink<WidgetData>;
+using StreamLink = std::shared_ptr<StreamData>;
 
 struct StreamData
 {
+  static StreamLink Create(const NodeClass & klass, YAML::Node yaml);
+  static StreamLink Create(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml);
   void dump() const;
 
   const NodeClass klass;
   const NodeLabel label;
-  std::optional<StreamLink> input;
   YAML::Node yaml;
+  StreamLink refer;
+  StreamLink input;
 };
 
 struct TopicData

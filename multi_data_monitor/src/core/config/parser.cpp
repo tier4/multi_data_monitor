@@ -104,17 +104,14 @@ StreamLink NodeConstructor::parse_stream_dict(YAML::Node yaml)
   const auto label = take_optional(yaml, "label").as<std::string>("");
   const auto input = take_optional(yaml, "input");
 
-  // TODO(Takagi, Isamu): if (klass == "link")
+  StreamLink node = StreamData::Create(klass, label, yaml);
+  output_.streams.emplace_back(node);
 
-  std::optional<StreamLink> link;
   if (input)
   {
-    link = parse_stream_yaml(input);
+    node->input = parse_stream_yaml(input);
   }
-
-  const auto data = std::make_shared<StreamData>(StreamData{klass, label, link, yaml});
-  output_.streams.push_back(data);
-  return StreamLink{"", data, {}};
+  return node;
 }
 
 ConfigData NodeTransformer::operator()(const ConfigData & input)
@@ -137,24 +134,34 @@ void NodeTransformer::transform_stream_common(const std::shared_ptr<StreamData> 
 
 void NodeTransformer::transform_stream_subscription(const std::shared_ptr<StreamData> & stream)
 {
-  std::shared_ptr<StreamData> topic;
+  StreamLink topic;
   {
     YAML::Node yaml;
     yaml["name"] = take_required(stream->yaml, "topic");
     yaml["qos"] = take_optional(stream->yaml, "qos");
-    topic = std::make_shared<StreamData>(StreamData{"topic", "", std::nullopt, yaml});
+    topic = StreamData::Create("topic", yaml);
   }
 
-  std::shared_ptr<StreamData> field;
+  StreamLink field;
   {
     YAML::Node yaml;
     yaml["name"] = take_required(stream->yaml, "field");
-    const auto link = StreamLink{"", topic, {}};
-    field = std::make_shared<StreamData>(StreamData{"field", stream->label, link, yaml});
+    yaml["label"] = stream->label;
+    field = StreamData::Create("field", stream->label, yaml);
   }
 
+  field->input = topic;
   output_.streams.push_back(topic);
   output_.streams.push_back(field);
+}
+
+ConfigData InterfaceHandler::operator()(const ConfigData & input)
+{
+  for (const auto & stream : input.streams)
+  {
+    output_.streams.push_back(stream);
+  }
+  return output_;
 }
 
 }  // namespace multi_data_monitor

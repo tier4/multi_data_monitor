@@ -54,6 +54,16 @@ private:
   ConfigData output_;
 };
 
+class InterfaceHandler
+{
+public:
+  ConfigData operator()(const ConfigData & input);
+
+private:
+  void handle_stream(const std::shared_ptr<StreamData> & stream);
+  ConfigData output_;
+};
+
 }  // namespace multi_data_monitor
 
 #endif  // CORE__CONFIG__PARSER_HPP_

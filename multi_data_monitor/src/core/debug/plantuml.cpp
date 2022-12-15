@@ -43,7 +43,7 @@ std::string Diagram::convert(const ConfigData & input)
   {
     if (stream->input)
     {
-      ss << stream << " --> " << stream->input.value().link << std::endl;
+      ss << stream << " --> " << stream->input << std::endl;
     }
   }
 
