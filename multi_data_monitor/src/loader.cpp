@@ -16,9 +16,49 @@
 #include "debug/plantuml.hpp"
 #include <iostream>
 
+void load(const std::string & input)
+{
+  auto step0 = multi_data_monitor::ConfigLoader();
+  auto data0 = step0(input);
+
+  auto step1a = multi_data_monitor::ConstructSubscriptions();
+  auto step1b = multi_data_monitor::ConstructStream();
+  auto data1a = step1a(data0);
+  auto data1b = step1b(data0);
+
+  auto data1 = multi_data_monitor::StreamList();
+  data1.insert(data1.end(), data1a.begin(), data1a.end());
+  data1.insert(data1.end(), data1b.begin(), data1b.end());
+
+  // auto step2 = multi_data_monitor::NodeTransformer();
+  // auto step3 = multi_data_monitor::InterfaceHandler();
+  // auto step4 = multi_data_monitor::ResolveConnection();
+
+  // const auto data2 = step2(data1);
+  // const auto data3 = step3(data2);
+
+  const auto & debug1 = data1;
+  const auto & debug2 = data1b;
+
+  std::cout << "========================================" << std::endl;
+  for (const auto & stream : debug1)
+  {
+    stream->dump();
+  }
+  std::cout << "========================================" << std::endl;
+  for (const auto & stream : debug2)
+  {
+    stream->dump();
+  }
+  std::cout << "========================================" << std::endl;
+
+  auto diagram = multi_data_monitor::plantuml::Diagram();
+  diagram.write(debug1, "diagram1.plantuml");
+  diagram.write(debug2, "diagram2.plantuml");
+}
+
 int main(int argc, char ** argv)
 {
-  namespace mdm = multi_data_monitor;
   if (argc != 3)
   {
     std::cerr << "usage: command <scheme> <config-file-path>" << std::endl;
@@ -27,31 +67,5 @@ int main(int argc, char ** argv)
 
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
-
-  auto step1 = mdm::ConfigLoader();
-  auto step2 = mdm::NodeConstructor();
-  auto step3 = mdm::NodeTransformer();
-  auto step4 = mdm::InterfaceHandler();
-
-  const auto data0 = scheme + "://" + config;
-  const auto data1 = step1(data0);
-  const auto data2 = step2(data1);
-  const auto data3 = step3(data2);
-  const auto data4 = step4(data3);
-
-  std::cout << "========================================" << std::endl;
-  for (const auto & stream : data3.streams)
-  {
-    stream->dump();
-  }
-  std::cout << "========================================" << std::endl;
-  for (const auto & stream : data4.streams)
-  {
-    stream->dump();
-  }
-  std::cout << "========================================" << std::endl;
-
-  auto diagram = mdm::plantuml::Diagram();
-  diagram.write(data3, "diagram1.plantuml");
-  diagram.write(data4, "diagram2.plantuml");
+  load(scheme + "://" + config);
 }

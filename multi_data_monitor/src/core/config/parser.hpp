@@ -31,37 +31,57 @@ private:
   ConfigFile output_;
 };
 
-class NodeConstructor
+class ConstructSubscriptions
 {
 public:
-  ConfigData operator()(const ConfigFile & input);
+  StreamList operator()(const ConfigFile & input);
+
+private:
+  void parse_subscription(YAML::Node topic);
+  StreamList output_;
+};
+
+class ConstructStream
+{
+public:
+  StreamList operator()(const ConfigFile & input);
 
 private:
   StreamLink parse_stream_link(YAML::Node yaml);
   StreamLink parse_stream_yaml(YAML::Node yaml);
   StreamLink parse_stream_dict(YAML::Node yaml);
-  ConfigData output_;
+  StreamList output_;
 };
 
 class NodeTransformer
 {
 public:
-  ConfigData operator()(const ConfigData & input);
+  StreamList operator()(const StreamList & input);
 
 private:
   void transform_stream_common(const std::shared_ptr<StreamData> & stream);
   void transform_stream_subscription(const std::shared_ptr<StreamData> & stream);
-  ConfigData output_;
+  StreamList output_;
 };
 
 class InterfaceHandler
 {
 public:
-  ConfigData operator()(const ConfigData & input);
+  StreamList operator()(const StreamList & input);
 
 private:
   void handle_stream(const std::shared_ptr<StreamData> & stream);
-  ConfigData output_;
+  StreamList output_;
+};
+
+class ResolveConnection
+{
+public:
+  StreamList operator()(const StreamList & input);
+
+private:
+  StreamLink resolve(const StreamLink & stream);
+  StreamList output_;
 };
 
 }  // namespace multi_data_monitor

@@ -20,12 +20,12 @@
 namespace multi_data_monitor::plantuml
 {
 
-std::string Diagram::convert(const ConfigData & input)
+std::string Diagram::convert(const StreamList & streams)
 {
   std::ostringstream ss;
   ss << "@startuml debug" << std::endl;
 
-  for (const auto & stream : input.streams)
+  for (const auto & stream : streams)
   {
     ss << "card " << stream << " [" << std::endl;
     ss << stream->klass;
@@ -39,11 +39,15 @@ std::string Diagram::convert(const ConfigData & input)
     ss << "]" << std::endl;
   }
 
-  for (const auto & stream : input.streams)
+  for (const auto & stream : streams)
   {
     if (stream->input)
     {
       ss << stream << " --> " << stream->input << std::endl;
+    }
+    if (stream->refer)
+    {
+      ss << stream << " --> " << stream->refer << " #line.dashed" << std::endl;
     }
   }
 
@@ -51,7 +55,7 @@ std::string Diagram::convert(const ConfigData & input)
   return ss.str();
 }
 
-void Diagram::write(const ConfigData & input, const std::string & path)
+void Diagram::write(const StreamList & input, const std::string & path)
 {
   std::ofstream ofs(path);
   ofs << convert(input) << std::endl;

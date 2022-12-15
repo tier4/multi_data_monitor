@@ -14,21 +14,25 @@ widgets:
     input: { class: topic-field, name: [/test/header, stamp.sec], qos: dt1 }
 
 streams:
-  - { class: subscription, topic: /test/header, field: stamp.sec, qos: dt1, label: test-test }
-  - { class: subscription, topic: /test/header, field: stamp.sec }
-  - class: field
-    name: stamp.nanosec
+  - class: stdout
+    input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dt1, label: test-test }
+  - class: stdout
+    input: { class: subscription, topic: /test/header, field: stamp.sec }
+  - class: stdout
     input:
-      class: topic
-      name: /test/header
-      type: std_msgs/msg/Header
+      class: field
+      name: stamp.nanosec
+      input:
+        class: topic
+        name: /test/header
+        type: std_msgs/msg/Header
 
-topics:
+subscriptions:
   - name: /test/header
     type: std_msgs/msg/Header
     fields:
-      - { name: stamp.sec }
-      - { name: stamp.nanosec }
+      - { name: stamp.sec, label: time1 }
+      - { name: stamp.nanosec, label: time1 }
   - name: /test/uint32
     fields:
-      - { name: data }
+      - { name: data, label: uint-data }

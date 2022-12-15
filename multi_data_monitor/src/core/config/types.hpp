@@ -21,6 +21,13 @@
 #include <string>
 #include <vector>
 
+namespace multi_data_monitor::builtin
+{
+
+const char subscription[] = "subscription";
+
+}
+
 namespace multi_data_monitor
 {
 
@@ -29,6 +36,7 @@ using NodeLabel = std::string;
 
 struct StreamData;
 using StreamLink = std::shared_ptr<StreamData>;
+using StreamList = std::vector<StreamLink>;
 
 struct StreamData
 {
@@ -41,17 +49,23 @@ struct StreamData
   YAML::Node yaml;
   StreamLink refer;
   StreamLink input;
+  // TODO(Takagi, Isamu): exception info
+};
+
+struct TopicQoS
+{
+  enum class Reliability { Auto, Default, Reliable, BestEffort };
+  enum class Durability { Auto, Default, Volatile, TransientLocal };
+  size_t depth;
+  Reliability reliability;
+  Durability durability;
 };
 
 struct TopicData
 {
-  enum class Reliability { Auto, Default, Reliable, BestEffort };
-  enum class Durability { Auto, Default, Volatile, TransientLocal };
   std::string name;
   std::string type;
-  size_t depth;
-  Reliability reliability;
-  Durability durability;
+  TopicQoS qos;
 };
 
 struct FieldData
@@ -75,11 +89,6 @@ struct ConfigFile
   std::vector<YAML::Node> widgets;
   std::vector<YAML::Node> streams;
   std::vector<YAML::Node> subscriptions;
-};
-
-struct ConfigData
-{
-  std::vector<std::shared_ptr<StreamData>> streams;
 };
 
 }  // namespace multi_data_monitor
