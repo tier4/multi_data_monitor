@@ -14,35 +14,43 @@
 
 #include "config/parser.hpp"
 #include "debug/plantuml.hpp"
+#include "loader/stream_loader.hpp"
 #include "parser/subscription.hpp"
 #include <iostream>
 
-void load(const std::string & input)
+namespace multi_data_monitor
 {
-  auto diagram = multi_data_monitor::plantuml::Diagram();
 
-  auto step0 = multi_data_monitor::ConfigLoader();
+StreamList load(const std::string & input)
+{
+  auto diagram = plantuml::Diagram();
+
+  auto step0 = ConfigLoader();
   auto data0 = step0(input);
 
-  auto step1a = multi_data_monitor::ConstructSubscription();
-  auto step1b = multi_data_monitor::ConstructStream();
+  auto step1a = ConstructSubscription();
+  auto step1b = ConstructStream();
   auto data1a = step1a(data0);
   auto data1b = step1b(data0);
 
-  auto data1 = multi_data_monitor::StreamList();
+  auto data1 = StreamList();
   data1.insert(data1.end(), data1a.begin(), data1a.end());
   data1.insert(data1.end(), data1b.begin(), data1b.end());
 
-  auto step2 = multi_data_monitor::CheckSpecialClass();
-  auto step3 = multi_data_monitor::MergeSubscription();
-  // auto step3 = multi_data_monitor::InterfaceHandler();
-  // auto step4 = multi_data_monitor::ResolveConnection();
+  auto step2 = CheckSpecialClass();
+  auto step3 = MergeSubscription();
+  auto step4 = ResolveConnection();
 
-  diagram.write(data1, "diagram1.plantuml");
   const auto data2 = step2(data1);
   const auto data3 = step3(data2);
-  diagram.write(data3, "diagram2.plantuml");
+  diagram.write(data3, "diagram1.plantuml");
+  const auto data4 = step4(data3);
+  diagram.write(data4, "diagram2.plantuml");
+
+  return data4;
 }
+
+}  // namespace multi_data_monitor
 
 int main(int argc, char ** argv)
 {
@@ -54,5 +62,9 @@ int main(int argc, char ** argv)
 
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
-  load(scheme + "://" + config);
+
+  auto streams = multi_data_monitor::load(scheme + "://" + config);
+
+  auto loader = multi_data_monitor::StreamLoader(streams);
+  (void)loader;
 }

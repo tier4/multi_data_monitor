@@ -5,27 +5,15 @@ stylesheets:
 
 widgets:
   - class: Simple
-    input: { topic: /test/header, field: stamp.sec }
+    input: { class: subscription, topic: /test/header, field: stamp.sec }
   - class: multi_data_monitor::Simple
-    input: { topic: /test/header, field: stamp.sec }
-  - class: multi_data_monitor::Simple
-    input: { class: topic-field, topic: /test/header, field: stamp.sec }
-  - class: multi_data_monitor::Simple
-    input: { class: topic-field, name: [/test/header, stamp.sec], qos: dt1 }
+    input: { class: subscription, name: [/test/header, stamp.sec], qos: dt1 }
 
 streams:
-  - class: stdout
+  - class: debug
     input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dt1, label: test-test }
-  - class: stdout
-    input: { class: subscription, topic: /test/header, field: stamp.sec }
-  - class: stdout
-    input:
-      class: field
-      name: stamp.nanosec
-      input:
-        class: topic
-        name: /test/header
-        type: std_msgs/msg/Header
+  - class: debug
+    input: { class: subscription, topic: /test/header, field: stamp.nanosec }
 
 subscriptions:
   - name: /test/header

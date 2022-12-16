@@ -12,12 +12,14 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__PARSER__ABSTRUCT_HPP_
-#define CORE__PARSER__ABSTRUCT_HPP_
+#include "panel.hpp"
 
 namespace multi_data_monitor
 {
 
-}  // namespace multi_data_monitor
+void PanelStream::message(const Packet & packet)
+{
+  (void)packet;
+}
 
-#endif  // CORE__PARSER__ABSTRUCT_HPP_
+}  // namespace multi_data_monitor

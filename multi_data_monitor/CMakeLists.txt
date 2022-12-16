@@ -19,8 +19,8 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
-ament_auto_add_executable(loader
-  src/loader.cpp
+ament_auto_add_executable(parser
+  src/tool/parser.cpp
   src/core/common/yaml.cpp
   src/core/config/parser.hpp
   src/core/config/parser.cpp
@@ -29,9 +29,15 @@ ament_auto_add_executable(loader
   src/core/config/utils.hpp
   src/core/config/utils.cpp
   src/core/debug/plantuml.cpp
+  src/core/loader/stream_loader.cpp
   src/core/parser/subscription.cpp
+  src/core/stream/basic.cpp
+  src/core/stream/debug.cpp
+  src/core/stream/field.cpp
+  src/core/stream/panel.cpp
+  src/core/stream/topic.cpp
 )
-target_include_directories(loader PRIVATE src/core)
+target_include_directories(parser PRIVATE src/core)
 
 # ament_auto_add_library(${PROJECT_NAME} SHARED)
 # target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})

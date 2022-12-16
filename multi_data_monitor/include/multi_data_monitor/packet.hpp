@@ -12,9 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "abstruct.hpp"
+#ifndef MULTI_DATA_MONITOR__PACKET_HPP_
+#define MULTI_DATA_MONITOR__PACKET_HPP_
+
+#include <yaml-cpp/yaml.h>
+#include <string>
+#include <unordered_map>
 
 namespace multi_data_monitor
 {
 
+struct Packet
+{
+  YAML::Node value;
+  std::unordered_map<std::string, std::string> attrs;
+};
+
 }  // namespace multi_data_monitor
+
+#endif  // MULTI_DATA_MONITOR__PACKET_HPP_

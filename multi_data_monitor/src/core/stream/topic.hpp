@@ -12,23 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__VALUES_HPP_
-#define MULTI_DATA_MONITOR__VALUES_HPP_
+#ifndef CORE__STREAM__TOPIC_HPP_
+#define CORE__STREAM__TOPIC_HPP_
 
-#include <yaml-cpp/yaml.h>
-#include <string>
-#include <unordered_map>
+#include "stream/basic.hpp"
 
 namespace multi_data_monitor
 {
 
-struct MonitorValues
+struct TopicStream : public InOutStream
 {
-  MonitorValues Clone() const { return MonitorValues{YAML::Clone(value), attrs}; }
-  YAML::Node value;
-  std::unordered_map<std::string, std::string> attrs;
+public:
+  void message(const Packet & packet) override;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__VALUES_HPP_
+#endif  // CORE__STREAM__TOPIC_HPP_
