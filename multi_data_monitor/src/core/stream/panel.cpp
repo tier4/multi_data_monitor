@@ -17,6 +17,11 @@
 namespace multi_data_monitor
 {
 
+void PanelStream::setting(YAML::Node yaml)
+{
+  (void)yaml;
+}
+
 void PanelStream::message(const Packet & packet)
 {
   (void)packet;

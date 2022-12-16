@@ -30,8 +30,9 @@ struct InputStream
 {
 public:
   virtual ~InputStream() = default;
-  virtual void message(const Packet & packet) = 0;
+  virtual void setting(YAML::Node yaml) = 0;
   virtual void connect(Stream stream);
+  virtual void message(const Packet & packet) = 0;
 };
 
 struct InOutStream : public InputStream

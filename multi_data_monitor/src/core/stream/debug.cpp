@@ -18,6 +18,11 @@
 namespace multi_data_monitor
 {
 
+void DebugStream::setting(YAML::Node yaml)
+{
+  (void)yaml;
+}
+
 void DebugStream::message(const Packet & packet)
 {
   std::cout << packet.value << std::endl;

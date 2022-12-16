@@ -29,12 +29,12 @@ StreamLoader::StreamLoader(const StreamList & configs)
   for (const auto & config : configs)
   {
     const auto stream = create_stream(config);
+    stream->setting(config->yaml);
     mapping[config] = streams_.emplace_back(stream);
   }
 
   for (const auto & [config, stream] : mapping)
   {
-    std::cout << config->klass << ": " << stream << std::endl;
     if (config->input)
     {
       mapping[config->input]->connect(stream);

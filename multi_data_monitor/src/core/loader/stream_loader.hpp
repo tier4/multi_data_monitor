@@ -31,6 +31,7 @@ class StreamLoader
 {
 public:
   explicit StreamLoader(const StreamList & configs);
+  const auto & topics() { return topics_; }
 
 private:
   Stream create_stream(const StreamLink config);

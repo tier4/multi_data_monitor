@@ -13,13 +13,29 @@
 // limitations under the License.
 
 #include "stream_runner.hpp"
+#include <rclcpp/rclcpp.hpp>
 
 namespace multi_data_monitor
 {
 
-StreamRunner::StreamRunner(rclcpp::Node::SharedPtr node) : node_(node)
+StreamRunner::StreamRunner(const StreamList & configs) : loader_(configs)
 {
-  RCLCPP_INFO_STREAM(node->get_logger(), "init stream runner");
+}
+
+void StreamRunner::start(ros::Node node)
+{
+  node_ = node;
+
+  const auto rate = rclcpp::Rate(1.0);
+  timer_ = rclcpp::create_timer(node_, node_->get_clock(), rate.period(), [this]() { on_timer(); });
+}
+
+void StreamRunner::on_timer()
+{
+  for (auto & topic : loader_.topics())
+  {
+    topic->update(node_);
+  }
 }
 
 }  // namespace multi_data_monitor

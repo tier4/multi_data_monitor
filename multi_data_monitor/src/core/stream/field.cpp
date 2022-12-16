@@ -17,6 +17,11 @@
 namespace multi_data_monitor
 {
 
+void FieldStream::setting(YAML::Node yaml)
+{
+  (void)yaml;
+}
+
 void FieldStream::message(const Packet & packet)
 {
   (void)packet;

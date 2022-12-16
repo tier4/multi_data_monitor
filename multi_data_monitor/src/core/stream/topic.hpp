@@ -15,7 +15,9 @@
 #ifndef CORE__STREAM__TOPIC_HPP_
 #define CORE__STREAM__TOPIC_HPP_
 
+#include "common/rclcpp.hpp"
 #include "stream/basic.hpp"
+#include <string>
 
 namespace multi_data_monitor
 {
@@ -23,7 +25,13 @@ namespace multi_data_monitor
 struct TopicStream : public InOutStream
 {
 public:
+  void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
+  void update(ros::Node node);
+
+private:
+  std::string name_;
+  std::string type_;
 };
 
 }  // namespace multi_data_monitor

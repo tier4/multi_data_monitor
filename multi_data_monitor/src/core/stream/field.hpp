@@ -23,6 +23,7 @@ namespace multi_data_monitor
 struct FieldStream : public InOutStream
 {
 public:
+  void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
 };
 

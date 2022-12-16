@@ -13,13 +13,35 @@
 // limitations under the License.
 
 #include "topic.hpp"
+#include "common/yaml.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <iostream>
+#include <string>
 
 namespace multi_data_monitor
 {
 
+void TopicStream::setting(YAML::Node yaml)
+{
+  name_ = yaml::take_required(yaml, "name").as<std::string>("");
+  type_ = yaml::take_optional(yaml, "type").as<std::string>("");
+}
+
 void TopicStream::message(const Packet & packet)
 {
   (void)packet;
+}
+
+void TopicStream::update(ros::Node node)
+{
+  const auto infos = node->get_publishers_info_by_topic(name_);
+  for (const auto & info : infos)
+  {
+    RCLCPP_INFO_STREAM(node->get_logger(), info.node_name());
+    RCLCPP_INFO_STREAM(node->get_logger(), info.node_namespace());
+    RCLCPP_INFO_STREAM(node->get_logger(), info.topic_type());
+    RCLCPP_INFO_STREAM(node->get_logger(), ros::to_string(info.qos_profile()));
+  }
 }
 
 }  // namespace multi_data_monitor

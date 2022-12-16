@@ -23,6 +23,7 @@ namespace multi_data_monitor
 struct PanelStream : public InputStream
 {
 public:
+  void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
 };
 

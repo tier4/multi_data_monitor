@@ -15,8 +15,8 @@
 #ifndef CORE__LOADER__STREAM_RUNNER_HPP_
 #define CORE__LOADER__STREAM_RUNNER_HPP_
 
+#include "common/rclcpp.hpp"
 #include "loader/stream_loader.hpp"
-#include <rclcpp/rclcpp.hpp>
 
 namespace multi_data_monitor
 {
@@ -24,10 +24,14 @@ namespace multi_data_monitor
 class StreamRunner
 {
 public:
-  explicit StreamRunner(rclcpp::Node::SharedPtr node);
+  explicit StreamRunner(const StreamList & configs);
+  void start(ros::Node node);
 
 private:
-  rclcpp::Node::SharedPtr node_;
+  void on_timer();
+  StreamLoader loader_;
+  ros::Node node_;
+  ros::Timer timer_;
 };
 
 }  // namespace multi_data_monitor

@@ -12,22 +12,29 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "loader.hpp"
-#include <iostream>
+#ifndef CORE__COMMON__RCLCPP_HPP_
+#define CORE__COMMON__RCLCPP_HPP_
 
-int main(int argc, char ** argv)
+#include <memory>
+#include <string>
+
+namespace rclcpp
 {
-  if (argc != 3)
-  {
-    std::cerr << "usage: command <scheme> <config-file-path>" << std::endl;
-    return 1;
-  }
 
-  const auto scheme = std::string(argv[1]);
-  const auto config = std::string(argv[2]);
+class Node;
+class TimerBase;
+class QoS;
 
-  auto streams = multi_data_monitor::load(scheme + "://" + config);
+}  // namespace rclcpp
 
-  auto loader = multi_data_monitor::StreamLoader(streams);
-  (void)loader;
-}
+namespace multi_data_monitor::ros
+{
+
+using Node = std::shared_ptr<rclcpp::Node>;
+using Timer = std::shared_ptr<rclcpp::TimerBase>;
+
+std::string to_string(const rclcpp::QoS & qos);
+
+}  // namespace multi_data_monitor::ros
+
+#endif  // CORE__COMMON__RCLCPP_HPP_
