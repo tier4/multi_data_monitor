@@ -16,51 +16,55 @@
 #include "common/exceptions.hpp"
 #include <iostream>
 #include <memory>
+#include <unordered_map>
 #include <utility>
 #include <vector>
 
 namespace multi_data_monitor
 {
 
-StreamLoader::StreamLoader(const StreamList & streams)
+StreamLoader::StreamLoader(const StreamList & configs)
 {
-  std::vector<std::pair<Stream, StreamLink>> stream_mapping_;
-  for (const auto & data : streams)
+  std::unordered_map<StreamLink, Stream> mapping;
+  for (const auto & config : configs)
   {
-    const auto node = create_stream(data);
-    streams_.push_back(node);
-    stream_mapping_.push_back({node, data});
+    const auto stream = create_stream(config);
+    mapping[config] = streams_.emplace_back(stream);
   }
 
-  for (const auto & [node, link] : stream_mapping_)
+  for (const auto & [config, stream] : mapping)
   {
-    std::cout << link->klass << ": " << node << std::endl;
+    std::cout << config->klass << ": " << stream << std::endl;
+    if (config->input)
+    {
+      mapping[config->input]->connect(stream);
+    }
 
     Packet packet;
     packet.value = YAML::Node("aaaaaaaaaaaaaaaa");
-    node->message(packet);
+    stream->message(packet);
   }
 }
 
-Stream StreamLoader::create_stream(const StreamLink data)
+Stream StreamLoader::create_stream(const StreamLink config)
 {
-  if (data->klass == builtin::panel)
+  if (config->klass == builtin::panel)
   {
     return panels_.emplace_back(std::make_shared<PanelStream>());
   }
-  if (data->klass == builtin::topic)
+  if (config->klass == builtin::topic)
   {
     return topics_.emplace_back(std::make_shared<TopicStream>());
   }
-  if (data->klass == builtin::field)
+  if (config->klass == builtin::field)
   {
     return std::make_shared<FieldStream>();
   }
-  if (data->klass == builtin::debug)
+  if (config->klass == builtin::debug)
   {
     return std::make_shared<DebugStream>();
   }
-  throw ConfigError("unknown stream type: " + data->klass);
+  throw ConfigError("unknown stream type: " + config->klass);
 }
 
 }  // namespace multi_data_monitor

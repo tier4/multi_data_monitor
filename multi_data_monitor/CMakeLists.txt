@@ -19,8 +19,7 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
-ament_auto_add_executable(parser
-  src/tool/parser.cpp
+ament_auto_add_library(${PROJECT_NAME}_core SHARED
   src/core/common/yaml.cpp
   src/core/config/parser.hpp
   src/core/config/parser.cpp
@@ -30,6 +29,7 @@ ament_auto_add_executable(parser
   src/core/config/utils.cpp
   src/core/debug/plantuml.cpp
   src/core/loader/stream_loader.cpp
+  src/core/loader/stream_runner.cpp
   src/core/parser/subscription.cpp
   src/core/stream/basic.cpp
   src/core/stream/debug.cpp
@@ -37,13 +37,16 @@ ament_auto_add_executable(parser
   src/core/stream/panel.cpp
   src/core/stream/topic.cpp
 )
+target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)
+
+# ament_auto_add_library(${PROJECT_NAME}_plugin SHARED)
+# target_link_libraries(${PROJECT_NAME}_plugin ${QT_LIBRARIES})
+
+ament_auto_add_executable(parser src/tool/parser.cpp)
 target_include_directories(parser PRIVATE src/core)
 
-# ament_auto_add_library(${PROJECT_NAME} SHARED)
-# target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
-
-# ament_auto_add_executable(debug)
-# target_link_libraries(debug ${PROJECT_NAME})
+ament_auto_add_executable(runner src/tool/runner.cpp)
+target_include_directories(runner PRIVATE src/core)
 
 pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
 pluginlib_export_plugin_description_file(multi_data_monitor plugins/builtins.xml)

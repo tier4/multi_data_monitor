@@ -30,10 +30,10 @@ namespace multi_data_monitor
 class StreamLoader
 {
 public:
-  explicit StreamLoader(const StreamList & streams);
+  explicit StreamLoader(const StreamList & configs);
 
 private:
-  Stream create_stream(const StreamLink data);
+  Stream create_stream(const StreamLink config);
   std::vector<std::shared_ptr<InputStream>> streams_;
   std::vector<std::shared_ptr<TopicStream>> topics_;
   std::vector<std::shared_ptr<PanelStream>> panels_;

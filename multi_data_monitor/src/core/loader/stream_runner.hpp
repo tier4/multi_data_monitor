@@ -12,29 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "loader/stream_runner.hpp"
+#ifndef CORE__LOADER__STREAM_RUNNER_HPP_
+#define CORE__LOADER__STREAM_RUNNER_HPP_
+
+#include "loader/stream_loader.hpp"
 #include <rclcpp/rclcpp.hpp>
-#include <iostream>
 
 namespace multi_data_monitor
 {
 
+class StreamRunner
+{
+public:
+  explicit StreamRunner(rclcpp::Node::SharedPtr node);
+
+private:
+  rclcpp::Node::SharedPtr node_;
+};
+
 }  // namespace multi_data_monitor
 
-int main(int argc, char ** argv)
-{
-  if (argc != 3)
-  {
-    std::cerr << "usage: command <scheme> <config-file-path>" << std::endl;
-    return 1;
-  }
-
-  rclcpp::init(argc, argv);
-  rclcpp::executors::SingleThreadedExecutor executor;
-  auto node = std::make_shared<rclcpp::Node>("runner");
-  auto runner = multi_data_monitor::StreamRunner(node);
-  executor.add_node(node);
-  executor.spin();
-  executor.remove_node(node);
-  rclcpp::shutdown();
-}
+#endif  // CORE__LOADER__STREAM_RUNNER_HPP_
