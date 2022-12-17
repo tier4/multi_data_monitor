@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "loader.hpp"
-#include "loader/stream_loader.hpp"
+#include "runner/stream_loader.hpp"
 #include <iostream>
 
 int main(int argc, char ** argv)
@@ -28,12 +28,8 @@ int main(int argc, char ** argv)
   const auto config = std::string(argv[2]);
   {
     const auto data = multi_data_monitor::load(scheme + "://" + config);
-    (void)data;
     std::cout << multi_data_monitor::CommonData::created << std::endl;
     std::cout << multi_data_monitor::CommonData::removed << std::endl;
-
-    // auto loader = multi_data_monitor::StreamLoader(streams);
-    // (void)loader;
   }
   std::cout << multi_data_monitor::CommonData::created << std::endl;
   std::cout << multi_data_monitor::CommonData::removed << std::endl;

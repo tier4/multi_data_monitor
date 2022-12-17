@@ -12,28 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__LOADER__STREAM_RUNNER_HPP_
-#define CORE__LOADER__STREAM_RUNNER_HPP_
+#ifndef CORE__RUNNER__STREAM_LOADER_HPP_
+#define CORE__RUNNER__STREAM_LOADER_HPP_
 
-#include "common/rclcpp.hpp"
-#include "loader/stream_loader.hpp"
+#include "config/types.hpp"
+#include "stream/basic.hpp"
+#include "stream/field.hpp"
+#include "stream/panel.hpp"
+#include "stream/print.hpp"
+#include "stream/topic.hpp"
+#include <memory>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-class StreamRunner
+class StreamLoader
 {
 public:
-  explicit StreamRunner(const StreamList & configs);
-  void start(ros::Node node);
+  explicit StreamLoader(const StreamList & configs);
+  const auto & topics() { return topics_; }
 
 private:
-  void on_timer();
-  StreamLoader loader_;
-  ros::Node node_;
-  ros::Timer timer_;
+  Stream create_stream(const StreamLink config);
+  std::vector<std::shared_ptr<InputStream>> streams_;
+  std::vector<std::shared_ptr<TopicStream>> topics_;
+  std::vector<std::shared_ptr<PanelStream>> panels_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__LOADER__STREAM_RUNNER_HPP_
+#endif  // CORE__RUNNER__STREAM_LOADER_HPP_

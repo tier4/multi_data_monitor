@@ -13,9 +13,20 @@
 // limitations under the License.
 
 #include "loader.hpp"
-#include "loader/stream_runner.hpp"
+#include "runner/stream_runner.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
+
+namespace multi_data_monitor
+{
+
+StreamRunner create_runner(const std::string & path)
+{
+  const auto data = multi_data_monitor::load(path);
+  return multi_data_monitor::StreamRunner(data.streams);
+}
+
+}  // namespace multi_data_monitor
 
 int main(int argc, char ** argv)
 {
@@ -27,9 +38,7 @@ int main(int argc, char ** argv)
 
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
-
-  auto streams = multi_data_monitor::load(scheme + "://" + config);
-  auto runner = multi_data_monitor::StreamRunner(streams);
+  auto runner = multi_data_monitor::create_runner(scheme + "://" + config);
 
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;

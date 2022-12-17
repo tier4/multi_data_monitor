@@ -25,8 +25,8 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/common/yaml.cpp"
   "src/core/config/types.cpp"
   "src/core/debug/plantuml.cpp"
-  "src/core/loader/stream_loader.cpp"
-  "src/core/loader/stream_runner.cpp"
+  "src/core/runner/stream_loader.cpp"
+  "src/core/runner/stream_runner.cpp"
   "src/core/parser/check_system_class.cpp"
   "src/core/parser/construction.cpp"
   "src/core/parser/file.cpp"
@@ -46,8 +46,8 @@ target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)
 ament_auto_add_executable(parser src/tool/parser.cpp)
 target_include_directories(parser PRIVATE src/core)
 
-#ament_auto_add_executable(runner src/tool/runner.cpp)
-#target_include_directories(runner PRIVATE src/core)
+ament_auto_add_executable(runner src/tool/runner.cpp)
+target_include_directories(runner PRIVATE src/core)
 
 pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
 pluginlib_export_plugin_description_file(multi_data_monitor plugins/builtins.xml)
