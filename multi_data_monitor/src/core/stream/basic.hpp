@@ -40,6 +40,9 @@ struct InOutStream : public InputStream
 public:
   void connect(Stream stream) override;
 
+protected:
+  void outputs(const Packet & packet);
+
 private:
   std::vector<Stream> outputs_;
 };

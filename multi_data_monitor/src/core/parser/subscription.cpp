@@ -41,7 +41,7 @@ StreamList MergeSubscription::operator()(const StreamList & input)
   {
     if (2 <= data.qoses.size())
     {
-      const auto list = "[" + text::join(data.qoses, ", ") + "]";
+      const auto list = "[" + text::join(data.qoses) + "]";
       throw ConfigError("topic qos is not unique: " + list + " for " + name);
     }
     if (1 == data.qoses.size())
@@ -54,7 +54,7 @@ StreamList MergeSubscription::operator()(const StreamList & input)
   {
     if (2 <= data.types.size())
     {
-      const auto list = "[" + text::join(data.types, ", ") + "]";
+      const auto list = "[" + text::join(data.types) + "]";
       throw ConfigError("topic type is not unique: " + list + " for " + name);
     }
     if (1 == data.types.size())
@@ -67,7 +67,7 @@ StreamList MergeSubscription::operator()(const StreamList & input)
   {
     if (2 <= data.types.size())
     {
-      const auto list = "[" + text::join(data.types, ", ") + "]";
+      const auto list = "[" + text::join(data.types) + "]";
       throw ConfigError("field type is not unique: " + list + " for " + name);
     }
     if (1 == data.types.size())

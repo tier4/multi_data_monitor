@@ -23,6 +23,7 @@ namespace rclcpp
 
 class Node;
 class TimerBase;
+class GenericSubscription;
 class QoS;
 
 }  // namespace rclcpp
@@ -32,6 +33,7 @@ namespace multi_data_monitor::ros
 
 using Node = std::shared_ptr<rclcpp::Node>;
 using Timer = std::shared_ptr<rclcpp::TimerBase>;
+using Subscription = std::shared_ptr<rclcpp::GenericSubscription>;
 
 std::string to_string(const rclcpp::QoS & qos);
 

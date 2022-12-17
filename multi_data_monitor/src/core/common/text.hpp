@@ -21,7 +21,7 @@ namespace multi_data_monitor::text
 {
 
 template <class Iterable>
-std::string join(const Iterable & iterable, const std::string & delimiter)
+std::string join(const Iterable & iterable, const std::string & delimiter = ", ")
 {
   const auto head = iterable.begin();
   const auto tail = iterable.end();

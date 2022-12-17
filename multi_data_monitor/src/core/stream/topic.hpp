@@ -17,7 +17,15 @@
 
 #include "common/rclcpp.hpp"
 #include "stream/basic.hpp"
+#include <memory>
 #include <string>
+
+namespace generic_type_utility
+{
+
+class GenericMessage;
+
+}
 
 namespace multi_data_monitor
 {
@@ -30,8 +38,12 @@ public:
   void update(ros::Node node);
 
 private:
+  void create_subscription(ros::Node node);
   std::string name_;
   std::string type_;
+  std::string qos_;
+  std::shared_ptr<generic_type_utility::GenericMessage> generic_;
+  ros::Subscription sub_;
 };
 
 }  // namespace multi_data_monitor

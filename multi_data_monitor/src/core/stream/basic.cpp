@@ -28,4 +28,12 @@ void InOutStream::connect(Stream stream)
   outputs_.push_back(stream);
 }
 
+void InOutStream::outputs(const Packet & packet)
+{
+  for (Stream & output : outputs_)
+  {
+    output->message(packet);
+  }
+}
+
 }  // namespace multi_data_monitor

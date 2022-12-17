@@ -39,10 +39,6 @@ StreamLoader::StreamLoader(const StreamList & configs)
     {
       mapping[config->input]->connect(stream);
     }
-
-    Packet packet;
-    packet.value = YAML::Node("aaaaaaaaaaaaaaaa");
-    stream->message(packet);
   }
 }
 

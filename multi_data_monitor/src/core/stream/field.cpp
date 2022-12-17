@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "field.hpp"
+#include <iostream>
 
 namespace multi_data_monitor
 {
@@ -24,7 +25,8 @@ void FieldStream::setting(YAML::Node yaml)
 
 void FieldStream::message(const Packet & packet)
 {
-  (void)packet;
+  std::cout << "===== field =====" << std::endl;
+  std::cout << packet.value << std::endl;
 }
 
 }  // namespace multi_data_monitor

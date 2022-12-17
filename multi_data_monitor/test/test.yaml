@@ -7,17 +7,18 @@ widgets:
   - class: Simple
     input: { class: subscription, topic: /test/header, field: stamp.sec }
   - class: multi_data_monitor::Simple
-    input: { class: subscription, name: [/test/header, stamp.sec], qos: dt1 }
+    input: { class: subscription, name: [/test/header, stamp.sec], qos: dd1 }
 
 streams:
   - class: debug
-    input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dt1, label: test-test }
+    input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dd1, label: test-test }
   - class: debug
     input: { class: subscription, topic: /test/header, field: stamp.nanosec }
 
 subscriptions:
   - name: /test/header
     type: std_msgs/msg/Header
+    qos: dd1
     fields:
       - { name: stamp.sec, label: time1 }
       - { name: stamp.nanosec, label: time1 }
