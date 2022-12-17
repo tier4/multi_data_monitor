@@ -16,6 +16,7 @@
 #define CORE__STREAM__PRINT_HPP_
 
 #include "stream/basic.hpp"
+#include <string>
 
 namespace multi_data_monitor
 {
@@ -25,6 +26,9 @@ struct PrintStream : public InOutStream
 public:
   void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
+
+private:
+  std::string title_;
 };
 
 }  // namespace multi_data_monitor

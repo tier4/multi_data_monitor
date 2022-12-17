@@ -13,17 +13,24 @@
 // limitations under the License.
 
 #include "print.hpp"
+#include "common/yaml.hpp"
 #include <iostream>
+#include <string>
 
 namespace multi_data_monitor
 {
 
-void PrintStream::setting([[maybe_unused]] YAML::Node yaml)
+void PrintStream::setting(YAML::Node yaml)
 {
+  title_ = yaml::take_optional(yaml, "title").as<std::string>("");
 }
 
 void PrintStream::message(const Packet & packet)
 {
+  if (!title_.empty())
+  {
+    std::cout << title_ << std::endl;
+  }
   std::cout << packet.value << std::endl;
 }
 

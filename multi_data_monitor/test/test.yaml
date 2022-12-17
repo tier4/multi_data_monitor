@@ -7,12 +7,14 @@ widgets:
   - class: Simple
     input: { class: subscription, topic: /test/header, field: stamp.sec }
   - class: multi_data_monitor::Simple
-    input: { class: subscription, name: [/test/header, stamp.sec], qos: dd1 }
+    input: { class: subscription, topic: /test/header, field: stamp.nanosec }
 
 streams:
   - class: print
+    title: ===== stamp.sec =====
     input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dd1, label: test-test }
   - class: print
+    title: ===== stamp.nanosec =====
     input: { class: subscription, topic: /test/header, field: stamp.nanosec }
 
 subscriptions:

@@ -24,7 +24,7 @@ void FieldStream::setting(YAML::Node yaml)
 {
   const auto name = yaml::take_required(yaml, "name").as<std::string>("");
   const auto type = yaml::take_optional(yaml, "type").as<std::string>("");
-  access_.reset(name);
+  access_ = generic_type_utility::TypeAccess(name);
 }
 
 void FieldStream::message(const Packet & packet)

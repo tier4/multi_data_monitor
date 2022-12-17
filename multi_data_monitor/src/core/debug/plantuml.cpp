@@ -27,7 +27,7 @@ std::string Diagram::convert(const StreamList & streams)
 
   for (const auto & stream : streams)
   {
-    ss << "card " << stream << " [" << std::endl;
+    ss << "card " << stream << " #cyan [" << std::endl;
     ss << stream->klass;
     if (!stream->label.empty())
     {
