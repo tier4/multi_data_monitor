@@ -23,10 +23,10 @@
 namespace multi_data_monitor
 {
 
-class MergeSubscription
+class MergeSubscription : public ConfigParserInterface
 {
 public:
-  StreamList operator()(const StreamList & input);
+  ConfigData execute(const ConfigData & input) override;
 
 private:
   void handle_subscription(const StreamLink & input);
@@ -45,7 +45,7 @@ private:
     std::unordered_set<std::string> types;
   };
 
-  StreamList output_;
+  ConfigData output_;
   std::unordered_map<std::string, TopicData> topics_;
   std::unordered_map<std::string, FieldData> fields_;
 };

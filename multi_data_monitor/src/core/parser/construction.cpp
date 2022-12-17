@@ -28,7 +28,7 @@ void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self,
   const auto nodes = yaml::take_optional(yaml, name);
   if (!nodes.IsSequence())
   {
-    throw ConfigError(name + " config is not a sequence");
+    throw ConfigError("config seccion '" + name + "' is not a sequence");
   }
   for (const auto & node : nodes)
   {
@@ -88,7 +88,8 @@ void ParseBasicObject::parse_subscription(YAML::Node topic)
     yaml["field-type"] = field_type;
     yaml["qos"] = topic_qos;
 
-    data_.create_stream(builtin::subscription, label, yaml);
+    const auto stream = data_.create_stream(builtin::subscription, label, yaml);
+    stream->system = true;
   }
 }
 
@@ -96,13 +97,12 @@ StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
   {
-    // TODO(Takagi, Isamu): parse_stream_link
+    return parse_stream_link(yaml);
   }
   if (yaml.IsMap())
   {
     return parse_stream_dict(yaml);
   }
-
   // TODO(Takagi, Isamu): error message
   throw ConfigError("unexpected stream format");
 }
@@ -111,15 +111,29 @@ WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
   {
-    // TODO(Takagi, Isamu): parse_widget_link
+    return parse_widget_link(yaml);
   }
   if (yaml.IsMap())
   {
     return parse_widget_dict(yaml);
   }
-
   // TODO(Takagi, Isamu): error message
   throw ConfigError("unexpected widget format");
+}
+
+StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml)
+{
+  StreamLink stream = data_.create_stream(builtin::relay);
+  stream->system = true;
+  stream->yaml["refer"] = yaml.as<std::string>();
+  return stream;
+}
+
+WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml)
+{
+  WidgetLink widget = data_.create_widget(builtin::relay);
+  widget->yaml["refer"] = yaml.as<std::string>();
+  return widget;
 }
 
 StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
@@ -146,6 +160,7 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
   if (input)
   {
     StreamLink stream = data_.create_stream(builtin::panel);
+    stream->system = true;
     stream->input = parse_stream_yaml(input);
     widget->input = stream;
   }

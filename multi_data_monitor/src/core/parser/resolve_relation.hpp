@@ -12,43 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__CONFIG__PARSER_HPP_
-#define CORE__CONFIG__PARSER_HPP_
+#ifndef CORE__PARSER__RESOLVE_RELATION_HPP_
+#define CORE__PARSER__RESOLVE_RELATION_HPP_
 
-#include "common/exceptions.hpp"
-#include "types.hpp"
-#include <memory>
-#include <string>
+#include "config/types.hpp"
 
 namespace multi_data_monitor
 {
 
-class CheckSpecialClass
+class ConnectRelation : public ConfigParserInterface
 {
 public:
-  StreamList operator()(const StreamList & input);
+  ConfigData execute(const ConfigData & input) override;
 };
 
-class InterfaceHandler
+class ResolveRelation : public ConfigParserInterface
 {
 public:
-  StreamList operator()(const StreamList & input);
-
-private:
-  void handle_stream(const StreamLink & stream);
-  StreamList output_;
+  ConfigData execute(const ConfigData & input) override;
 };
 
-class ResolveConnection
+class ReleaseRelation : public ConfigParserInterface
 {
 public:
-  StreamList operator()(const StreamList & input);
-
-private:
-  StreamLink resolve(const StreamLink & stream);
-  StreamList output_;
+  ConfigData execute(const ConfigData & input) override;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__CONFIG__PARSER_HPP_
+#endif  // CORE__PARSER__RESOLVE_RELATION_HPP_

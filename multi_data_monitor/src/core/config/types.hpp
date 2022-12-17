@@ -24,6 +24,7 @@
 namespace multi_data_monitor::builtin
 {
 
+const char relay[] = "relay";
 const char print[] = "print";
 const char subscription[] = "subscription";
 const char topic[] = "@topic";
@@ -53,6 +54,8 @@ struct CommonData
 
   const NodeClass klass;
   const NodeLabel label;
+  bool system = false;
+  bool unused = false;
   // TODO(Takagi, Isamu): debug info for exception
 };
 
@@ -95,6 +98,28 @@ struct ConfigData
 
   std::vector<StreamLink> streams;
   std::vector<WidgetLink> widgets;
+};
+
+class ConfigParserInterface
+{
+public:
+  virtual ~ConfigParserInterface() = default;
+  virtual ConfigData execute(const ConfigData & input) = 0;
+};
+
+template <class T>
+struct NodeTraits;
+
+template <>
+struct NodeTraits<StreamLink>
+{
+  static constexpr auto Name = "stream";
+};
+
+template <>
+struct NodeTraits<WidgetLink>
+{
+  static constexpr auto Name = "stream";
 };
 
 }  // namespace multi_data_monitor

@@ -8,6 +8,12 @@ widgets:
     input: { class: subscription, topic: /test/header, field: stamp.sec }
   - class: multi_data_monitor::Simple
     input: { class: subscription, topic: /test/header, field: stamp.nanosec }
+  - class: multi_data_monitor::Simple
+    input: test-test
+  - class: multi_data_monitor::Simple
+    input: time1
+  - class: multi_data_monitor::Simple
+    input: temp1
 
 streams:
   - class: print
@@ -16,6 +22,16 @@ streams:
   - class: print
     title: ===== stamp.nanosec =====
     input: { class: subscription, topic: /test/header, field: stamp.nanosec }
+  - class: relay
+    label: temp1
+    refer: temp2
+  - class: relay
+    label: temp2
+    refer: temp3
+    param: table
+  - class: relay
+    label: temp3
+    refer: uint-data
 
 subscriptions:
   - name: /test/header
@@ -23,7 +39,7 @@ subscriptions:
     qos: dd1
     fields:
       - { name: stamp.sec, label: time1 }
-      - { name: stamp.nanosec, label: time1 }
+      - { name: stamp.nanosec, label: time2 }
   - name: /test/uint32
     fields:
       - { name: data, label: uint-data }

@@ -12,32 +12,20 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__PARSER__CONSTRUCTION_HPP_
-#define CORE__PARSER__CONSTRUCTION_HPP_
+#ifndef CORE__PARSER__CHECK_SYSTEM_CLASS_HPP_
+#define CORE__PARSER__CHECK_SYSTEM_CLASS_HPP_
 
 #include "config/types.hpp"
 
 namespace multi_data_monitor
 {
 
-class ParseBasicObject
+class CheckSystemClass : public ConfigParserInterface
 {
 public:
-  ConfigData execute(ConfigFile & file);
-
-private:
-  void parse_stream_root(YAML::Node yaml);
-  void parse_widget_root(YAML::Node yaml);
-  void parse_subscription(YAML::Node yaml);
-  StreamLink parse_stream_yaml(YAML::Node yaml);
-  WidgetLink parse_widget_yaml(YAML::Node yaml);
-  StreamLink parse_stream_link(YAML::Node yaml);
-  WidgetLink parse_widget_link(YAML::Node yaml);
-  StreamLink parse_stream_dict(YAML::Node yaml);
-  WidgetLink parse_widget_dict(YAML::Node yaml);
-  ConfigData data_;
+  ConfigData execute(const ConfigData & input) override;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__PARSER__CONSTRUCTION_HPP_
+#endif  // CORE__PARSER__CHECK_SYSTEM_CLASS_HPP_

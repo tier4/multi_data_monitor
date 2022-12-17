@@ -16,9 +16,15 @@
 #define CORE__COMMON__EXCEPTIONS_HPP_
 
 #include <stdexcept>
+#include <string>
 
 namespace multi_data_monitor
 {
+
+struct LogicError : public std::logic_error
+{
+  using std::logic_error::logic_error;
+};
 
 struct FilePathError : public std::runtime_error
 {
@@ -28,6 +34,15 @@ struct FilePathError : public std::runtime_error
 struct ConfigError : public std::runtime_error
 {
   using std::runtime_error::runtime_error;
+
+  static ConfigError LabelConflict(const std::string & label, const std::string & scope)
+  {
+    return ConfigError(scope + " label '" + label + "' is not unique");
+  }
+  static ConfigError LabelNotFound(const std::string & label, const std::string & scope)
+  {
+    return ConfigError(scope + " label '" + label + "' is not found");
+  }
 };
 
 }  // namespace multi_data_monitor

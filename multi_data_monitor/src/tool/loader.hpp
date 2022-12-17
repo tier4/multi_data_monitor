@@ -12,14 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "debug/plantuml.hpp"
-#include "parser/construction.hpp"
-#include "parser/file.hpp"
-#include "parser/subscription.hpp"
-#include <string>
-
 #ifndef TOOL__LOADER_HPP_
 #define TOOL__LOADER_HPP_
+
+#include "debug/plantuml.hpp"
+#include "parser/check_system_class.hpp"
+#include "parser/construction.hpp"
+#include "parser/file.hpp"
+#include "parser/resolve_relation.hpp"
+#include "parser/subscription.hpp"
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace multi_data_monitor
 {
@@ -30,30 +34,20 @@ ConfigData load(const std::string & path)
   auto file = ConfigFileLoader().execute(path);
   auto data = ParseBasicObject().execute(file);
 
-  diagram.write(data, "graph1.plantuml");
+  std::vector<std::shared_ptr<ConfigParserInterface>> parsers;
+  parsers.push_back(std::make_shared<MergeSubscription>());
+  parsers.push_back(std::make_shared<CheckSystemClass>());
+  parsers.push_back(std::make_shared<ConnectRelation>());
+  parsers.push_back(std::make_shared<ResolveRelation>());
+  parsers.push_back(std::make_shared<ReleaseRelation>());
 
-  /*
-  auto step1a = ConstructSubscription();
-  auto step1b = ConstructStream();
-  auto data1a = step1a(data0);
-  auto data1b = step1b(data0);
-
-  auto data1 = StreamList();
-  data1.insert(data1.end(), data1a.begin(), data1a.end());
-  data1.insert(data1.end(), data1b.begin(), data1b.end());
-
-  auto step2 = CheckSpecialClass();
-  auto step3 = MergeSubscription();
-  auto step4 = ResolveConnection();
-
-  const auto data2 = step2(data1);
-  const auto data3 = step3(data2);
-  diagram.write(data3, "diagram1.plantuml");
-  const auto data4 = step4(data3);
-  diagram.write(data4, "diagram2.plantuml");
-  */
-
-  return ConfigData();
+  diagram.write(data, "graphs/step0.plantuml");
+  for (size_t i = 0; i < parsers.size(); ++i)
+  {
+    data = parsers[i]->execute(data);
+    diagram.write(data, "graphs/step" + std::to_string(i + 1) + ".plantuml");
+  }
+  return data;
 }
 
 }  // namespace multi_data_monitor

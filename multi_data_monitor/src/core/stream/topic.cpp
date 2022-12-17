@@ -14,7 +14,7 @@
 
 #include "topic.hpp"
 #include "common/exceptions.hpp"
-#include "common/text.hpp"
+#include "common/util.hpp"
 #include "common/yaml.hpp"
 #include <generic_type_utility/generic_type_utility.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -125,7 +125,7 @@ void TopicStream::create_subscription(ros::Node node)
     {
       if (types.size() != 1)
       {
-        RCLCPP_WARN_STREAM(node->get_logger(), "topic type is not unique: " << text::join(types));
+        RCLCPP_WARN_STREAM(node->get_logger(), "topic type is not unique: " << util::join(types));
         return;
       }
       type = *types.begin();
@@ -135,7 +135,7 @@ void TopicStream::create_subscription(ros::Node node)
     {
       if (qoses.size() != 1)
       {
-        RCLCPP_WARN_STREAM(node->get_logger(), "topic qos is not unique: " << text::join(qoses));
+        RCLCPP_WARN_STREAM(node->get_logger(), "topic qos is not unique: " << util::join(qoses));
         return;
       }
       qos = *qoses.begin();

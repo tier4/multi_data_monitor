@@ -14,7 +14,7 @@
 
 #include "subscription.hpp"
 #include "common/exceptions.hpp"
-#include "common/text.hpp"
+#include "common/util.hpp"
 #include "common/yaml.hpp"
 #include <string>
 
@@ -24,15 +24,16 @@
 namespace multi_data_monitor
 {
 
-StreamList MergeSubscription::operator()(const StreamList & input)
+ConfigData MergeSubscription::execute(const ConfigData & input)
 {
-  for (const auto & stream : input)
+  output_ = input;
+
+  for (const auto & stream : input.streams)
   {
     if (stream->klass == builtin::subscription)
     {
       handle_subscription(stream);
     }
-    output_.push_back(stream);
   }
 
   // TODO(Takagi, Isamu): refactor
@@ -41,7 +42,7 @@ StreamList MergeSubscription::operator()(const StreamList & input)
   {
     if (2 <= data.qoses.size())
     {
-      const auto list = "[" + text::join(data.qoses) + "]";
+      const auto list = "[" + util::join(data.qoses) + "]";
       throw ConfigError("topic qos is not unique: " + list + " for " + name);
     }
     if (1 == data.qoses.size())
@@ -54,7 +55,7 @@ StreamList MergeSubscription::operator()(const StreamList & input)
   {
     if (2 <= data.types.size())
     {
-      const auto list = "[" + text::join(data.types) + "]";
+      const auto list = "[" + util::join(data.types) + "]";
       throw ConfigError("topic type is not unique: " + list + " for " + name);
     }
     if (1 == data.types.size())
@@ -67,7 +68,7 @@ StreamList MergeSubscription::operator()(const StreamList & input)
   {
     if (2 <= data.types.size())
     {
-      const auto list = "[" + text::join(data.types) + "]";
+      const auto list = "[" + util::join(data.types) + "]";
       throw ConfigError("field type is not unique: " + list + " for " + name);
     }
     if (1 == data.types.size())
@@ -118,12 +119,10 @@ void MergeSubscription::create_topic(const std::string & name, const std::string
 {
   if (topics_.count(code) == 0)
   {
-    /*
-    const auto node = StreamData::Create("@topic");
+    const auto node = output_.create_stream("@topic");
+    node->system = true;
     node->yaml["name"] = name;
-    output_.push_back(node);
     topics_[code].node = node;
-    */
   }
 }
 
@@ -131,12 +130,10 @@ void MergeSubscription::create_field(const std::string & name, const std::string
 {
   if (fields_.count(code) == 0)
   {
-    /*
-    const auto node = StreamData::Create("@field");
+    const auto node = output_.create_stream("@field");
+    node->system = true;
     node->yaml["name"] = name;
-    output_.push_back(node);
     fields_[code].node = node;
-    */
   }
 }
 

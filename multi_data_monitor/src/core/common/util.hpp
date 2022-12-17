@@ -12,12 +12,13 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__COMMON__TEXT_HPP_
-#define CORE__COMMON__TEXT_HPP_
+#ifndef CORE__COMMON__UTIL_HPP_
+#define CORE__COMMON__UTIL_HPP_
 
 #include <string>
+#include <vector>
 
-namespace multi_data_monitor::text
+namespace multi_data_monitor::util
 {
 
 template <class Iterable>
@@ -33,6 +34,6 @@ std::string join(const Iterable & iterable, const std::string & delimiter = ", "
   return result;
 }
 
-}  // namespace multi_data_monitor::text
+}  // namespace multi_data_monitor::util
 
-#endif  // CORE__COMMON__TEXT_HPP_
+#endif  // CORE__COMMON__UTIL_HPP_
