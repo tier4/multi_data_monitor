@@ -16,13 +16,49 @@
 #include "common/exceptions.hpp"
 #include "common/util.hpp"
 #include "common/yaml.hpp"
+#include <functional>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 #include <vector>
 
+//
+#include <iostream>
+
 namespace multi_data_monitor
 {
+
+struct ConfigLinks
+{
+  std::vector<std::reference_wrapper<StreamLink>> to_streams;
+  std::vector<std::reference_wrapper<WidgetLink>> to_widgets;
+};
+
+ConfigLinks create_link_list(const ConfigData & input)
+{
+  std::vector<std::reference_wrapper<StreamLink>> to_streams;
+  std::vector<std::reference_wrapper<WidgetLink>> to_widgets;
+  for (const auto & stream : input.streams)
+  {
+    to_streams.push_back(std::ref(stream->input));
+    to_streams.push_back(std::ref(stream->refer));
+  }
+  for (const auto & widget : input.widgets)
+  {
+    to_streams.push_back(std::ref(widget->input));
+    to_widgets.push_back(std::ref(widget->refer));
+    for (auto & item : widget->items)
+    {
+      to_widgets.push_back(std::ref(item.link));
+    }
+  }
+
+  ConfigLinks links;
+  const auto has_ref = [](const auto & ref) { return static_cast<bool>(ref.get()); };
+  links.to_streams = util::filter<std::reference_wrapper<StreamLink>>(to_streams, has_ref);
+  links.to_widgets = util::filter<std::reference_wrapper<WidgetLink>>(to_widgets, has_ref);
+  return links;
+}
 
 template <class NodeLink>
 void create_label(const NodeLink & node, std::unordered_map<std::string, NodeLink> & labels)
@@ -54,7 +90,7 @@ void connect_label(const NodeLink & node, const std::unordered_map<std::string, 
 }
 
 template <class NodeLink>
-NodeLink resolve_link(const NodeLink & node, std::unordered_set<NodeLink> & visit)
+NodeLink resolve_node(const NodeLink & node, std::unordered_set<NodeLink> & visit)
 {
   if (!node->refer)
   {
@@ -70,23 +106,31 @@ NodeLink resolve_link(const NodeLink & node, std::unordered_set<NodeLink> & visi
     throw ConfigError("circular link is detected: " + util::join(labels));
   }
   visit.insert(node);
-  node->refer = resolve_link(node->refer, visit);
+  node->refer = resolve_node(node->refer, visit);
   return node->refer;
 }
 
 template <class NodeLink>
-void resolve_node(const NodeLink & node)
+void resolve_link(std::reference_wrapper<NodeLink> link)
 {
-  if (node->refer)
+  std::unordered_set<NodeLink> visit;
+  link.get() = resolve_node(link.get(), visit);
+}
+
+template <class NodeLink, class NodeList = std::vector<NodeLink>, class NodeSet = std::unordered_set<NodeLink>>
+NodeList filter_unused(const NodeList & nodes, const NodeSet & node_used, const std::string & klass)
+{
+  NodeList result;
+  for (const auto & node : nodes)
   {
-    std::unordered_set<decltype(node->refer)> visit;
-    node->refer = resolve_link(node->refer, visit);
+    if (node->klass == klass)
+    {
+      if (node_used.count(node) == 0) continue;
+      throw LogicError("ReleaseRelation: unintended stream reverse reference");
+    }
+    result.push_back(node);
   }
-  if (node->input)
-  {
-    std::unordered_set<decltype(node->input)> visit;
-    node->input = resolve_link(node->input, visit);
-  }
+  return result;
 }
 
 ConfigData ConnectRelation::execute(const ConfigData & input)
@@ -94,59 +138,34 @@ ConfigData ConnectRelation::execute(const ConfigData & input)
   std::unordered_map<std::string, StreamLink> stream_labels;
   std::unordered_map<std::string, WidgetLink> widget_labels;
 
-  for (const auto & stream : input.streams) create_label(stream, stream_labels);
-  for (const auto & widget : input.widgets) create_label(widget, widget_labels);
-  for (const auto & stream : input.streams) connect_label(stream, stream_labels);
-  for (const auto & widget : input.widgets) connect_label(widget, widget_labels);
+  for (const auto & node : input.streams) create_label(node, stream_labels);
+  for (const auto & node : input.widgets) create_label(node, widget_labels);
+  for (const auto & node : input.streams) connect_label(node, stream_labels);
+  for (const auto & node : input.widgets) connect_label(node, widget_labels);
   return input;
 }
 
 ConfigData ResolveRelation::execute(const ConfigData & input)
 {
-  for (const auto & stream : input.streams) resolve_node(stream);
-  for (const auto & widget : input.widgets) resolve_node(widget);
+  const auto links = create_link_list(input);
+  for (const auto & link : links.to_streams) resolve_link(link);
+  for (const auto & link : links.to_widgets) resolve_link(link);
   return input;
 }
 
 ConfigData ReleaseRelation::execute(const ConfigData & input)
 {
-  std::unordered_map<StreamLink, int> stream_used;
-  std::unordered_map<WidgetLink, int> widget_used;
-  for (const auto & stream : input.streams)
-  {
-    if (stream->refer) ++stream_used[stream->refer];
-    if (stream->input) ++stream_used[stream->input];
-  }
-  for (const auto & widget : input.widgets)
-  {
-    if (widget->refer) ++widget_used[widget->refer];
-    if (widget->input) ++stream_used[widget->input];
-  }
+  std::unordered_set<StreamLink> stream_used;
+  std::unordered_set<WidgetLink> widget_used;
 
-  std::vector<StreamLink> output_streams;
-  std::vector<WidgetLink> output_widgets;
-  for (const auto & stream : input.streams)
-  {
-    if (stream->klass == builtin::relay || stream->klass == builtin::subscription)
-    {
-      if (stream_used[stream] == 0) continue;
-      throw LogicError("ReleaseRelation: unintended stream reverse reference");
-    }
-    output_streams.push_back(stream);
-  }
-  for (const auto & widget : input.widgets)
-  {
-    if (widget->klass == builtin::relay)
-    {
-      if (widget_used[widget] == 0) continue;
-      throw LogicError("ReleaseRelation: unintended widget reverse reference");
-    }
-    output_widgets.push_back(widget);
-  }
+  const auto links = create_link_list(input);
+  for (const auto & link : links.to_streams) stream_used.insert(link.get());
+  for (const auto & link : links.to_widgets) widget_used.insert(link.get());
 
   ConfigData output = input;
-  output.streams = output_streams;
-  output.widgets = output_widgets;
+  output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::subscription);
+  output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::relay);
+  output.widgets = filter_unused<WidgetLink>(output.widgets, widget_used, builtin::relay);
   return output;
 }
 

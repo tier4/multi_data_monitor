@@ -34,6 +34,17 @@ std::string join(const Iterable & iterable, const std::string & delimiter = ", "
   return result;
 }
 
+template <class T>
+std::vector<T> filter(const std::vector<T> & input, const std::function<bool(const T &)> function)
+{
+  std::vector<T> result;
+  for (const auto & data : input)
+  {
+    if (function(data)) result.push_back(data);
+  }
+  return result;
+}
+
 }  // namespace multi_data_monitor::util
 
 #endif  // CORE__COMMON__UTIL_HPP_

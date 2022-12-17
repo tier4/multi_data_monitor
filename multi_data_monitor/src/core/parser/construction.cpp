@@ -28,7 +28,7 @@ void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self,
   const auto nodes = yaml::take_optional(yaml, name);
   if (!nodes.IsSequence())
   {
-    throw ConfigError("config seccion '" + name + "' is not a sequence");
+    throw ConfigError("config section '" + name + "' is not a sequence");
   }
   for (const auto & node : nodes)
   {
@@ -155,6 +155,7 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
   const auto input = yaml::take_optional(yaml, "input");
+  const auto items = yaml::take_optional(yaml, "items");
 
   WidgetLink widget = data_.create_widget(klass, label, yaml);
   if (input)
@@ -163,6 +164,17 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
     stream->system = true;
     stream->input = parse_stream_yaml(input);
     widget->input = stream;
+  }
+  if (items)
+  {
+    if (!items.IsSequence())
+    {
+      throw ConfigError("widget property 'items' is not a sequence");
+    }
+    for (const auto & item : items)
+    {
+      widget->items.push_back(WidgetItem{YAML::Node(), parse_widget_yaml(item)});
+    }
   }
   return widget;
 }

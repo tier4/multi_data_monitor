@@ -41,11 +41,12 @@ ConfigData load(const std::string & path)
   parsers.push_back(std::make_shared<ResolveRelation>());
   parsers.push_back(std::make_shared<ReleaseRelation>());
 
-  diagram.write(data, "graphs/step0.plantuml");
+  diagram.write(data, "graphs/step0-parse-basic-object.plantuml");
   for (size_t i = 0; i < parsers.size(); ++i)
   {
+    const auto filename = std::to_string(i + 1) + "-" + parsers[i]->name();
     data = parsers[i]->execute(data);
-    diagram.write(data, "graphs/step" + std::to_string(i + 1) + ".plantuml");
+    diagram.write(data, "graphs/step" + filename + ".plantuml");
   }
   return data;
 }

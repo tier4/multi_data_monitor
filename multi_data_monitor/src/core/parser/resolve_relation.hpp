@@ -16,6 +16,7 @@
 #define CORE__PARSER__RESOLVE_RELATION_HPP_
 
 #include "config/types.hpp"
+#include <string>
 
 namespace multi_data_monitor
 {
@@ -23,18 +24,21 @@ namespace multi_data_monitor
 class ConnectRelation : public ConfigParserInterface
 {
 public:
+  std::string name() { return "connect-relation"; }
   ConfigData execute(const ConfigData & input) override;
 };
 
 class ResolveRelation : public ConfigParserInterface
 {
 public:
+  std::string name() { return "resolve-relation"; }
   ConfigData execute(const ConfigData & input) override;
 };
 
 class ReleaseRelation : public ConfigParserInterface
 {
 public:
+  std::string name() { return "release-relation"; }
   ConfigData execute(const ConfigData & input) override;
 };
 

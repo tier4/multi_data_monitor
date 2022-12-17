@@ -45,6 +45,12 @@ using StreamLink = std::shared_ptr<StreamData>;
 using WidgetLink = std::shared_ptr<WidgetData>;
 using StreamList = std::vector<StreamLink>;
 
+struct WidgetItem
+{
+  YAML::Node yaml;
+  WidgetLink link;
+};
+
 struct CommonData
 {
   CommonData(const NodeClass & klass, const NodeLabel & label);
@@ -75,6 +81,7 @@ struct WidgetData : public CommonData
   YAML::Node yaml;
   StreamLink input;
   WidgetLink refer;
+  std::vector<WidgetItem> items;
 };
 
 class StyleSheetConfig
@@ -104,6 +111,7 @@ class ConfigParserInterface
 {
 public:
   virtual ~ConfigParserInterface() = default;
+  virtual std::string name() = 0;
   virtual ConfigData execute(const ConfigData & input) = 0;
 };
 
@@ -119,7 +127,7 @@ struct NodeTraits<StreamLink>
 template <>
 struct NodeTraits<WidgetLink>
 {
-  static constexpr auto Name = "stream";
+  static constexpr auto Name = "widget";
 };
 
 }  // namespace multi_data_monitor

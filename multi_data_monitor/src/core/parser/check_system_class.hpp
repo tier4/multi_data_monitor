@@ -16,6 +16,7 @@
 #define CORE__PARSER__CHECK_SYSTEM_CLASS_HPP_
 
 #include "config/types.hpp"
+#include <string>
 
 namespace multi_data_monitor
 {
@@ -23,6 +24,7 @@ namespace multi_data_monitor
 class CheckSystemClass : public ConfigParserInterface
 {
 public:
+  std::string name() { return "check-system-class"; }
   ConfigData execute(const ConfigData & input) override;
 };
 

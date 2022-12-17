@@ -67,6 +67,12 @@ std::string Diagram::convert(const ConfigData & data)
 
   for (const auto & widget : data.widgets)
   {
+    ss << "'items" << std::endl;
+    for (const auto & item : widget->items)
+    {
+      ss << widget << " --> " << item.link << std::endl;
+    }
+    ss << "'end" << std::endl;
     if (widget->input)
     {
       ss << widget << " --> " << widget->input << std::endl;

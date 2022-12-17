@@ -26,6 +26,7 @@ namespace multi_data_monitor
 class MergeSubscription : public ConfigParserInterface
 {
 public:
+  std::string name() { return "merge-subscription"; }
   ConfigData execute(const ConfigData & input) override;
 
 private:
