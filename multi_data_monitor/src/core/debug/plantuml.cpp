@@ -20,14 +20,14 @@
 namespace multi_data_monitor::plantuml
 {
 
-std::string Diagram::convert(const StreamList & streams)
+std::string Diagram::convert(const ConfigData & data)
 {
   std::ostringstream ss;
   ss << "@startuml debug" << std::endl;
 
-  for (const auto & stream : streams)
+  for (const auto & stream : data.streams)
   {
-    ss << "card " << stream << " #cyan [" << std::endl;
+    ss << "card " << stream << " #AAFFFF [" << std::endl;
     ss << stream->klass;
     if (!stream->label.empty())
     {
@@ -39,7 +39,21 @@ std::string Diagram::convert(const StreamList & streams)
     ss << "]" << std::endl;
   }
 
-  for (const auto & stream : streams)
+  for (const auto & widget : data.widgets)
+  {
+    ss << "card " << widget << " #FFAAFF [" << std::endl;
+    ss << widget->klass;
+    if (!widget->label.empty())
+    {
+      ss << " [" << widget->label << "]";
+    }
+    ss << std::endl;
+    ss << "---" << std::endl;
+    ss << YAML::Dump(widget->yaml) << std::endl;
+    ss << "]" << std::endl;
+  }
+
+  for (const auto & stream : data.streams)
   {
     if (stream->input)
     {
@@ -51,14 +65,26 @@ std::string Diagram::convert(const StreamList & streams)
     }
   }
 
+  for (const auto & widget : data.widgets)
+  {
+    if (widget->input)
+    {
+      ss << widget << " --> " << widget->input << std::endl;
+    }
+    if (widget->refer)
+    {
+      ss << widget << " --> " << widget->refer << " #line.dashed" << std::endl;
+    }
+  }
+
   ss << "@enduml" << std::endl;
   return ss.str();
 }
 
-void Diagram::write(const StreamList & input, const std::string & path)
+void Diagram::write(const ConfigData & data, const std::string & path)
 {
   std::ofstream ofs(path);
-  ofs << convert(input) << std::endl;
+  ofs << convert(data) << std::endl;
 }
 
 }  // namespace multi_data_monitor::plantuml

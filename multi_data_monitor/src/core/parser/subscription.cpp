@@ -118,10 +118,12 @@ void MergeSubscription::create_topic(const std::string & name, const std::string
 {
   if (topics_.count(code) == 0)
   {
+    /*
     const auto node = StreamData::Create("@topic");
     node->yaml["name"] = name;
     output_.push_back(node);
     topics_[code].node = node;
+    */
   }
 }
 
@@ -129,10 +131,12 @@ void MergeSubscription::create_field(const std::string & name, const std::string
 {
   if (fields_.count(code) == 0)
   {
+    /*
     const auto node = StreamData::Create("@field");
     node->yaml["name"] = name;
     output_.push_back(node);
     fields_[code].node = node;
+    */
   }
 }
 

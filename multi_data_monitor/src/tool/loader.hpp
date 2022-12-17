@@ -12,9 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "config/parser.hpp"
 #include "debug/plantuml.hpp"
-#include "loader/stream_loader.hpp"
+#include "parser/construction.hpp"
+#include "parser/file.hpp"
 #include "parser/subscription.hpp"
 #include <string>
 
@@ -24,13 +24,15 @@
 namespace multi_data_monitor
 {
 
-StreamList load(const std::string & input)
+ConfigData load(const std::string & path)
 {
   auto diagram = plantuml::Diagram();
+  auto file = ConfigFileLoader().execute(path);
+  auto data = ParseBasicObject().execute(file);
 
-  auto step0 = ConfigLoader();
-  auto data0 = step0(input);
+  diagram.write(data, "graph1.plantuml");
 
+  /*
   auto step1a = ConstructSubscription();
   auto step1b = ConstructStream();
   auto data1a = step1a(data0);
@@ -49,8 +51,9 @@ StreamList load(const std::string & input)
   diagram.write(data3, "diagram1.plantuml");
   const auto data4 = step4(data3);
   diagram.write(data4, "diagram2.plantuml");
+  */
 
-  return data4;
+  return ConfigData();
 }
 
 }  // namespace multi_data_monitor

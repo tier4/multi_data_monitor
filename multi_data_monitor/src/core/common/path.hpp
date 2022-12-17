@@ -12,22 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__DEBUG__PLANTUML_HPP_
-#define CORE__DEBUG__PLANTUML_HPP_
+#ifndef CORE__COMMON__PATH_HPP_
+#define CORE__COMMON__PATH_HPP_
 
-#include "config/types.hpp"
 #include <string>
 
-namespace multi_data_monitor::plantuml
+namespace multi_data_monitor::path
 {
 
-class Diagram
-{
-public:
-  std::string convert(const ConfigData & data);
-  void write(const ConfigData & data, const std::string & path);
-};
+const std::string resolve(const std::string & path);
 
-}  // namespace multi_data_monitor::plantuml
+}  // namespace multi_data_monitor::path
 
-#endif  // CORE__DEBUG__PLANTUML_HPP_
+#endif  // CORE__COMMON__PATH_HPP_

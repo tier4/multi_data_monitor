@@ -12,16 +12,21 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__CONFIG__UTILS_HPP_
-#define CORE__CONFIG__UTILS_HPP_
+#ifndef CORE__PARSER__FILE_HPP_
+#define CORE__PARSER__FILE_HPP_
 
+#include "config/types.hpp"
 #include <string>
 
-namespace multi_data_monitor::path
+namespace multi_data_monitor
 {
 
-const std::string resolve(const std::string & path);
+class ConfigFileLoader
+{
+public:
+  ConfigFile execute(const std::string & input);
+};
 
-}  // namespace multi_data_monitor::path
+}  // namespace multi_data_monitor
 
-#endif  // CORE__CONFIG__UTILS_HPP_
+#endif  // CORE__PARSER__FILE_HPP_

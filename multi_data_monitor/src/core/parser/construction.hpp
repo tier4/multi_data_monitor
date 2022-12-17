@@ -12,43 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__CONFIG__PARSER_HPP_
-#define CORE__CONFIG__PARSER_HPP_
+#ifndef CORE__PARSER__CONSTRUCTION_HPP_
+#define CORE__PARSER__CONSTRUCTION_HPP_
 
-#include "common/exceptions.hpp"
-#include "types.hpp"
-#include <memory>
-#include <string>
+#include "config/types.hpp"
 
 namespace multi_data_monitor
 {
 
-class CheckSpecialClass
+class ParseBasicObject
 {
 public:
-  StreamList operator()(const StreamList & input);
-};
-
-class InterfaceHandler
-{
-public:
-  StreamList operator()(const StreamList & input);
+  ConfigData execute(ConfigFile & file);
 
 private:
-  void handle_stream(const StreamLink & stream);
-  StreamList output_;
-};
-
-class ResolveConnection
-{
-public:
-  StreamList operator()(const StreamList & input);
-
-private:
-  StreamLink resolve(const StreamLink & stream);
-  StreamList output_;
+  void parse_stream_root(YAML::Node yaml);
+  void parse_widget_root(YAML::Node yaml);
+  void parse_subscription(YAML::Node yaml);
+  StreamLink parse_stream_yaml(YAML::Node yaml);
+  WidgetLink parse_widget_yaml(YAML::Node yaml);
+  StreamLink parse_stream_dict(YAML::Node yaml);
+  WidgetLink parse_widget_dict(YAML::Node yaml);
+  StreamLink parse_stream_link(YAML::Node yaml);
+  ConfigData data_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__CONFIG__PARSER_HPP_
+#endif  // CORE__PARSER__CONSTRUCTION_HPP_

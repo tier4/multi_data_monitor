@@ -12,43 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__CONFIG__PARSER_HPP_
-#define CORE__CONFIG__PARSER_HPP_
-
+#include "file.hpp"
 #include "common/exceptions.hpp"
-#include "types.hpp"
-#include <memory>
+#include "common/path.hpp"
+#include "common/yaml.hpp"
+#include <filesystem>
 #include <string>
 
 namespace multi_data_monitor
 {
 
-class CheckSpecialClass
+ConfigFile ConfigFileLoader::execute(const std::string & input)
 {
-public:
-  StreamList operator()(const StreamList & input);
-};
+  const auto path = std::filesystem::path(path::resolve(input));
+  if (!std::filesystem::exists(path))
+  {
+    throw FilePathError("file not found '" + path.string() + "'");
+  }
 
-class InterfaceHandler
-{
-public:
-  StreamList operator()(const StreamList & input);
+  // TODO(Takagi, Isamu): handle yaml error
+  ConfigFile file;
+  file.yaml = YAML::LoadFile(path);
 
-private:
-  void handle_stream(const StreamLink & stream);
-  StreamList output_;
-};
-
-class ResolveConnection
-{
-public:
-  StreamList operator()(const StreamList & input);
-
-private:
-  StreamLink resolve(const StreamLink & stream);
-  StreamList output_;
-};
+  // Check version.
+  const auto version = yaml::take_optional(file.yaml, "version").as<std::string>("undefined");
+  if (version != "2.0")
+  {
+    throw ConfigError("not supported version '" + version + "'");
+  }
+  return file;
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // CORE__CONFIG__PARSER_HPP_

@@ -39,44 +39,39 @@ using NodeClass = std::string;
 using NodeLabel = std::string;
 
 struct StreamData;
+struct WidgetData;
 using StreamLink = std::shared_ptr<StreamData>;
+using WidgetLink = std::shared_ptr<WidgetData>;
 using StreamList = std::vector<StreamLink>;
 
-struct StreamData
+struct CommonData
 {
-  static StreamLink Create(const NodeClass & klass);
-  static StreamLink Create(const NodeClass & klass, YAML::Node yaml);
-  static StreamLink Create(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml);
-  void dump() const;
+  CommonData(const NodeClass & klass, const NodeLabel & label);
+  virtual ~CommonData();
+  static inline int created = 0;
+  static inline int removed = 0;
 
   const NodeClass klass;
   const NodeLabel label;
+  // TODO(Takagi, Isamu): debug info for exception
+};
+
+struct StreamData : public CommonData
+{
+  using CommonData::CommonData;
+  void dump() const;
   YAML::Node yaml;
-  StreamLink refer;
   StreamLink input;
-  // TODO(Takagi, Isamu): exception info
+  StreamLink refer;
 };
 
-struct TopicQoS
+struct WidgetData : public CommonData
 {
-  enum class Reliability { Auto, Default, Reliable, BestEffort };
-  enum class Durability { Auto, Default, Volatile, TransientLocal };
-  size_t depth;
-  Reliability reliability;
-  Durability durability;
-};
-
-struct TopicData
-{
-  std::string name;
-  std::string type;
-  TopicQoS qos;
-};
-
-struct FieldData
-{
-  std::string name;
-  std::string type;
+  using CommonData::CommonData;
+  void dump() const;
+  YAML::Node yaml;
+  StreamLink input;
+  WidgetLink refer;
 };
 
 class StyleSheetConfig
@@ -90,10 +85,16 @@ class StyleSheetStore
 struct ConfigFile
 {
   std::string version;
-  std::vector<YAML::Node> stylesheets;
-  std::vector<YAML::Node> widgets;
-  std::vector<YAML::Node> streams;
-  std::vector<YAML::Node> subscriptions;
+  YAML::Node yaml;
+};
+
+struct ConfigData
+{
+  StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
+  WidgetLink create_widget(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
+
+  std::vector<StreamLink> streams;
+  std::vector<WidgetLink> widgets;
 };
 
 }  // namespace multi_data_monitor

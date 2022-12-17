@@ -18,22 +18,14 @@
 namespace multi_data_monitor
 {
 
-StreamLink StreamData::Create(const NodeClass & klass)
+CommonData::CommonData(const NodeClass & klass, const NodeLabel & label) : klass(klass), label(label)
 {
-  const auto data = StreamData{klass, "", YAML::Node(), nullptr, nullptr};
-  return std::make_shared<StreamData>(data);
+  ++created;
 }
 
-StreamLink StreamData::Create(const NodeClass & klass, YAML::Node yaml)
+CommonData::~CommonData()
 {
-  const auto data = StreamData{klass, "", yaml, nullptr, nullptr};
-  return std::make_shared<StreamData>(data);
-}
-
-StreamLink StreamData::Create(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
-{
-  const auto data = StreamData{klass, label, yaml, nullptr, nullptr};
-  return std::make_shared<StreamData>(data);
+  ++removed;
 }
 
 void StreamData::dump() const
@@ -47,6 +39,20 @@ void StreamData::dump() const
   {
     std::cout << " - input: " << input << std::endl;
   }
+}
+
+StreamLink ConfigData::create_stream(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
+{
+  const auto data = std::make_shared<StreamData>(klass, label);
+  data->yaml = yaml;
+  return streams.emplace_back(data);
+}
+
+WidgetLink ConfigData::create_widget(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
+{
+  const auto data = std::make_shared<WidgetData>(klass, label);
+  data->yaml = yaml;
+  return widgets.emplace_back(data);
 }
 
 }  // namespace multi_data_monitor
