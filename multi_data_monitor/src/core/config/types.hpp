@@ -24,7 +24,7 @@
 namespace multi_data_monitor::builtin
 {
 
-const char debug[] = "debug";
+const char print[] = "print";
 const char subscription[] = "subscription";
 const char topic[] = "@topic";
 const char field[] = "@field";

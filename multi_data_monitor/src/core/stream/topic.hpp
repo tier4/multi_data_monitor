@@ -39,6 +39,7 @@ public:
 
 private:
   void create_subscription(ros::Node node);
+  void remove_subscription();
   std::string name_;
   std::string type_;
   std::string qos_;

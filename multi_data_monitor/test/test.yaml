@@ -10,9 +10,9 @@ widgets:
     input: { class: subscription, name: [/test/header, stamp.sec], qos: dd1 }
 
 streams:
-  - class: debug
+  - class: print
     input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dd1, label: test-test }
-  - class: debug
+  - class: print
     input: { class: subscription, topic: /test/header, field: stamp.nanosec }
 
 subscriptions:

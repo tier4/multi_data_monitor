@@ -33,9 +33,9 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   src/core/loader/stream_runner.cpp
   src/core/parser/subscription.cpp
   src/core/stream/basic.cpp
-  src/core/stream/debug.cpp
   src/core/stream/field.cpp
   src/core/stream/panel.cpp
+  src/core/stream/print.cpp
   src/core/stream/topic.cpp
 )
 target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)

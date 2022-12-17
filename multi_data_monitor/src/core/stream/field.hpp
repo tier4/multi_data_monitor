@@ -16,6 +16,7 @@
 #define CORE__STREAM__FIELD_HPP_
 
 #include "stream/basic.hpp"
+#include <generic_type_utility/type/access.hpp>
 
 namespace multi_data_monitor
 {
@@ -25,6 +26,9 @@ struct FieldStream : public InOutStream
 public:
   void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
+
+private:
+  generic_type_utility::TypeAccess access_;
 };
 
 }  // namespace multi_data_monitor

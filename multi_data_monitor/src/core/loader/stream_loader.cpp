@@ -56,9 +56,9 @@ Stream StreamLoader::create_stream(const StreamLink config)
   {
     return std::make_shared<FieldStream>();
   }
-  if (config->klass == builtin::debug)
+  if (config->klass == builtin::print)
   {
-    return std::make_shared<DebugStream>();
+    return std::make_shared<PrintStream>();
   }
   throw ConfigError("unknown stream type: " + config->klass);
 }

@@ -12,15 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__STREAM__DEBUG_HPP_
-#define CORE__STREAM__DEBUG_HPP_
+#ifndef CORE__STREAM__PRINT_HPP_
+#define CORE__STREAM__PRINT_HPP_
 
 #include "stream/basic.hpp"
 
 namespace multi_data_monitor
 {
 
-struct DebugStream : public InOutStream
+struct PrintStream : public InOutStream
 {
 public:
   void setting(YAML::Node yaml) override;
@@ -29,4 +29,4 @@ public:
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__STREAM__DEBUG_HPP_
+#endif  // CORE__STREAM__PRINT_HPP_

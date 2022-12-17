@@ -17,9 +17,9 @@
 
 #include "config/types.hpp"
 #include "stream/basic.hpp"
-#include "stream/debug.hpp"
 #include "stream/field.hpp"
 #include "stream/panel.hpp"
+#include "stream/print.hpp"
 #include "stream/topic.hpp"
 #include <memory>
 #include <vector>

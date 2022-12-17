@@ -13,20 +13,23 @@
 // limitations under the License.
 
 #include "field.hpp"
-#include <iostream>
+#include "common/yaml.hpp"
+#include <generic_type_utility/yaml.hpp>
+#include <string>
 
 namespace multi_data_monitor
 {
 
 void FieldStream::setting(YAML::Node yaml)
 {
-  (void)yaml;
+  const auto name = yaml::take_required(yaml, "name").as<std::string>("");
+  const auto type = yaml::take_optional(yaml, "type").as<std::string>("");
+  access_.reset(name);
 }
 
 void FieldStream::message(const Packet & packet)
 {
-  std::cout << "===== field =====" << std::endl;
-  std::cout << packet.value << std::endl;
+  outputs({generic_type_utility::apply(access_, packet.value), packet.attrs});
 }
 
 }  // namespace multi_data_monitor

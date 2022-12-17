@@ -153,4 +153,10 @@ void TopicStream::create_subscription(ros::Node node)
   sub_ = node->create_generic_subscription(name_, type, convert_qos(qos), callback);
 }
 
+void TopicStream::remove_subscription()
+{
+  generic_.reset();
+  sub_.reset();
+}
+
 }  // namespace multi_data_monitor

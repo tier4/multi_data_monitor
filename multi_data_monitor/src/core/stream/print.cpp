@@ -12,18 +12,17 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "debug.hpp"
+#include "print.hpp"
 #include <iostream>
 
 namespace multi_data_monitor
 {
 
-void DebugStream::setting(YAML::Node yaml)
+void PrintStream::setting([[maybe_unused]] YAML::Node yaml)
 {
-  (void)yaml;
 }
 
-void DebugStream::message(const Packet & packet)
+void PrintStream::message(const Packet & packet)
 {
   std::cout << packet.value << std::endl;
 }
