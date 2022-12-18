@@ -12,13 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <multi_data_monitor/widget.hpp>
 #include <QLabel>
-#include <multi_data_monitor/design.hpp>
 
 namespace multi_data_monitor
 {
 
-class Simple : public multi_data_monitor::Design
+class Simple : public BasicWidget
+{
+public:
+  SetupResult setup(YAML::Node yaml, const std::vector<YAML::Node> & items) override;
+  BuildResult build(const std::vector<QWidget *> & items) override;
+  void message(const Packet & packet) override;
+};
+
+SetupResult Simple::setup(YAML::Node yaml, const std::vector<YAML::Node> & items)
+{
+  (void)yaml;
+  (void)items;
+  return {};
+}
+
+BuildResult Simple::build(const std::vector<QWidget *> & items)
+{
+  (void)items;
+  return {};
+};
+
+void Simple::message(const Packet & packet)
+{
+  (void)packet;
+}
+
+/*
+class Simple : public BasicWidget
 {
 private:
   QLabel * label_;
@@ -41,8 +68,9 @@ public:
     UpdateProperties(input, label_);
   }
 };
+*/
 
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Simple, multi_data_monitor::Design)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Simple, multi_data_monitor::BasicWidget)

@@ -51,7 +51,11 @@ ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
 )
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
 
-# ament_auto_add_library(${PROJECT_NAME}_plugin SHARED)
+ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
+  "src/plugin/widget/matrix.cpp"
+  "src/plugin/widget/simple.cpp"
+  "src/plugin/widget/titled.cpp"
+)
 # target_link_libraries(${PROJECT_NAME}_plugin ${QT_LIBRARIES})
 
 ament_auto_add_executable(parser src/tool/parser.cpp)

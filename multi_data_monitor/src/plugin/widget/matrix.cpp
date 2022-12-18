@@ -12,13 +12,40 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include <multi_data_monitor/widget.hpp>
 #include <QGridLayout>
-#include <multi_data_monitor/design.hpp>
 
 namespace multi_data_monitor
 {
 
-class Matrix : public multi_data_monitor::Design
+class Matrix : public BasicWidget
+{
+public:
+  SetupResult setup(YAML::Node yaml, const std::vector<YAML::Node> & items) override;
+  BuildResult build(const std::vector<QWidget *> & items) override;
+  void message(const Packet & packet) override;
+};
+
+SetupResult Matrix::setup(YAML::Node yaml, const std::vector<YAML::Node> & items)
+{
+  (void)yaml;
+  (void)items;
+  return {};
+}
+
+BuildResult Matrix::build(const std::vector<QWidget *> & items)
+{
+  (void)items;
+  return {};
+};
+
+void Matrix::message(const Packet & packet)
+{
+  (void)packet;
+}
+
+/*
+class Matrix : public BasicWidget
 {
 private:
   QGridLayout * layout_;
@@ -56,8 +83,9 @@ public:
   }
   void Callback(const MonitorValues &) override {}  // TODO(Takagi, Isamu): remove
 };
+*/
 
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Matrix, multi_data_monitor::Design)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Matrix, multi_data_monitor::BasicWidget)

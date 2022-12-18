@@ -17,6 +17,7 @@
 
 #include "config/types.hpp"
 #include <multi_data_monitor/widget.hpp>
+#include <pluginlib/class_loader.hpp>
 #include <memory>
 #include <vector>
 
@@ -32,6 +33,7 @@ public:
 private:
   Widget create_widget(const WidgetLink config);
   std::vector<Widget> widgets_;
+  pluginlib::ClassLoader<BasicWidget> plugins_;
 };
 
 }  // namespace multi_data_monitor

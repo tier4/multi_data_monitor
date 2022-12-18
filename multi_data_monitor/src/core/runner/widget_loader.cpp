@@ -14,20 +14,26 @@
 
 #include "widget_loader.hpp"
 #include "common/exceptions.hpp"
+#include <string>
 #include <unordered_map>
 #include <vector>
+
+// DEBUG
+#include <iostream>
 
 namespace multi_data_monitor
 {
 
-WidgetLoader::WidgetLoader(const WidgetList & configs)
+WidgetLoader::WidgetLoader(const WidgetList & configs) : plugins_(plugin::name::package, plugin::name::widget)
 {
   std::unordered_map<WidgetLink, Widget> mapping;
   for (const auto & config : configs)
   {
     const auto widget = create_widget(config);
+    /*
     widget->setup(config->yaml, std::vector<YAML::Node>());
     mapping[config] = widgets_.emplace_back(widget);
+    */
   }
 
   /*
@@ -43,7 +49,16 @@ WidgetLoader::WidgetLoader(const WidgetList & configs)
 
 Widget WidgetLoader::create_widget(const WidgetLink config)
 {
-  throw ConfigError("unknown widget type: " + config->klass);
+  std::string klass = config->klass;
+  if (klass.find("::") == std::string::npos)
+  {
+    klass = plugin::name::package + std::string("::") + klass;
+  }
+  if (!plugins_.isClassAvailable(klass))
+  {
+    throw ConfigError("unknown widget type: " + config->klass);
+  }
+  return plugins_.createSharedInstance(klass);
 }
 
 }  // namespace multi_data_monitor

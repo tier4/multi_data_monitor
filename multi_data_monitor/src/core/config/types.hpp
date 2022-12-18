@@ -24,14 +24,22 @@
 namespace multi_data_monitor::builtin
 {
 
-const char relay[] = "relay";
-const char print[] = "print";
-const char subscription[] = "subscription";
-const char topic[] = "@topic";
-const char field[] = "@field";
-const char panel[] = "@panel";
+constexpr char relay[] = "relay";
+constexpr char print[] = "print";
+constexpr char subscription[] = "subscription";
+constexpr char topic[] = "@topic";
+constexpr char field[] = "@field";
+constexpr char panel[] = "@panel";
 
 }  // namespace multi_data_monitor::builtin
+
+namespace multi_data_monitor::plugin::name
+{
+
+constexpr char package[] = "multi_data_monitor";
+constexpr char widget[] = "multi_data_monitor::BasicWidget";
+
+}  // namespace multi_data_monitor::plugin::name
 
 namespace multi_data_monitor
 {

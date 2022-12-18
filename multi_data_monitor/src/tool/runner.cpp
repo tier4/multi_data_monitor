@@ -13,19 +13,27 @@
 // limitations under the License.
 
 #include "runner/config_loader.hpp"
+#include "runner/stream_loader.hpp"
 #include "runner/stream_runner.hpp"
+#include "runner/widget_loader.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
 
 namespace multi_data_monitor
 {
 
-StreamRunner::SharedPtr create_runner(const std::string & path)
+struct Loaders
+{
+  StreamLoader::SharedPtr stream;
+  WidgetLoader::SharedPtr widget;
+};
+
+Loaders create_loaders(const std::string & path)
 {
   const auto config = ConfigLoader().execute(path);
-  const auto loader = std::make_shared<multi_data_monitor::StreamLoader>(config.streams);
-  const auto runner = std::make_shared<multi_data_monitor::StreamRunner>(loader);
-  return runner;
+  const auto stream = std::make_shared<StreamLoader>(config.streams);
+  const auto widget = std::make_shared<WidgetLoader>(config.widgets);
+  return Loaders{stream, widget};
 }
 
 }  // namespace multi_data_monitor
@@ -40,7 +48,9 @@ int main(int argc, char ** argv)
 
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
-  auto runner = multi_data_monitor::create_runner(scheme + "://" + config);
+  auto loader = multi_data_monitor::create_loaders(scheme + "://" + config);
+  auto runner = std::make_shared<multi_data_monitor::StreamRunner>(loader.stream);
+  return 0;
 
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;

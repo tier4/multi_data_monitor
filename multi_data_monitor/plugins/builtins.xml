@@ -1,7 +1,7 @@
-<library path="multi_data_monitor">
-  <class base_class_type="multi_data_monitor::Design" type="multi_data_monitor::Simple"/>
-  <class base_class_type="multi_data_monitor::Design" type="multi_data_monitor::Title"/>
-  <class base_class_type="multi_data_monitor::Design" type="multi_data_monitor::Matrix"/>
+<library path="multi_data_monitor_plugin">
+  <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Simple"/>
+  <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Titled"/>
+  <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Matrix"/>
   <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Format"/>
   <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Precision"/>
   <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Switch"/>

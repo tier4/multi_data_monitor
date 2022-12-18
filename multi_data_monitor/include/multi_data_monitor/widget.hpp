@@ -33,9 +33,9 @@ class BasicWidget
 {
 public:
   virtual ~BasicWidget() = default;
-  virtual void message(const Packet & packet) = 0;
   virtual SetupResult setup(YAML::Node yaml, const std::vector<YAML::Node> & items) = 0;
   virtual BuildResult build(const std::vector<QWidget *> & items) = 0;
+  virtual void message(const Packet & packet) = 0;
 };
 
 using Widget = std::shared_ptr<BasicWidget>;
