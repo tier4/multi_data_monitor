@@ -50,17 +50,15 @@ int main(int argc, char ** argv)
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
   auto loader = multi_data_monitor::create_loaders(scheme + "://" + config);
-
-  /*
-  auto runner = std::make_shared<multi_data_monitor::StreamRunner>(loader.stream);
+  auto runner = multi_data_monitor::StreamRunner();
+  runner.set_topics(loader->stream.topics());
 
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;
   auto node = std::make_shared<rclcpp::Node>("runner");
-  runner->start(node);
+  runner.start(node);
   executor.add_node(node);
   executor.spin();
   executor.remove_node(node);
   rclcpp::shutdown();
-  */
 }

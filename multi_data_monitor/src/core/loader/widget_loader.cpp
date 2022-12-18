@@ -31,13 +31,11 @@ WidgetLoader::WidgetLoader() : plugins_(plugin::name::package, plugin::name::wid
 WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
 {
   std::unordered_map<WidgetLink, Widget> mapping;
-  /*
   for (const auto & config : configs)
   {
     const auto widget = widgets_.emplace_back(create_widget(config));
     widget->setup(config->yaml, std::vector<YAML::Node>());
   }
-  */
   return mapping;
 }
 
@@ -54,6 +52,10 @@ Widget WidgetLoader::create_widget(const WidgetLink config)
     throw ConfigError("unknown widget type: " + config->klass);
   }
   return plugins_.createSharedInstance(klass);
+}
+
+void WidgetLoader::release()
+{
 }
 
 }  // namespace multi_data_monitor

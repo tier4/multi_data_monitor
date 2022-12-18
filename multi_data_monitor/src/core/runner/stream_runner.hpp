@@ -16,16 +16,18 @@
 #define CORE__RUNNER__STREAM_RUNNER_HPP_
 
 #include "common/rclcpp.hpp"
-#include "loader/stream_loader.hpp"
 #include <memory>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
+class TopicStream;
+
 class StreamRunner final
 {
 public:
-  using SharedPtr = std::shared_ptr<StreamRunner>;
+  void set_topics(const std::vector<std::shared_ptr<TopicStream>> & topics);
   void start(ros::Node node);
   void shutdown();
 
@@ -33,6 +35,7 @@ private:
   void on_timer(ros::Node node);
   ros::Node node_;
   ros::Timer timer_;
+  std::vector<std::shared_ptr<TopicStream>> topics_;
 };
 
 }  // namespace multi_data_monitor

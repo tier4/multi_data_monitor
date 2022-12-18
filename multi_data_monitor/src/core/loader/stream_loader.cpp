@@ -67,4 +67,8 @@ Stream StreamLoader::create_stream(const StreamLink config)
   throw ConfigError("unknown stream type: " + config->klass);
 }
 
+void StreamLoader::release()
+{
+}
+
 }  // namespace multi_data_monitor

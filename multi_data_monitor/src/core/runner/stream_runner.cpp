@@ -13,11 +13,17 @@
 // limitations under the License.
 
 #include "stream_runner.hpp"
+#include "stream/topic.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <utility>
 
 namespace multi_data_monitor
 {
+
+void StreamRunner::set_topics(const std::vector<std::shared_ptr<TopicStream>> & topics)
+{
+  topics_ = topics;
+}
 
 void StreamRunner::start(ros::Node node)
 {
@@ -28,13 +34,12 @@ void StreamRunner::start(ros::Node node)
 void StreamRunner::shutdown()
 {
   timer_->cancel();
-  // for (auto & topic : loader_->topics()) topic->shutdown();
+  for (auto & topic : topics_) topic->shutdown();
 }
 
 void StreamRunner::on_timer(ros::Node node)
 {
-  (void)node;
-  // for (auto & topic : loader_->topics()) topic->update(node);
+  for (auto & topic : topics_) topic->update(node);
 }
 
 }  // namespace multi_data_monitor
