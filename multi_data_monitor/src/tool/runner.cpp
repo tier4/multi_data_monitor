@@ -20,10 +20,12 @@
 namespace multi_data_monitor
 {
 
-StreamRunner create_runner(const std::string & path)
+StreamRunner::SharedPtr create_runner(const std::string & path)
 {
-  const auto data = ConfigLoader().execute(path);
-  return multi_data_monitor::StreamRunner(data.streams);
+  const auto config = ConfigLoader().execute(path);
+  const auto loader = std::make_shared<multi_data_monitor::StreamLoader>(config.streams);
+  const auto runner = std::make_shared<multi_data_monitor::StreamRunner>(loader);
+  return runner;
 }
 
 }  // namespace multi_data_monitor
@@ -43,7 +45,7 @@ int main(int argc, char ** argv)
   rclcpp::init(argc, argv);
   rclcpp::executors::SingleThreadedExecutor executor;
   auto node = std::make_shared<rclcpp::Node>("runner");
-  runner.start(node);
+  runner->start(node);
   executor.add_node(node);
   executor.spin();
   executor.remove_node(node);

@@ -94,9 +94,6 @@ void MultiDataMonitor::onInitialize()
     widget->setLayout(layout);
     parent->setTitleBarWidget(widget);
   }
-
-  // rviz_node_ = getDisplayContext()->getRosNodeAbstraction().lock()->get_raw_node();
-  // loader_ = std::make_unique<Loader>();
 }
 
 void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
@@ -119,20 +116,17 @@ void MultiDataMonitor::mousePressEvent(QMouseEvent * event)
 
 void MultiDataMonitor::updateMultiDataMonitor()
 {
+  auto rviz_node = getDisplayContext()->getRosNodeAbstraction().lock()->get_raw_node();
   QWidget * widget = nullptr;
   try
   {
-    // TODO(Takagi, Isamu): subscribe automatically
-    /*
-    loader_->Unsubscribe();
-    widget = loader_->Reload(setting_->getPath());
-    loader_->Subscribe(rviz_node_);
+    const auto path = setting_->getPath();
+    widget = manager_.build(path, rviz_node);
     setting_->setVisible(false);
-    */
   }
   catch (const std::exception & error)
   {
-    // RCLCPP_ERROR_STREAM(rviz_node_->get_logger(), error.what());
+    RCLCPP_ERROR_STREAM(rviz_node->get_logger(), error.what());
     QTextEdit * text = new QTextEdit();
     text->setReadOnly(true);
     text->setText(error.what());

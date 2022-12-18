@@ -12,34 +12,38 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__WIDGET_HPP_
-#define MULTI_DATA_MONITOR__WIDGET_HPP_
-
-#include <multi_data_monitor/packet.hpp>
-#include <memory>
+#include "widget_loader.hpp"
+#include "common/exceptions.hpp"
+#include <unordered_map>
 #include <vector>
-
-class QWidget;
 
 namespace multi_data_monitor
 {
 
-struct BuildResult
+WidgetLoader::WidgetLoader(const WidgetList & configs)
 {
-  QWidget * main;
-};
+  std::unordered_map<WidgetLink, Widget> mapping;
+  for (const auto & config : configs)
+  {
+    const auto widget = create_widget(config);
+    widget->setup(config->yaml, std::vector<YAML::Node>());
+    mapping[config] = widgets_.emplace_back(widget);
+  }
 
-class BasicWidget
+  /*
+  for (const auto & [config, widget] : mapping)
+  {
+    if (config->input)
+    {
+      mapping[config->input]->connect(widget);
+    }
+  }
+  */
+}
+
+Widget WidgetLoader::create_widget(const WidgetLink config)
 {
-public:
-  virtual ~BasicWidget() = default;
-  virtual void message(const Packet & packet) = 0;
-  virtual SetupResult setup(YAML::Node yaml, const std::vector<YAML::Node> & items) = 0;
-  virtual BuildResult build(const std::vector<QWidget *> & items) = 0;
-};
-
-using Widget = std::shared_ptr<BasicWidget>;
+  throw ConfigError("unknown widget type: " + config->klass);
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // MULTI_DATA_MONITOR__WIDGET_HPP_

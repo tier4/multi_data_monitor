@@ -44,6 +44,7 @@ struct WidgetData;
 using StreamLink = std::shared_ptr<StreamData>;
 using WidgetLink = std::shared_ptr<WidgetData>;
 using StreamList = std::vector<StreamLink>;
+using WidgetList = std::vector<WidgetLink>;
 
 struct WidgetItem
 {

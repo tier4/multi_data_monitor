@@ -12,28 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "core/loader.hpp"
-#include <rclcpp/rclcpp.hpp>
-#include <iostream>
+#ifndef CORE__RVIZ__MANAGER_HPP_
+#define CORE__RVIZ__MANAGER_HPP_
 
-int main(int argc, char ** argv)
+#include "common/rclcpp.hpp"
+#include <memory>
+#include <string>
+
+class QWidget;
+
+namespace multi_data_monitor
 {
-  const auto args = rclcpp::remove_ros_arguments(argc, argv);
-  if (args.size() != 2)
-  {
-    std::cout << "usage: command path" << std::endl;
-    return 1;
-  }
 
-  rclcpp::init(argc, argv);
-  const auto node = std::make_shared<rclcpp::Node>("test");
+class RvizManager final
+{
+public:
+  QWidget * build(const std::string & path, ros::Node node);
+  RvizManager();
+  ~RvizManager();
 
-  multi_data_monitor::Loader loader;
-  loader.Reload(args[1]);
+private:
+  class Impl;
+  std::unique_ptr<Impl> impl;
+};
 
-  rclcpp::executors::SingleThreadedExecutor executor;
-  executor.add_node(node);
-  executor.spin();
-  executor.remove_node(node);
-  rclcpp::shutdown();
-}
+}  // namespace multi_data_monitor
+
+#endif  // CORE__RVIZ__MANAGER_HPP_

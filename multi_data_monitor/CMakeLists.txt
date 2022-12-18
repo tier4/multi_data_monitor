@@ -42,9 +42,14 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
 target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)
 
 ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
-  "src/rviz/panel.hpp"
-  "src/rviz/panel.cpp"
+  "src/core/rviz/manager.hpp"
+  "src/core/rviz/manager.cpp"
+  "src/core/rviz/panel.hpp"
+  "src/core/rviz/panel.cpp"
+  "src/core/runner/widget_loader.hpp"
+  "src/core/runner/widget_loader.cpp"
 )
+target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
 
 # ament_auto_add_library(${PROJECT_NAME}_plugin SHARED)
 # target_link_libraries(${PROJECT_NAME}_plugin ${QT_LIBRARIES})

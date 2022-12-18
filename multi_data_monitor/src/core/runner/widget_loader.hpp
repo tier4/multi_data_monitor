@@ -12,33 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "stream_runner.hpp"
-#include <rclcpp/rclcpp.hpp>
-#include <utility>
+#ifndef CORE__RUNNER__WIDGET_LOADER_HPP_
+#define CORE__RUNNER__WIDGET_LOADER_HPP_
+
+#include "config/types.hpp"
+#include <multi_data_monitor/widget.hpp>
+#include <memory>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-StreamRunner::StreamRunner(const StreamLoader::SharedPtr loader)
+class WidgetLoader final
 {
-  loader_ = std::move(loader);
-}
+public:
+  using SharedPtr = std::shared_ptr<WidgetLoader>;
+  explicit WidgetLoader(const WidgetList & configs);
 
-void StreamRunner::start(ros::Node node)
-{
-  const auto rate = rclcpp::Rate(1.0);
-  timer_ = rclcpp::create_timer(node, node->get_clock(), rate.period(), [this, node]() { on_timer(node); });
-}
-
-void StreamRunner::shutdown()
-{
-  timer_->cancel();
-  for (auto & topic : loader_->topics()) topic->shutdown();
-}
-
-void StreamRunner::on_timer(ros::Node node)
-{
-  for (auto & topic : loader_->topics()) topic->update(node);
-}
+private:
+  Widget create_widget(const WidgetLink config);
+  std::vector<Widget> widgets_;
+};
 
 }  // namespace multi_data_monitor
+
+#endif  // CORE__RUNNER__WIDGET_LOADER_HPP_

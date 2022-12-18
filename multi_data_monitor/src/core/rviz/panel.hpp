@@ -12,9 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef RVIZ__PANEL_HPP_
-#define RVIZ__PANEL_HPP_
+#ifndef CORE__RVIZ__PANEL_HPP_
+#define CORE__RVIZ__PANEL_HPP_
 
+#include "manager.hpp"
 #include <rviz_common/panel.hpp>
 #include <memory>
 #include <string>
@@ -56,11 +57,11 @@ public:
   void updateMultiDataMonitor();
 
 private:
-  // std::unique_ptr<Loader> loader_;
+  RvizManager manager_;
   QWidget * monitor_;
   SettingWidget * setting_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // RVIZ__PANEL_HPP_
+#endif  // CORE__RVIZ__PANEL_HPP_

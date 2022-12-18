@@ -30,6 +30,7 @@ namespace multi_data_monitor
 class StreamLoader final
 {
 public:
+  using SharedPtr = std::shared_ptr<StreamLoader>;
   explicit StreamLoader(const StreamList & configs);
   const auto & topics() { return topics_; }
 
