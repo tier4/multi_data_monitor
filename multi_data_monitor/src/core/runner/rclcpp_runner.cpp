@@ -31,15 +31,25 @@ void RclcppRunner::start(ros::Node node)
   timer_ = rclcpp::create_timer(node, node->get_clock(), rate.period(), [this, node]() { on_timer(node); });
 }
 
-void RclcppRunner::shutdown()
-{
-  timer_->cancel();
-  for (auto & topic : topics_) topic->shutdown();
-}
-
 void RclcppRunner::on_timer(ros::Node node)
 {
-  for (auto & topic : topics_) topic->update(node);
+  for (auto & topic : topics_)
+  {
+    topic->update(node);
+  }
+}
+
+void RclcppRunner::shutdown()
+{
+  // Stop the timer and subscriptions.
+  timer_.reset();
+  for (auto & topic : topics_)
+  {
+    topic->shutdown();
+  }
+
+  // Release shared_ptr to unload plugins.
+  topics_.clear();
 }
 
 }  // namespace multi_data_monitor

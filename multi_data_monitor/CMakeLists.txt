@@ -33,6 +33,7 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/parser/resolve_relation.cpp"
   "src/core/parser/subscription.cpp"
   "src/core/runner/rclcpp_runner.cpp"
+  "src/core/runner/stream_runner.cpp"
   "src/core/stream/basic.cpp"
   "src/core/stream/field.cpp"
   "src/core/stream/panel.cpp"
@@ -48,6 +49,8 @@ ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
   "src/core/rviz/panel.cpp"
   "src/core/loader/widget_loader.hpp"
   "src/core/loader/widget_loader.cpp"
+  "src/core/runner/widget_runner.hpp"
+  "src/core/runner/widget_runner.cpp"
 )
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
 

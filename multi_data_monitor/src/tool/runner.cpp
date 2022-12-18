@@ -13,31 +13,9 @@
 // limitations under the License.
 
 #include "loader/config_loader.hpp"
-#include "loader/stream_loader.hpp"
-#include "loader/widget_loader.hpp"
-#include "runner/rclcpp_runner.hpp"
+#include "runner/widget_runner.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
-
-namespace multi_data_monitor
-{
-
-struct Loaders
-{
-  StreamLoader stream;
-  WidgetLoader widget;
-};
-
-std::shared_ptr<Loaders> create_loaders(const std::string & path)
-{
-  const auto config = ConfigLoader().execute(path);
-  const auto loader = std::make_shared<Loaders>();
-  loader->stream.create(config.streams);
-  loader->widget.create(config.widgets);
-  return loader;
-}
-
-}  // namespace multi_data_monitor
 
 int main(int argc, char ** argv)
 {
@@ -47,18 +25,22 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  const auto scheme = std::string(argv[1]);
-  const auto config = std::string(argv[2]);
-  auto loader = multi_data_monitor::create_loaders(scheme + "://" + config);
-  auto runner = multi_data_monitor::RclcppRunner();
-  runner.set_topics(loader->stream.topics());
+  multi_data_monitor::WidgetRunner runner;
+  {
+    const auto scheme = std::string(argv[1]);
+    const auto config = std::string(argv[2]);
+    runner.create(multi_data_monitor::ConfigLoader().execute(scheme + "://" + config));
+  }
 
   rclcpp::init(argc, argv);
-  rclcpp::executors::SingleThreadedExecutor executor;
   auto node = std::make_shared<rclcpp::Node>("runner");
   runner.start(node);
-  executor.add_node(node);
-  executor.spin();
-  executor.remove_node(node);
+  {
+    rclcpp::executors::SingleThreadedExecutor executor;
+    executor.add_node(node);
+    executor.spin();
+    executor.remove_node(node);
+  }
+  runner.shutdown();
   rclcpp::shutdown();
 }

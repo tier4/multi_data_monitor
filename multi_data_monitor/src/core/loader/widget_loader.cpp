@@ -56,6 +56,9 @@ Widget WidgetLoader::create_widget(const WidgetLink config)
 
 void WidgetLoader::release()
 {
+  // TODO(Takagi, Isamu): check use count
+  // Release shared_ptr to unload plugins.
+  widgets_.clear();
 }
 
 }  // namespace multi_data_monitor

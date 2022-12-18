@@ -29,7 +29,13 @@ using Stream = std::shared_ptr<BasicStream>;
 struct BasicStream
 {
 public:
-  virtual ~BasicStream() = default;
+  // DEBUG
+  static inline int created = 0;
+  static inline int removed = 0;
+  BasicStream() { ++created; }
+  virtual ~BasicStream() { ++removed; }
+
+  // virtual ~BasicStream() = default;
   virtual void setting(YAML::Node yaml) = 0;
   virtual void connect(Stream stream);
   virtual void message(const Packet & packet) = 0;

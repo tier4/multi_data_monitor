@@ -69,6 +69,11 @@ Stream StreamLoader::create_stream(const StreamLink config)
 
 void StreamLoader::release()
 {
+  // TODO(Takagi, Isamu): check use count
+  // Release shared_ptr to unload plugins.
+  panels_.clear();
+  topics_.clear();
+  streams_.clear();
 }
 
 }  // namespace multi_data_monitor
