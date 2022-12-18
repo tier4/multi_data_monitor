@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__RUNNER__STREAM_RUNNER_HPP_
-#define CORE__RUNNER__STREAM_RUNNER_HPP_
+#ifndef CORE__RUNNER__RCLCPP_RUNNER_HPP_
+#define CORE__RUNNER__RCLCPP_RUNNER_HPP_
 
 #include "common/rclcpp.hpp"
 #include <memory>
@@ -24,7 +24,7 @@ namespace multi_data_monitor
 
 class TopicStream;
 
-class StreamRunner final
+class RclcppRunner final
 {
 public:
   void set_topics(const std::vector<std::shared_ptr<TopicStream>> & topics);
@@ -40,4 +40,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__RUNNER__STREAM_RUNNER_HPP_
+#endif  // CORE__RUNNER__RCLCPP_RUNNER_HPP_

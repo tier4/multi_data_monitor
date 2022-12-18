@@ -15,7 +15,7 @@
 #include "loader/config_loader.hpp"
 #include "loader/stream_loader.hpp"
 #include "loader/widget_loader.hpp"
-#include "runner/stream_runner.hpp"
+#include "runner/rclcpp_runner.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
 
@@ -50,7 +50,7 @@ int main(int argc, char ** argv)
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
   auto loader = multi_data_monitor::create_loaders(scheme + "://" + config);
-  auto runner = multi_data_monitor::StreamRunner();
+  auto runner = multi_data_monitor::RclcppRunner();
   runner.set_topics(loader->stream.topics());
 
   rclcpp::init(argc, argv);
