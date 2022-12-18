@@ -20,7 +20,7 @@
 namespace multi_data_monitor::plantuml
 {
 
-std::string Diagram::convert(const ConfigData & data)
+std::string Diagram::convert(const ConfigData & data) const
 {
   std::ostringstream ss;
   ss << "@startuml debug" << std::endl;
@@ -87,7 +87,7 @@ std::string Diagram::convert(const ConfigData & data)
   return ss.str();
 }
 
-void Diagram::write(const ConfigData & data, const std::string & path)
+void Diagram::write(const ConfigData & data, const std::string & path) const
 {
   std::ofstream ofs(path);
   ofs << convert(data) << std::endl;

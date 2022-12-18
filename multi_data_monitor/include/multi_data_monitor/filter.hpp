@@ -12,30 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__DESIGN_HPP_
-#define MULTI_DATA_MONITOR__DESIGN_HPP_
+#ifndef MULTI_DATA_MONITOR__FILTER_HPP_
+#define MULTI_DATA_MONITOR__FILTER_HPP_
 
-#include <multi_data_monitor/values.hpp>
-#include <variant>
-
-class QWidget;
-class QLayout;
+#include <multi_data_monitor/packet.hpp>
 
 namespace multi_data_monitor
 {
 
-class Design
+class Filter
 {
 public:
-  using Instance = std::variant<QWidget *, QLayout *>;
-  virtual ~Design() = default;
-  virtual Instance Create(const YAML::Node params) = 0;
-  virtual void AddWidget(QWidget *, const YAML::Node params);
-  virtual void AddLayout(QLayout *, const YAML::Node params);
-  virtual void Callback(const MonitorValues & input) = 0;
-  void UpdateProperties(const MonitorValues & input, QWidget * widget);
+  virtual ~Filter() = default;
+  virtual SetupResult setup(YAML::Node yaml) = 0;
+  virtual Packet apply(const Packet & packet) = 0;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__DESIGN_HPP_
+#endif  // MULTI_DATA_MONITOR__FILTER_HPP_

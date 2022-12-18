@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "loader.hpp"
+#include "runner/config_loader.hpp"
 #include "runner/stream_runner.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
@@ -22,7 +22,7 @@ namespace multi_data_monitor
 
 StreamRunner create_runner(const std::string & path)
 {
-  const auto data = multi_data_monitor::load(path);
+  const auto data = ConfigLoader().execute(path);
   return multi_data_monitor::StreamRunner(data.streams);
 }
 

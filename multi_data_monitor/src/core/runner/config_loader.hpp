@@ -12,31 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "stream_runner.hpp"
-#include <rclcpp/rclcpp.hpp>
+#ifndef CORE__RUNNER__CONFIG_LOADER_HPP_
+#define CORE__RUNNER__CONFIG_LOADER_HPP_
+
+#include "config/types.hpp"
+#include <memory>
+#include <string>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-StreamRunner::StreamRunner(const StreamList & configs) : loader_(configs)
+class ConfigLoader final
 {
-}
+public:
+  ConfigLoader();
+  ConfigData execute(const std::string & path) const;
+  ConfigData partial_construct(const std::string & path) const;
+  ConfigData partial_execute(const ConfigData & data) const;
+  const auto & parsers() const { return parsers_; }
 
-void StreamRunner::start(ros::Node node)
-{
-  const auto rate = rclcpp::Rate(1.0);
-  timer_ = rclcpp::create_timer(node, node->get_clock(), rate.period(), [this, node]() { on_timer(node); });
-}
-
-void StreamRunner::shutdown()
-{
-  timer_->cancel();
-  for (auto & topic : loader_.topics()) topic->shutdown();
-}
-
-void StreamRunner::on_timer(ros::Node node)
-{
-  for (auto & topic : loader_.topics()) topic->update(node);
-}
+private:
+  std::vector<std::shared_ptr<ConfigParserInterface>> parsers_;
+};
 
 }  // namespace multi_data_monitor
+
+#endif  // CORE__RUNNER__CONFIG_LOADER_HPP_

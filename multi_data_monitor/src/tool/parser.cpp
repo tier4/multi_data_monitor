@@ -12,9 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "loader.hpp"
-#include "runner/stream_loader.hpp"
+#include "debug/plantuml.hpp"
+#include "runner/config_loader.hpp"
 #include <iostream>
+
+namespace multi_data_monitor
+{
+
+ConfigData load(const std::string & path)
+{
+  const auto diagram = plantuml::Diagram();
+  const auto loader = ConfigLoader();
+  const auto parsers = loader.parsers();
+
+  auto data = loader.partial_construct(path);
+  diagram.write(data, "graphs/step0-partial-construct.plantuml");
+  for (size_t i = 0; i < parsers.size(); ++i)
+  {
+    const auto filename = std::to_string(i + 1) + "-" + parsers[i]->name();
+    data = parsers[i]->execute(data);
+    diagram.write(data, "graphs/step" + filename + ".plantuml");
+  }
+  return data;
+}
+
+}  // namespace multi_data_monitor
 
 int main(int argc, char ** argv)
 {

@@ -12,10 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__WIDGET_HPP_
-#define CORE__WIDGET_HPP_
+#ifndef RVIZ__PANEL_HPP_
+#define RVIZ__PANEL_HPP_
 
-#include "loader.hpp"
 #include <rviz_common/panel.hpp>
 #include <memory>
 #include <string>
@@ -40,8 +39,8 @@ public:
   std::string getPath() const;
 
 private:
-  QLineEdit * path_;
-  QPushButton * button_;
+  QLineEdit * config_path_edit_;
+  QPushButton * config_path_load_;
 };
 
 class MultiDataMonitor : public rviz_common::Panel
@@ -54,17 +53,14 @@ public:
   void load(const rviz_common::Config & config) override;
   void onInitialize() override;
   void mousePressEvent(QMouseEvent * event) override;
-
-public slots:
-  void reload();
+  void updateMultiDataMonitor();
 
 private:
-  rclcpp::Node::SharedPtr rviz_node_;
-  std::unique_ptr<Loader> loader_;
+  // std::unique_ptr<Loader> loader_;
   QWidget * monitor_;
   SettingWidget * setting_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__WIDGET_HPP_
+#endif  // RVIZ__PANEL_HPP_

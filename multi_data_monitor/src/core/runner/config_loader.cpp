@@ -12,45 +12,45 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef TOOL__LOADER_HPP_
-#define TOOL__LOADER_HPP_
-
-#include "debug/plantuml.hpp"
+#include "config_loader.hpp"
 #include "parser/check_system_class.hpp"
 #include "parser/construction.hpp"
 #include "parser/file.hpp"
 #include "parser/resolve_relation.hpp"
 #include "parser/subscription.hpp"
-#include <memory>
-#include <string>
-#include <vector>
 
 namespace multi_data_monitor
 {
 
-ConfigData load(const std::string & path)
+ConfigLoader::ConfigLoader()
 {
-  auto diagram = plantuml::Diagram();
+  parsers_.push_back(std::make_shared<MergeSubscription>());
+  parsers_.push_back(std::make_shared<CheckSystemClass>());
+  parsers_.push_back(std::make_shared<ConnectRelation>());
+  parsers_.push_back(std::make_shared<ResolveRelation>());
+  parsers_.push_back(std::make_shared<ReleaseRelation>());
+}
+
+ConfigData ConfigLoader::execute(const std::string & path) const
+{
+  return partial_execute(partial_construct(path));
+}
+
+ConfigData ConfigLoader::partial_construct(const std::string & path) const
+{
   auto file = ConfigFileLoader().execute(path);
   auto data = ParseBasicObject().execute(file);
-
-  std::vector<std::shared_ptr<ConfigParserInterface>> parsers;
-  parsers.push_back(std::make_shared<MergeSubscription>());
-  parsers.push_back(std::make_shared<CheckSystemClass>());
-  parsers.push_back(std::make_shared<ConnectRelation>());
-  parsers.push_back(std::make_shared<ResolveRelation>());
-  parsers.push_back(std::make_shared<ReleaseRelation>());
-
-  diagram.write(data, "graphs/step0-parse-basic-object.plantuml");
-  for (size_t i = 0; i < parsers.size(); ++i)
-  {
-    const auto filename = std::to_string(i + 1) + "-" + parsers[i]->name();
-    data = parsers[i]->execute(data);
-    diagram.write(data, "graphs/step" + filename + ".plantuml");
-  }
   return data;
 }
 
-}  // namespace multi_data_monitor
+ConfigData ConfigLoader::partial_execute(const ConfigData & data) const
+{
+  ConfigData result = data;
+  for (const auto & parser : parsers_)
+  {
+    result = parser->execute(result);
+  }
+  return result;
+}
 
-#endif  // TOOL__LOADER_HPP_
+}  // namespace multi_data_monitor

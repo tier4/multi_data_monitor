@@ -21,14 +21,15 @@
 namespace multi_data_monitor
 {
 
-class StreamRunner
+class StreamRunner final
 {
 public:
   explicit StreamRunner(const StreamList & configs);
   void start(ros::Node node);
+  void shutdown();
 
 private:
-  void on_timer();
+  void on_timer(ros::Node node);
   StreamLoader loader_;
   ros::Node node_;
   ros::Timer timer_;

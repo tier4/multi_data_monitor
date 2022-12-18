@@ -24,8 +24,8 @@ namespace multi_data_monitor::plantuml
 class Diagram
 {
 public:
-  std::string convert(const ConfigData & data);
-  void write(const ConfigData & data, const std::string & path);
+  std::string convert(const ConfigData & data) const;
+  void write(const ConfigData & data, const std::string & path) const;
 };
 
 }  // namespace multi_data_monitor::plantuml

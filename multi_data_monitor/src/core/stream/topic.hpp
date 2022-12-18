@@ -36,6 +36,7 @@ public:
   void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
   void update(ros::Node node);
+  void shutdown();
 
 private:
   void create_subscription(ros::Node node);

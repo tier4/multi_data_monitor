@@ -25,6 +25,7 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/common/yaml.cpp"
   "src/core/config/types.cpp"
   "src/core/debug/plantuml.cpp"
+  "src/core/runner/config_loader.cpp"
   "src/core/runner/stream_loader.cpp"
   "src/core/runner/stream_runner.cpp"
   "src/core/parser/check_system_class.cpp"
@@ -39,6 +40,11 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/stream/topic.cpp"
 )
 target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)
+
+ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
+  "src/rviz/panel.hpp"
+  "src/rviz/panel.cpp"
+)
 
 # ament_auto_add_library(${PROJECT_NAME}_plugin SHARED)
 # target_link_libraries(${PROJECT_NAME}_plugin ${QT_LIBRARIES})

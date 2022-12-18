@@ -99,6 +99,11 @@ void TopicStream::update(ros::Node node)
   }
 }
 
+void TopicStream::shutdown()
+{
+  sub_.reset();
+}
+
 void TopicStream::create_subscription(ros::Node node)
 {
   auto type = type_;

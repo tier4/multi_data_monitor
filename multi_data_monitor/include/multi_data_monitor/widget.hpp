@@ -12,22 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__ACTION_HPP_
-#define MULTI_DATA_MONITOR__ACTION_HPP_
+#ifndef MULTI_DATA_MONITOR__WIDGET_HPP_
+#define MULTI_DATA_MONITOR__WIDGET_HPP_
 
-#include <multi_data_monitor/values.hpp>
+#include <multi_data_monitor/packet.hpp>
+#include <vector>
+
+class QWidget;
 
 namespace multi_data_monitor
 {
 
-class Action
+struct BuildResult
+{
+  QWidget * main;
+};
+
+class Widget
 {
 public:
-  virtual ~Action() = default;
-  virtual void Initialize(const YAML::Node & yaml) = 0;
-  virtual MonitorValues Apply(const MonitorValues & input) = 0;
+  virtual ~Widget() = default;
+  virtual void message(const Packet & packet) = 0;
+  virtual SetupResult setup(YAML::Node yaml, const std::vector<YAML::Node> & items) = 0;
+  virtual BuildResult build(const std::vector<QWidget *> & items) = 0;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__ACTION_HPP_
+#endif  // MULTI_DATA_MONITOR__WIDGET_HPP_

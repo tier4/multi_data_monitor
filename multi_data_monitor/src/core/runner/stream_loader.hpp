@@ -27,7 +27,7 @@
 namespace multi_data_monitor
 {
 
-class StreamLoader
+class StreamLoader final
 {
 public:
   explicit StreamLoader(const StreamList & configs);
