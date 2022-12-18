@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__RUNNER__CONFIG_LOADER_HPP_
-#define CORE__RUNNER__CONFIG_LOADER_HPP_
+#ifndef CORE__LOADER__CONFIG_LOADER_HPP_
+#define CORE__LOADER__CONFIG_LOADER_HPP_
 
 #include "config/types.hpp"
 #include <memory>
@@ -38,4 +38,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__RUNNER__CONFIG_LOADER_HPP_
+#endif  // CORE__LOADER__CONFIG_LOADER_HPP_

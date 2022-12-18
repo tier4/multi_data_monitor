@@ -12,41 +12,33 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__STREAM__BASIC_HPP_
-#define CORE__STREAM__BASIC_HPP_
-
-#include <multi_data_monitor/packet.hpp>
-#include <memory>
-#include <vector>
+#include "stream_runner.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <utility>
 
 namespace multi_data_monitor
 {
 
-struct BasicStream;
-struct InOutStream;
-using Stream = std::shared_ptr<BasicStream>;
-
-struct BasicStream
+StreamRunner::StreamRunner(const StreamLoader::SharedPtr loader)
 {
-public:
-  virtual ~BasicStream() = default;
-  virtual void setting(YAML::Node yaml) = 0;
-  virtual void connect(Stream stream);
-  virtual void message(const Packet & packet) = 0;
-};
+  loader_ = std::move(loader);
+}
 
-struct InOutStream : public BasicStream
+void StreamRunner::start(ros::Node node)
 {
-public:
-  void connect(Stream stream) override;
+  const auto rate = rclcpp::Rate(1.0);
+  timer_ = rclcpp::create_timer(node, node->get_clock(), rate.period(), [this, node]() { on_timer(node); });
+}
 
-protected:
-  void outputs(const Packet & packet);
+void StreamRunner::shutdown()
+{
+  timer_->cancel();
+  for (auto & topic : loader_->topics()) topic->shutdown();
+}
 
-private:
-  std::vector<Stream> outputs_;
-};
+void StreamRunner::on_timer(ros::Node node)
+{
+  for (auto & topic : loader_->topics()) topic->update(node);
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // CORE__STREAM__BASIC_HPP_

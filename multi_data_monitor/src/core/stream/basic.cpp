@@ -18,7 +18,7 @@
 namespace multi_data_monitor
 {
 
-void InputStream::connect([[maybe_unused]] Stream stream)
+void BasicStream::connect([[maybe_unused]] Stream stream)
 {
   throw ConfigError("connect to input stream");
 }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "debug/plantuml.hpp"
-#include "runner/config_loader.hpp"
+#include "loader/config_loader.hpp"
 #include <iostream>
 
 namespace multi_data_monitor

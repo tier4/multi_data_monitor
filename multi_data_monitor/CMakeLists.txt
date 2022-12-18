@@ -25,14 +25,14 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/common/yaml.cpp"
   "src/core/config/types.cpp"
   "src/core/debug/plantuml.cpp"
-  "src/core/runner/config_loader.cpp"
-  "src/core/runner/stream_loader.cpp"
-  "src/core/runner/stream_runner.cpp"
+  "src/core/loader/config_loader.cpp"
+  "src/core/loader/stream_loader.cpp"
   "src/core/parser/check_system_class.cpp"
   "src/core/parser/construction.cpp"
   "src/core/parser/file.cpp"
   "src/core/parser/resolve_relation.cpp"
   "src/core/parser/subscription.cpp"
+  "src/core/runner/stream_runner.cpp"
   "src/core/stream/basic.cpp"
   "src/core/stream/field.cpp"
   "src/core/stream/panel.cpp"
@@ -46,8 +46,8 @@ ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
   "src/core/rviz/manager.cpp"
   "src/core/rviz/panel.hpp"
   "src/core/rviz/panel.cpp"
-  "src/core/runner/widget_loader.hpp"
-  "src/core/runner/widget_loader.cpp"
+  "src/core/loader/widget_loader.hpp"
+  "src/core/loader/widget_loader.cpp"
 )
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
 

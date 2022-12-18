@@ -24,27 +24,21 @@
 namespace multi_data_monitor
 {
 
-WidgetLoader::WidgetLoader(const WidgetList & configs) : plugins_(plugin::name::package, plugin::name::widget)
+WidgetLoader::WidgetLoader() : plugins_(plugin::name::package, plugin::name::widget)
 {
+}
+
+WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
+{
+  std::unordered_map<WidgetLink, Widget> mapping;
+  /*
   for (const auto & config : configs)
   {
     const auto widget = widgets_.emplace_back(create_widget(config));
     widget->setup(config->yaml, std::vector<YAML::Node>());
   }
-}
-
-void connect()
-{
-  /*
-  std::unordered_map<WidgetLink, Widget> mapping;
-  for (const auto & [config, widget] : mapping)
-  {
-    if (config->input)
-    {
-      mapping[config->input]->connect(widget);
-    }
-  }
   */
+  return mapping;
 }
 
 Widget WidgetLoader::create_widget(const WidgetLink config)

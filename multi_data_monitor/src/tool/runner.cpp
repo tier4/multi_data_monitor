@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "runner/config_loader.hpp"
-#include "runner/stream_loader.hpp"
+#include "loader/config_loader.hpp"
+#include "loader/stream_loader.hpp"
+#include "loader/widget_loader.hpp"
 #include "runner/stream_runner.hpp"
-#include "runner/widget_loader.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
 
@@ -24,16 +24,17 @@ namespace multi_data_monitor
 
 struct Loaders
 {
-  StreamLoader::SharedPtr stream;
-  WidgetLoader::SharedPtr widget;
+  StreamLoader stream;
+  WidgetLoader widget;
 };
 
-Loaders create_loaders(const std::string & path)
+std::shared_ptr<Loaders> create_loaders(const std::string & path)
 {
   const auto config = ConfigLoader().execute(path);
-  const auto stream = std::make_shared<StreamLoader>(config.streams);
-  const auto widget = std::make_shared<WidgetLoader>(config.widgets);
-  return Loaders{stream, widget};
+  const auto loader = std::make_shared<Loaders>();
+  loader->stream.create(config.streams);
+  loader->widget.create(config.widgets);
+  return loader;
 }
 
 }  // namespace multi_data_monitor
@@ -49,7 +50,8 @@ int main(int argc, char ** argv)
   const auto scheme = std::string(argv[1]);
   const auto config = std::string(argv[2]);
   auto loader = multi_data_monitor::create_loaders(scheme + "://" + config);
-  return 0;
+
+  /*
   auto runner = std::make_shared<multi_data_monitor::StreamRunner>(loader.stream);
 
   rclcpp::init(argc, argv);
@@ -60,4 +62,5 @@ int main(int argc, char ** argv)
   executor.spin();
   executor.remove_node(node);
   rclcpp::shutdown();
+  */
 }

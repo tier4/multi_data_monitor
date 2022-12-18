@@ -23,7 +23,11 @@
 namespace multi_data_monitor
 {
 
-StreamLoader::StreamLoader(const StreamList & configs)
+StreamLoader::StreamLoader()
+{
+}
+
+StreamLoader::Mapping StreamLoader::create(const StreamList & configs)
 {
   std::unordered_map<StreamLink, Stream> mapping;
   for (const auto & config : configs)
@@ -32,7 +36,6 @@ StreamLoader::StreamLoader(const StreamList & configs)
     stream->setting(config->yaml);
     mapping[config] = streams_.emplace_back(stream);
   }
-
   for (const auto & [config, stream] : mapping)
   {
     if (config->input)
@@ -40,6 +43,7 @@ StreamLoader::StreamLoader(const StreamList & configs)
       mapping[config->input]->connect(stream);
     }
   }
+  return mapping;
 }
 
 Stream StreamLoader::create_stream(const StreamLink config)

@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include "manager.hpp"
-#include "runner/config_loader.hpp"
+#include "loader/config_loader.hpp"
+#include "loader/widget_loader.hpp"
 #include "runner/stream_runner.hpp"
-#include "runner/widget_loader.hpp"
 #include <QLabel>
 
 // DEBUG
@@ -32,36 +32,46 @@ public:
   void start(ros::Node node);
 
 private:
-  StreamRunner::SharedPtr stream_runner_;
-  StreamLoader::SharedPtr stream_loader_;
-  WidgetLoader::SharedPtr widget_loader_;
+  // StreamRunner::SharedPtr stream_runner_;
+  // StreamLoader::SharedPtr stream_loader_;
+  // WidgetLoader::SharedPtr widget_loader_;
 };
 
 RvizManager::Impl::~Impl()
 {
   // Stop the runner first
+  /**
   if (stream_runner_)
   {
     stream_runner_->shutdown();
   }
+  */
 
   // Releases the object after the runner stops
+  /*
   stream_runner_.reset();
   stream_loader_.reset();
   widget_loader_.reset();
+  */
 }
 
 void RvizManager::Impl::setup(const std::string & path)
 {
+  (void)path;
+  /*
   const auto data = ConfigLoader().execute(path);
   stream_loader_ = std::make_shared<StreamLoader>(data.streams);
   widget_loader_ = std::make_shared<WidgetLoader>(data.widgets);
+  */
 }
 
 void RvizManager::Impl::start(ros::Node node)
 {
+  (void)node;
+  /*
   stream_runner_ = std::make_shared<StreamRunner>(stream_loader_);
   stream_runner_->start(node);
+  */
 }
 
 QWidget * RvizManager::build(const std::string & path, ros::Node node)

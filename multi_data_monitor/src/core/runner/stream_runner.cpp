@@ -19,11 +19,6 @@
 namespace multi_data_monitor
 {
 
-StreamRunner::StreamRunner(const StreamLoader::SharedPtr loader)
-{
-  loader_ = std::move(loader);
-}
-
 void StreamRunner::start(ros::Node node)
 {
   const auto rate = rclcpp::Rate(1.0);
@@ -33,12 +28,13 @@ void StreamRunner::start(ros::Node node)
 void StreamRunner::shutdown()
 {
   timer_->cancel();
-  for (auto & topic : loader_->topics()) topic->shutdown();
+  // for (auto & topic : loader_->topics()) topic->shutdown();
 }
 
 void StreamRunner::on_timer(ros::Node node)
 {
-  for (auto & topic : loader_->topics()) topic->update(node);
+  (void)node;
+  // for (auto & topic : loader_->topics()) topic->update(node);
 }
 
 }  // namespace multi_data_monitor

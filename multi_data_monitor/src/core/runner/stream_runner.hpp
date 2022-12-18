@@ -16,7 +16,7 @@
 #define CORE__RUNNER__STREAM_RUNNER_HPP_
 
 #include "common/rclcpp.hpp"
-#include "runner/stream_loader.hpp"
+#include "loader/stream_loader.hpp"
 #include <memory>
 
 namespace multi_data_monitor
@@ -26,7 +26,6 @@ class StreamRunner final
 {
 public:
   using SharedPtr = std::shared_ptr<StreamRunner>;
-  explicit StreamRunner(const StreamLoader::SharedPtr loader);
   void start(ros::Node node);
   void shutdown();
 
@@ -34,7 +33,6 @@ private:
   void on_timer(ros::Node node);
   ros::Node node_;
   ros::Timer timer_;
-  StreamLoader::SharedPtr loader_;
 };
 
 }  // namespace multi_data_monitor

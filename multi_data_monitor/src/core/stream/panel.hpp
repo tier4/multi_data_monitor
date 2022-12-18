@@ -20,7 +20,7 @@
 namespace multi_data_monitor
 {
 
-struct PanelStream : public InputStream
+struct PanelStream : public BasicStream
 {
 public:
   void setting(YAML::Node yaml) override;
