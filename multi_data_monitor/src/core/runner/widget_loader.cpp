@@ -26,17 +26,17 @@ namespace multi_data_monitor
 
 WidgetLoader::WidgetLoader(const WidgetList & configs) : plugins_(plugin::name::package, plugin::name::widget)
 {
-  std::unordered_map<WidgetLink, Widget> mapping;
   for (const auto & config : configs)
   {
-    const auto widget = create_widget(config);
-    /*
+    const auto widget = widgets_.emplace_back(create_widget(config));
     widget->setup(config->yaml, std::vector<YAML::Node>());
-    mapping[config] = widgets_.emplace_back(widget);
-    */
   }
+}
 
+void connect()
+{
   /*
+  std::unordered_map<WidgetLink, Widget> mapping;
   for (const auto & [config, widget] : mapping)
   {
     if (config->input)
@@ -49,6 +49,7 @@ WidgetLoader::WidgetLoader(const WidgetList & configs) : plugins_(plugin::name::
 
 Widget WidgetLoader::create_widget(const WidgetLink config)
 {
+  // Search in default plugins if namespace is omitted.
   std::string klass = config->klass;
   if (klass.find("::") == std::string::npos)
   {

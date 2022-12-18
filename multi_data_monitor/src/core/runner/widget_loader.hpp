@@ -32,8 +32,10 @@ public:
 
 private:
   Widget create_widget(const WidgetLink config);
-  std::vector<Widget> widgets_;
+
+  // The plugin loader must be written first for release order.
   pluginlib::ClassLoader<BasicWidget> plugins_;
+  std::vector<Widget> widgets_;
 };
 
 }  // namespace multi_data_monitor
