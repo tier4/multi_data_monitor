@@ -6,7 +6,7 @@ stylesheets:
 widgets:
   - class: Matrix
     label: root
-    items: [w1, w2, w3, w4, { class: Matrix, items: [w5, w7, root] }]
+    items: [w1, w2, w3, w4, w7, { class: Matrix, items: [w5, w7] }]
   - class: Simple
     label: w1
     input: { class: subscription, topic: /test/header, field: stamp.sec }

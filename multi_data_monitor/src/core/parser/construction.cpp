@@ -26,6 +26,10 @@ using RootFunc = void (ParseBasicObject::*)(YAML::Node);
 void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self, RootFunc func)
 {
   const auto nodes = yaml::take_optional(yaml, name);
+  if (!nodes.IsDefined())
+  {
+    return;
+  }
   if (!nodes.IsSequence())
   {
     throw ConfigError("config section '" + name + "' is not a sequence");

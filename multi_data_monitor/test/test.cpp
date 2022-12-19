@@ -12,16 +12,72 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "common/exceptions.hpp"
+#include "loader/config_loader.hpp"
 #include <gtest/gtest.h>
 
-TEST(GraphStructure, Circular)
+std::string resource(const std::string & path)
 {
-  EXPECT_EQ(1, 1);
+  static const std::string scheme = "file://";
+  return scheme + TEST_YAML + path;
 }
+
+void load_config(const std::string & path)
+{
+  multi_data_monitor::ConfigLoader().execute(resource(path));
+}
+
+TEST(GraphStructure, StreamLabelCirculation)
+{
+  EXPECT_THROW(load_config("stream-label-circulation.yaml"), multi_data_monitor::LabelCirculation);
+}
+
+TEST(GraphStructure, StreamGraphCirculation)
+{
+  EXPECT_THROW(load_config("stream-graph-circulation.yaml"), multi_data_monitor::GraphCirculation);
+}
+
+TEST(GraphStructure, WidgetLabelCirculation)
+{
+  EXPECT_THROW(load_config("widget-label-circulation.yaml"), multi_data_monitor::LabelCirculation);
+}
+
+TEST(GraphStructure, WidgetGraphCirculation)
+{
+  EXPECT_THROW(load_config("widget-graph-circulation.yaml"), multi_data_monitor::GraphCirculation);
+}
+
+TEST(GraphStructure, WidgetGraphItNotTree)
+{
+  EXPECT_THROW(load_config("widget-graph-is-not-tree.yaml"), multi_data_monitor::GraphIsNotTree);
+}
+
+class RclcppEnvironment : public testing::Environment
+{
+public:
+  RclcppEnvironment(int argc, char ** argv)
+  {
+    argc = argc;
+    argv = argv;
+  }
+  void SetUp() override
+  {
+    // rclcpp::init();
+  }
+  void TearDown() override
+  {
+    // rclcpp::shutdown();
+  }
+
+private:
+  int argc;
+  char ** argv;
+};
 
 int main(int argc, char ** argv)
 {
   testing::InitGoogleTest(&argc, argv);
-  bool result = RUN_ALL_TESTS();
+  // testing::AddGlobalTestEnvironment();
+  const auto result = RUN_ALL_TESTS();
   return result;
 }

@@ -73,11 +73,11 @@ pluginlib_export_plugin_description_file(multi_data_monitor plugins/builtins.xml
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
-endif()
-
-if(BUILD_TESTING)
   find_package(ament_cmake_gtest REQUIRED)
   ament_add_gtest(${PROJECT_NAME}_gtest test/test.cpp)
+  target_compile_definitions(${PROJECT_NAME}_gtest PRIVATE TEST_YAML="${CMAKE_CURRENT_SOURCE_DIR}/test/yaml/")
+  target_include_directories(${PROJECT_NAME}_gtest PRIVATE src/core)
+  target_link_libraries(${PROJECT_NAME}_gtest ${PROJECT_NAME}_core)
 endif()
 
 install(PROGRAMS

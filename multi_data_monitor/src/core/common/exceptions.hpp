@@ -45,6 +45,21 @@ struct ConfigError : public std::runtime_error
   }
 };
 
+struct LabelCirculation : public ConfigError
+{
+  using ConfigError::ConfigError;
+};
+
+struct GraphCirculation : public ConfigError
+{
+  using ConfigError::ConfigError;
+};
+
+struct GraphIsNotTree : public ConfigError
+{
+  using ConfigError::ConfigError;
+};
+
 }  // namespace multi_data_monitor
 
 #endif  // CORE__COMMON__EXCEPTIONS_HPP_

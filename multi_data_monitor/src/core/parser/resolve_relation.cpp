@@ -28,6 +28,79 @@
 namespace multi_data_monitor
 {
 
+template <class T>
+using Graph = std::unordered_map<T, std::vector<T>>;
+
+Graph<StreamLink> create_stream_graph(const StreamList & streams)
+{
+  Graph<StreamLink> graph;
+  for (const auto & stream : streams)
+  {
+    graph[stream] = stream->input ? StreamList{stream->input} : StreamList{};
+  }
+  return graph;
+}
+
+Graph<WidgetLink> create_widget_graph(const WidgetList & widgets)
+{
+  Graph<WidgetLink> graph;
+  for (const auto & widget : widgets)
+  {
+    const auto item_link = [](const WidgetItem & item) { return item.link; };
+    graph[widget] = util::map<WidgetItem, WidgetLink>(widget->items, item_link);
+  }
+  return graph;
+}
+
+template <class T>
+void check_graph_structure(const Graph<T> & graph, bool tree)
+{
+  std::unordered_map<T, int> degrees;
+  std::vector<T> nodes;
+  for (const auto & [node, links] : graph)
+  {
+    nodes.push_back(node);
+    for (const auto & link : links)
+    {
+      ++degrees[link];
+    }
+  }
+
+  // Check tree structure and prepare for topological sorting.
+  std::vector<T> topological;
+  for (const auto & node : nodes)
+  {
+    if (tree && 2 <= degrees[node])
+    {
+      throw GraphIsNotTree("graph is not tree");
+    }
+    if (degrees[node] == 0)
+    {
+      topological.push_back(node);
+    }
+  }
+
+  // Check loop structure by topological sorting.
+  size_t count = 0;
+  while (!topological.empty())
+  {
+    const auto node = topological.back();
+    topological.pop_back();
+    ++count;
+    for (const auto & link : graph.at(node))
+    {
+      if (--degrees[link] == 0)
+      {
+        topological.push_back(link);
+      }
+    }
+  }
+  if (nodes.size() != count)
+  {
+    throw GraphCirculation("graph loop is detected");
+  }
+}
+
 struct ConfigLinks
 {
   std::vector<std::reference_wrapper<StreamLink>> to_streams;
@@ -103,7 +176,7 @@ NodeLink resolve_node(const NodeLink & node, std::unordered_set<NodeLink> & visi
     {
       if (!node->label.empty()) labels.push_back(node->label);
     }
-    throw ConfigError("circular link is detected: " + util::join(labels));
+    throw LabelCirculation("label loop is detected: " + util::join(labels));
   }
   visit.insert(node);
   node->refer = resolve_node(node->refer, visit);
@@ -162,19 +235,20 @@ ConfigData ReleaseRelation::execute(const ConfigData & input)
   for (const auto & link : links.to_streams) stream_used.insert(link.get());
   for (const auto & link : links.to_widgets) widget_used.insert(link.get());
 
-  // TODO(Takagi, Isamu):
-  // - check tree widget structure
-  // - check cycle widget items + tree
-  // - check cycle widget refer
-  // - check cycle widget input
-  // - check cycle stream refer
-  // - check cycle stream input
-
   ConfigData output = input;
   output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::subscription);
   output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::relay);
   output.widgets = filter_unused<WidgetLink>(output.widgets, widget_used, builtin::relay);
   return output;
+}
+
+ConfigData ValidateRelation::execute(const ConfigData & input)
+{
+  const auto stream_graph = create_stream_graph(input.streams);
+  const auto widget_graph = create_widget_graph(input.widgets);
+  check_graph_structure(stream_graph, false);
+  check_graph_structure(widget_graph, true);
+  return input;
 }
 
 }  // namespace multi_data_monitor

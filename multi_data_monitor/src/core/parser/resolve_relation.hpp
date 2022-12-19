@@ -42,6 +42,13 @@ public:
   ConfigData execute(const ConfigData & input) override;
 };
 
+class ValidateRelation : public ConfigParserInterface
+{
+public:
+  std::string name() { return "validate-relation"; }
+  ConfigData execute(const ConfigData & input) override;
+};
+
 }  // namespace multi_data_monitor
 
 #endif  // CORE__PARSER__RESOLVE_RELATION_HPP_

@@ -45,6 +45,17 @@ std::vector<T> filter(const std::vector<T> & input, const std::function<bool(con
   return result;
 }
 
+template <class T, class R>
+std::vector<R> map(const std::vector<T> & input, const std::function<R(const T &)> function)
+{
+  std::vector<R> result;
+  for (const auto & data : input)
+  {
+    result.push_back(function(data));
+  }
+  return result;
+}
+
 }  // namespace multi_data_monitor::util
 
 #endif  // CORE__COMMON__UTIL_HPP_
