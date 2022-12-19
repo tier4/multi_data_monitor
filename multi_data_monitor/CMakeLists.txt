@@ -75,6 +75,11 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+if(BUILD_TESTING)
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_gtest test/test.cpp)
+endif()
+
 install(PROGRAMS
   scripts/tutorial
   DESTINATION lib/${PROJECT_NAME}

@@ -5,7 +5,8 @@ stylesheets:
 
 widgets:
   - class: Matrix
-    items: [w1, w2, w3, w4, w5, { class: Matrix }]
+    label: root
+    items: [w1, w2, w3, w4, { class: Matrix, items: [w5, w7, root] }]
   - class: Simple
     label: w1
     input: { class: subscription, topic: /test/header, field: stamp.sec }
@@ -23,6 +24,9 @@ widgets:
     refer: w6
   - class: multi_data_monitor::Simple
     label: w6
+    input: temp1
+  - class: multi_data_monitor::Simple
+    label: w7
     input: temp1
 
 streams:

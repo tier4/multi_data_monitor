@@ -162,6 +162,14 @@ ConfigData ReleaseRelation::execute(const ConfigData & input)
   for (const auto & link : links.to_streams) stream_used.insert(link.get());
   for (const auto & link : links.to_widgets) widget_used.insert(link.get());
 
+  // TODO(Takagi, Isamu):
+  // - check tree widget structure
+  // - check cycle widget items + tree
+  // - check cycle widget refer
+  // - check cycle widget input
+  // - check cycle stream refer
+  // - check cycle stream input
+
   ConfigData output = input;
   output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::subscription);
   output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::relay);

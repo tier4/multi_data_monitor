@@ -16,6 +16,7 @@
 #define CORE__RVIZ__MANAGER_HPP_
 
 #include "common/rclcpp.hpp"
+#include "runner/widget_runner.hpp"
 #include <memory>
 #include <string>
 
@@ -28,12 +29,9 @@ class RvizManager final
 {
 public:
   QWidget * build(const std::string & path, ros::Node node);
-  RvizManager();
-  ~RvizManager();
 
 private:
-  class Impl;
-  std::unique_ptr<Impl> impl;
+  WidgetRunner runner_;
 };
 
 }  // namespace multi_data_monitor

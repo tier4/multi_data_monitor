@@ -32,8 +32,12 @@ public:
   ConfigData partial_execute(const ConfigData & data) const;
   const auto & parsers() const { return parsers_; }
 
+  using HookFunction = std::function<void(int, const std::string &, const ConfigData &)>;
+  void hook(HookFunction function);
+
 private:
   std::vector<std::shared_ptr<ConfigParserInterface>> parsers_;
+  HookFunction function_;
 };
 
 }  // namespace multi_data_monitor

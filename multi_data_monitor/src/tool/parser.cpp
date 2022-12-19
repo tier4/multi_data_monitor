@@ -14,29 +14,22 @@
 
 #include "debug/plantuml.hpp"
 #include "loader/config_loader.hpp"
+#include "loader/stream_loader.hpp"
 #include <iostream>
-
-namespace multi_data_monitor
-{
+using namespace multi_data_monitor;  // NOLINT
 
 ConfigData load(const std::string & path)
 {
-  const auto diagram = plantuml::Diagram();
-  const auto loader = ConfigLoader();
-  const auto parsers = loader.parsers();
-
-  auto data = loader.partial_construct(path);
-  diagram.write(data, "graphs/step0-partial-construct.plantuml");
-  for (size_t i = 0; i < parsers.size(); ++i)
+  const auto func = [](int step, const std::string & name, const ConfigData & data)
   {
-    const auto filename = std::to_string(i + 1) + "-" + parsers[i]->name();
-    data = parsers[i]->execute(data);
+    const auto diagram = plantuml::Diagram();
+    const auto filename = std::to_string(step) + "-" + name;
     diagram.write(data, "graphs/step" + filename + ".plantuml");
-  }
-  return data;
+  };
+  ConfigLoader loader;
+  loader.hook(func);
+  return loader.execute(path);
 }
-
-}  // namespace multi_data_monitor
 
 int main(int argc, char ** argv)
 {
@@ -46,12 +39,11 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  const auto scheme = std::string(argv[1]);
-  const auto config = std::string(argv[2]);
+  multi_data_monitor::StreamLoader stream_loader;
   {
-    const auto data = multi_data_monitor::load(scheme + "://" + config);
-    std::cout << multi_data_monitor::CommonData::created << std::endl;
-    std::cout << multi_data_monitor::CommonData::removed << std::endl;
+    const auto scheme = std::string(argv[1]);
+    const auto config = std::string(argv[2]);
+    const auto data = load(scheme + "://" + config);
   }
   std::cout << multi_data_monitor::CommonData::created << std::endl;
   std::cout << multi_data_monitor::CommonData::removed << std::endl;

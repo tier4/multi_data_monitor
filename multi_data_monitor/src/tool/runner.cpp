@@ -26,6 +26,7 @@ int main(int argc, char ** argv)
   }
 
   multi_data_monitor::WidgetRunner runner;
+  runner.shutdown();
   {
     const auto scheme = std::string(argv[1]);
     const auto config = std::string(argv[2]);

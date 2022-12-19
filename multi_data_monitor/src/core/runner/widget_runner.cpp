@@ -36,6 +36,8 @@ void WidgetRunner::shutdown()
   stream_runner_.shutdown();
   widget_loader_.release();
 
+  std::cout << "config created: " << CommonData::created << std::endl;
+  std::cout << "config created: " << CommonData::removed << std::endl;
   std::cout << "stream created: " << BasicStream::created << std::endl;
   std::cout << "stream removed: " << BasicStream::removed << std::endl;
   std::cout << "widget created: " << BasicWidget::created << std::endl;

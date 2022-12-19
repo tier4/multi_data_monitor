@@ -31,26 +31,28 @@ ConfigLoader::ConfigLoader()
   parsers_.push_back(std::make_shared<ReleaseRelation>());
 }
 
-ConfigData ConfigLoader::execute(const std::string & path) const
+void ConfigLoader::hook(HookFunction function)
 {
-  return partial_execute(partial_construct(path));
+  function_ = function;
 }
 
-ConfigData ConfigLoader::partial_construct(const std::string & path) const
+ConfigData ConfigLoader::execute(const std::string & path) const
 {
   auto file = ConfigFileLoader().execute(path);
   auto data = ParseBasicObject().execute(file);
-  return data;
-}
-
-ConfigData ConfigLoader::partial_execute(const ConfigData & data) const
-{
-  ConfigData result = data;
-  for (const auto & parser : parsers_)
+  if (function_)
   {
-    result = parser->execute(result);
+    function_(0, "construct-node", data);
   }
-  return result;
+  for (size_t i = 0; i < parsers_.size(); ++i)
+  {
+    data = parsers_[i]->execute(data);
+    if (function_)
+    {
+      function_(i + 1, parsers_[i]->name(), data);
+    }
+  }
+  return data;
 }
 
 }  // namespace multi_data_monitor

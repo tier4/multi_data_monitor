@@ -12,27 +12,16 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "manager.hpp"
-#include "loader/config_loader.hpp"
-#include "loader/widget_loader.hpp"
-#include "runner/rclcpp_runner.hpp"
-#include <QLabel>
+#include <gtest/gtest.h>
 
-// DEBUG
-#include <iostream>
-
-namespace multi_data_monitor
+TEST(GraphStructure, Circular)
 {
-
-QWidget * RvizManager::build(const std::string & path, ros::Node node)
-{
-  (void)path;
-  (void)node;
-
-  runner_.shutdown();
-  // runner_.create(path);
-  // runner_.start(node);
-  return new QLabel("TEST");
+  EXPECT_EQ(1, 1);
 }
 
-}  // namespace multi_data_monitor
+int main(int argc, char ** argv)
+{
+  testing::InitGoogleTest(&argc, argv);
+  bool result = RUN_ALL_TESTS();
+  return result;
+}
