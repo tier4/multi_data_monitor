@@ -24,14 +24,16 @@
 namespace multi_data_monitor
 {
 
+RvizManager::~RvizManager()
+{
+  runner_.shutdown();
+}
+
 QWidget * RvizManager::build(const std::string & path, ros::Node node)
 {
-  (void)path;
-  (void)node;
-
   runner_.shutdown();
-  // runner_.create(path);
-  // runner_.start(node);
+  runner_.create(ConfigLoader::Execute(path));
+  runner_.start(node);
   return new QLabel("TEST");
 }
 

@@ -26,9 +26,7 @@ ConfigData load(const std::string & path)
     const auto filename = std::to_string(step) + "-" + name;
     diagram.write(data, "graphs/step" + filename + ".plantuml");
   };
-  ConfigLoader loader;
-  loader.hook(func);
-  return loader.execute(path);
+  return ConfigLoader::Execute(path, func);
 }
 
 int main(int argc, char ** argv)
@@ -39,12 +37,12 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  multi_data_monitor::StreamLoader stream_loader;
+  StreamLoader stream_loader;
   {
     const auto scheme = std::string(argv[1]);
     const auto config = std::string(argv[2]);
     const auto data = load(scheme + "://" + config);
   }
-  std::cout << multi_data_monitor::CommonData::created << std::endl;
-  std::cout << multi_data_monitor::CommonData::removed << std::endl;
+  std::cout << CommonData::created << std::endl;
+  std::cout << CommonData::removed << std::endl;
 }

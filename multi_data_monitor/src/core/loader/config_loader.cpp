@@ -22,6 +22,18 @@
 namespace multi_data_monitor
 {
 
+ConfigData ConfigLoader::Execute(const std::string & path)
+{
+  return ConfigLoader().execute(path);
+}
+
+ConfigData ConfigLoader::Execute(const std::string & path, HookFunction function)
+{
+  ConfigLoader loader = ConfigLoader();
+  loader.hook(function);
+  return loader.execute(path);
+}
+
 ConfigLoader::ConfigLoader()
 {
   parsers_.push_back(std::make_shared<MergeSubscription>());

@@ -16,6 +16,7 @@
 #include "runner/widget_runner.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <iostream>
+using namespace multi_data_monitor;  // NOLINT
 
 int main(int argc, char ** argv)
 {
@@ -25,11 +26,11 @@ int main(int argc, char ** argv)
     return 1;
   }
 
-  multi_data_monitor::WidgetRunner runner;
+  WidgetRunner runner;
   {
     const auto scheme = std::string(argv[1]);
     const auto config = std::string(argv[2]);
-    runner.create(multi_data_monitor::ConfigLoader().execute(scheme + "://" + config));
+    runner.create(ConfigLoader::Execute(scheme + "://" + config));
   }
 
   rclcpp::init(argc, argv);

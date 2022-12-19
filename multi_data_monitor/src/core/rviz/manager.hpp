@@ -28,6 +28,7 @@ namespace multi_data_monitor
 class RvizManager final
 {
 public:
+  ~RvizManager();
   QWidget * build(const std::string & path, ros::Node node);
 
 private:

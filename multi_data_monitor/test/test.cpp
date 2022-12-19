@@ -24,7 +24,7 @@ std::string resource(const std::string & path)
 
 void load_config(const std::string & path)
 {
-  multi_data_monitor::ConfigLoader().execute(resource(path));
+  multi_data_monitor::ConfigLoader::Execute(resource(path));
 }
 
 TEST(GraphStructure, StreamLabelCirculation)
