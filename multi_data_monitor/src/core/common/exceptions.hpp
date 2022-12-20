@@ -26,7 +26,7 @@ struct LogicError : public std::logic_error
   using std::logic_error::logic_error;
 };
 
-struct FilePathError : public std::runtime_error
+struct RuntimeError : public std::runtime_error
 {
   using std::runtime_error::runtime_error;
 };
@@ -43,6 +43,11 @@ struct ConfigError : public std::runtime_error
   {
     return ConfigError(scope + " label '" + label + "' is not found");
   }
+};
+
+struct FilePathError : public ConfigError
+{
+  using ConfigError::ConfigError;
 };
 
 struct LabelCirculation : public ConfigError

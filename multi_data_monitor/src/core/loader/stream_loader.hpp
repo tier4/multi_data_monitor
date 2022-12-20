@@ -36,6 +36,7 @@ public:
   Mapping create(const StreamList & configs);
   void release();
   const auto & topics() { return topics_; }
+  const auto & panels() { return panels_; }
 
 private:
   Stream create_stream(const StreamLink config);

@@ -27,7 +27,7 @@ ConfigFile ConfigFileLoader::execute(const std::string & input)
   const auto path = std::filesystem::path(path::resolve(input));
   if (!std::filesystem::exists(path))
   {
-    throw FilePathError("file not found '" + path.string() + "'");
+    throw FilePathError("config file not found '" + path.string() + "'");
   }
 
   // TODO(Takagi, Isamu): handle yaml error

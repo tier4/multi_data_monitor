@@ -24,48 +24,29 @@ class Simple : public BasicWidget
 public:
   SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) override;
   void message(const Packet & packet) override;
+
+private:
+  QLabel * label_;
+  QString title_;
 };
 
-SetupWidget Simple::setup(YAML::Node yaml, const std::vector<ChildWidget> & children)
+SetupWidget Simple::setup(YAML::Node yaml, const std::vector<ChildWidget> &)
 {
-  (void)yaml;
-  (void)children;
+  title_ = QString::fromStdString(yaml["title"].as<std::string>(""));
+  label_ = new QLabel(title_);
+  label_->setAlignment(Qt::AlignCenter);
+  label_->setToolTip(QString::fromStdString(yaml["notes"].as<std::string>("")));
 
   SetupWidget setup;
-  setup.main = new DebugLabel("simple widget");
+  setup.main = label_;
   return setup;
 }
 
 void Simple::message(const Packet & packet)
 {
-  (void)packet;
+  const auto value = QString::fromStdString(packet.value.as<std::string>());
+  label_->setText(title_ + value);
 }
-
-/*
-class Simple : public BasicWidget
-{
-private:
-  QLabel * label_;
-  QString title_;
-
-public:
-  Instance Create(const YAML::Node params) override
-  {
-    title_ = QString::fromStdString(params["title"].as<std::string>(""));
-    label_ = new QLabel(title_);
-    label_->setAlignment(Qt::AlignCenter);
-    label_->setToolTip(QString::fromStdString(params["notes"].as<std::string>("")));
-    return label_;
-  }
-
-  void Callback(const MonitorValues & input) override
-  {
-    const auto value = QString::fromStdString(input.value.as<std::string>());
-    label_->setText(title_ + value);
-    UpdateProperties(input, label_);
-  }
-};
-*/
 
 }  // namespace multi_data_monitor
 

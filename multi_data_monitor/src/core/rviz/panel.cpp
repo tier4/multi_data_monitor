@@ -39,7 +39,6 @@ SettingWidget::SettingWidget(MultiDataMonitor * panel) : QWidget(panel)
 
   layout->addWidget(config_path_edit_, 0, 0);
   layout->addWidget(config_path_load_, 0, 1);
-  layout->setContentsMargins(0, 0, 0, 0);
   setLayout(layout);
 }
 
@@ -66,6 +65,8 @@ MultiDataMonitor::MultiDataMonitor(QWidget * parent) : rviz_common::Panel(parent
   monitor_->setVisible(false);
   layout->addWidget(monitor_);
   layout->addWidget(setting_);
+  layout->setSpacing(0);
+  layout->setContentsMargins(0, 0, 0, 0);
   setLayout(layout);
 }
 
@@ -87,10 +88,11 @@ void MultiDataMonitor::onInitialize()
   const auto parent = dynamic_cast<QDockWidget *>(this->parent());
   if (parent)
   {
-    const auto widget = new QWidget();
     const auto layout = new QGridLayout();
+    const auto widget = new QWidget();
+    layout->setContentsMargins(0, 0, 0, 0);
+    widget->setContentsMargins(0, 0, 0, 0);
     layout->addWidget(parent->titleBarWidget());
-    layout->setMargin(0);
     widget->setLayout(layout);
     parent->setTitleBarWidget(widget);
   }

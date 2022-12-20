@@ -46,7 +46,7 @@ public:
 
   // virtual ~BasicWidget() = default;
   virtual SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) = 0;
-  virtual void message(const Packet & packet) = 0;
+  virtual void message([[maybe_unused]] const Packet & packet) {}
 };
 
 using Widget = std::shared_ptr<BasicWidget>;

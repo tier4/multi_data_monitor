@@ -1,7 +1,8 @@
 version: 2.0
 
 stylesheets:
-  - { path: package://multi_data_monitor/css/plugins/simple.css, target: multi_data_monitor::Simple }
+  - { path: package://multi_data_monitor/css/plugins/simple.css, class: multi_data_monitor::Simple }
+  - { path: package://multi_data_monitor/css/colors.css, class: Simple }
 
 widgets:
   - class: relay
@@ -14,10 +15,12 @@ widgets:
     label: w7
     input: temp1
   - class: Matrix
-    label: root
+    label: w0
+    cols: 3
     items: [w1, w2, w3, w4, { class: Matrix, label: m1, items: [w5, w7] }]
   - class: Simple
     label: w1
+    title: title
     input: { class: subscription, topic: /test/header, field: stamp.sec }
   - class: multi_data_monitor::Simple
     label: w2

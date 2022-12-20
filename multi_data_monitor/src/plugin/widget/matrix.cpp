@@ -27,73 +27,52 @@ class Matrix : public BasicWidget
 {
 public:
   SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) override;
-  void message(const Packet & packet) override;
 };
 
 SetupWidget Matrix::setup(YAML::Node yaml, const std::vector<ChildWidget> & children)
 {
-  (void)yaml;
-  (void)children;
+  int cols = 1;
+  int rows = 0;
+  int dx = 1;
+  int dy = 0;
 
-  const auto layout = new QGridLayout();
-  for (const auto & child : children)
+  if (yaml["cols"])
   {
-    layout->addWidget(child.widget);
+    cols = yaml["cols"].as<int>();
+    rows = 0;
+    dx = 1;
+    dy = 0;
+  }
+  if (yaml["rows"])
+  {
+    cols = 0;
+    rows = yaml["rows"].as<int>();
+    dx = 0;
+    dy = 1;
   }
 
   const auto widget = new QWidget();
+  const auto layout = new QGridLayout();
+  layout->setContentsMargins(0, 0, 0, 0);
   widget->setLayout(layout);
+
+  int x = 0;
+  int y = 0;
+  for (const auto & child : children)
+  {
+    layout->addWidget(child.widget, y, x);
+    x += dx;
+    y += dy;
+    if (cols) y += (x / cols);
+    if (rows) x += (y / rows);
+    if (cols) x %= cols;
+    if (rows) y %= rows;
+  }
 
   SetupWidget setup;
   setup.main = widget;
   return setup;
 }
-
-void Matrix::message(const Packet & packet)
-{
-  (void)packet;
-}
-
-/*
-class Matrix : public BasicWidget
-{
-private:
-  QGridLayout * layout_;
-  int cols_;
-  int rows_;
-  int x_;
-  int y_;
-  void Increment()
-  {
-    x_ += 1;
-    y_ += x_ / cols_;
-    x_ %= cols_;
-    y_ %= rows_;
-  }
-
-public:
-  Instance Create(const YAML::Node yaml) override
-  {
-    cols_ = yaml["cols"].as<int>(1000);
-    rows_ = yaml["rows"].as<int>(1000);
-    x_ = 0;
-    y_ = 0;
-    layout_ = new QGridLayout();
-    return layout_;
-  }
-  void AddWidget(QWidget * widget, const YAML::Node) override
-  {
-    layout_->addWidget(widget, y_, x_);
-    Increment();
-  }
-  void AddLayout(QLayout * layout, const YAML::Node) override
-  {
-    layout_->addLayout(layout, y_, x_);
-    Increment();
-  }
-  void Callback(const MonitorValues &) override {}  // TODO(Takagi, Isamu): remove
-};
-*/
 
 }  // namespace multi_data_monitor
 

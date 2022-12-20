@@ -14,7 +14,9 @@
 
 #include "widget_loader.hpp"
 #include "common/exceptions.hpp"
+#include <QGridLayout>
 #include <QWidget>
+#include <sstream>
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -25,6 +27,28 @@
 namespace multi_data_monitor
 {
 
+std::string get_full_plugin_name(const std::string & klass)
+{
+  if (klass.find("::") != std::string::npos)
+  {
+    return klass;
+  }
+  return plugin::name::package + std::string("::") + klass;
+}
+
+QString get_stylesheet(const DesignList & designs, const std::string & klass = "")
+{
+  std::stringstream stylesheet;
+  for (const auto & design : designs)
+  {
+    if (get_full_plugin_name(design->klass) == get_full_plugin_name(klass))
+    {
+      stylesheet << design->stylesheet << std::endl;
+    }
+  }
+  return QString::fromStdString(stylesheet.str());
+}
+
 WidgetLoader::WidgetLoader() : plugins_(plugin::name::package, plugin::name::widget)
 {
 }
@@ -33,8 +57,9 @@ WidgetLoader::~WidgetLoader()
 {
 }
 
-WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
+WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs, const DesignList & designs)
 {
+  // Place the dummy root object in stack memory to automatically release Qt objects.
   QWidget dummy_root_widget;
   std::unordered_map<WidgetLink, SetupWidget> containers;
   std::unordered_map<WidgetLink, Widget> mapping;
@@ -53,13 +78,21 @@ WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
     const auto result = widget->setup(config->yaml, children);
     containers[config] = result;
     result.main->setParent(&dummy_root_widget);
+    result.main->setStyleSheet(get_stylesheet(designs, config->klass));
   }
+
+  root_widget_ = std::make_unique<QWidget>();
+  root_widget_->setStyleSheet(get_stylesheet(designs));
+  root_widget_->setContentsMargins(0, 0, 0, 0);
 
   if (!configs.empty())
   {
     QWidget * widget = containers.at(configs.back()).main;
-    widget->setParent(nullptr);
-    root_widget_.reset(widget);
+    QLayout * layout = new QGridLayout();
+    layout->addWidget(widget);
+    // layout->setSpacing(0);
+    // layout->setContentsMargins(0, 0, 0, 0);
+    root_widget_->setLayout(layout);
   }
 
   for (const auto & [config, setup] : containers)
@@ -67,7 +100,7 @@ WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
     QWidget * widget = setup.main;
     if (widget && widget->parent() == &dummy_root_widget)
     {
-      // TODO(Takagi, Isamu): exception
+      // TODO(Takagi, Isamu): exception or warning
       std::cerr << "unused widget is detected: " << widget << std::endl;
     }
   }
@@ -77,11 +110,7 @@ WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
 Widget WidgetLoader::create_widget(const WidgetLink config)
 {
   // Search in default plugins if namespace is omitted.
-  std::string klass = config->klass;
-  if (klass.find("::") == std::string::npos)
-  {
-    klass = plugin::name::package + std::string("::") + klass;
-  }
+  std::string klass = get_full_plugin_name(config->klass);
   if (!plugins_.isClassAvailable(klass))
   {
     throw ConfigError("unknown widget type: " + config->klass);

@@ -43,6 +43,9 @@ int main(int argc, char ** argv)
     const auto config = std::string(argv[2]);
     const auto data = load(scheme + "://" + config);
   }
+
   std::cout << CommonData::created << std::endl;
   std::cout << CommonData::removed << std::endl;
+  std::cout << DesignData::created << std::endl;
+  std::cout << DesignData::removed << std::endl;
 }

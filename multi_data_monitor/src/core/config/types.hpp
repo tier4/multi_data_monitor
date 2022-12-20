@@ -49,12 +49,15 @@ using NodeLabel = std::string;
 
 struct StreamData;
 struct WidgetData;
+struct DesignData;
 using StreamLink = std::shared_ptr<StreamData>;
 using WidgetLink = std::shared_ptr<WidgetData>;
+using DesignLink = std::shared_ptr<DesignData>;
 using StreamList = std::vector<StreamLink>;
 using WidgetList = std::vector<WidgetLink>;
+using DesignList = std::vector<DesignLink>;
 
-struct WidgetItem
+struct WidgetItem final
 {
   YAML::Node yaml;
   WidgetLink link;
@@ -74,7 +77,7 @@ struct CommonData
   // TODO(Takagi, Isamu): debug info for exception
 };
 
-struct StreamData : public CommonData
+struct StreamData final : public CommonData
 {
   using CommonData::CommonData;
   void dump() const;
@@ -83,7 +86,7 @@ struct StreamData : public CommonData
   StreamLink refer;
 };
 
-struct WidgetData : public CommonData
+struct WidgetData final : public CommonData
 {
   using CommonData::CommonData;
   void dump() const;
@@ -93,27 +96,31 @@ struct WidgetData : public CommonData
   std::vector<WidgetItem> items;
 };
 
-class StyleSheetConfig
+struct DesignData final
 {
+  DesignData() { ++created; }
+  ~DesignData() { ++removed; }
+  static inline int created = 0;
+  static inline int removed = 0;
+
+  std::string klass;
+  std::string stylesheet;
 };
 
-class StyleSheetStore
-{
-};
-
-struct ConfigFile
+struct ConfigFile final
 {
   std::string version;
   YAML::Node yaml;
 };
 
-struct ConfigData
+struct ConfigData final
 {
   StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
   WidgetLink create_widget(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
 
   std::vector<StreamLink> streams;
   std::vector<WidgetLink> widgets;
+  std::vector<DesignLink> designs;
 };
 
 class ConfigParserInterface

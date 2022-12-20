@@ -17,6 +17,7 @@
 #include "parser/construction.hpp"
 #include "parser/file.hpp"
 #include "parser/resolve_relation.hpp"
+#include "parser/stylesheet.hpp"
 #include "parser/subscription.hpp"
 
 namespace multi_data_monitor
@@ -53,6 +54,7 @@ ConfigData ConfigLoader::execute(const std::string & path) const
 {
   auto file = ConfigFileLoader().execute(path);
   auto data = ParseBasicObject().execute(file);
+
   if (function_)
   {
     function_(0, "construct-node", data);
@@ -65,6 +67,7 @@ ConfigData ConfigLoader::execute(const std::string & path) const
       function_(i + 1, parsers_[i]->name(), data);
     }
   }
+  data.designs = ParseStyleSheet().execute(file);
   return data;
 }
 

@@ -31,7 +31,7 @@ public:
   using Mapping = std::unordered_map<WidgetLink, Widget>;
   WidgetLoader();
   ~WidgetLoader();
-  Mapping create(const WidgetList & configs);
+  Mapping create(const WidgetList & configs, const DesignList & designs);
   void release();
   QWidget * take_root_widget();
 

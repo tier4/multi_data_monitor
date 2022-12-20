@@ -19,6 +19,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
+ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
+  "src/plugin/widget/debug_label.hpp"
+  "src/plugin/widget/matrix.cpp"
+  "src/plugin/widget/simple.cpp"
+  "src/plugin/widget/titled.cpp"
+)
+
 ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/common/rclcpp.cpp"
   "src/core/common/path.cpp"
@@ -31,6 +38,7 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/parser/construction.cpp"
   "src/core/parser/file.cpp"
   "src/core/parser/resolve_relation.cpp"
+  "src/core/parser/stylesheet.cpp"
   "src/core/parser/subscription.cpp"
   "src/core/runner/rclcpp_runner.cpp"
   "src/core/runner/stream_runner.cpp"
@@ -53,14 +61,6 @@ ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
   "src/core/runner/widget_runner.cpp"
 )
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
-
-ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
-  "src/plugin/widget/debug_label.hpp"
-  "src/plugin/widget/matrix.cpp"
-  "src/plugin/widget/simple.cpp"
-  "src/plugin/widget/titled.cpp"
-)
-# target_link_libraries(${PROJECT_NAME}_plugin ${QT_LIBRARIES})
 
 ament_auto_add_executable(parser src/tool/parser.cpp)
 target_include_directories(parser PRIVATE src/core)
