@@ -1,4 +1,4 @@
-// Copyright 2022 Takagi, Isamu
+// Copyright 2021 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,30 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__RUNNER__WIDGET_RUNNER_HPP_
-#define CORE__RUNNER__WIDGET_RUNNER_HPP_
+#ifndef PLUGIN__WIDGET__DEBUG_LABEL_HPP_
+#define PLUGIN__WIDGET__DEBUG_LABEL_HPP_
 
-#include "common/rclcpp.hpp"
-#include "config/types.hpp"
-#include "loader/widget_loader.hpp"
-#include "runner/stream_runner.hpp"
+#include <QLabel>
+#include <iostream>
 
 namespace multi_data_monitor
 {
 
-class WidgetRunner final
+class DebugLabel : public QLabel
 {
-public:
-  void create(const ConfigData & config);
-  void start(ros::Node node);
-  void shutdown();
-  QWidget * take_root_widget();
+  Q_OBJECT
 
-private:
-  WidgetLoader widget_loader_;
-  StreamRunner stream_runner_;
+public:
+  static inline int counter = 0;
+  int count;
+
+  explicit DebugLabel(const char * text) : QLabel(QString(text)), count(++counter)
+  {
+    std::cerr << "debug label created: " << count << std::endl;
+  }
+
+  ~DebugLabel() { std::cerr << "debug label removed: " << count << std::endl; }
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__RUNNER__WIDGET_RUNNER_HPP_
+#endif  // PLUGIN__WIDGET__DEBUG_LABEL_HPP_

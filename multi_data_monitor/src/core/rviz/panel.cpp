@@ -13,15 +13,15 @@
 // limitations under the License.
 
 #include "panel.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rviz_common/display_context.hpp>
+#include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
 #include <QDockWidget>
 #include <QGridLayout>
 #include <QLineEdit>
 #include <QMouseEvent>
 #include <QPushButton>
 #include <QTextEdit>
-#include <rclcpp/rclcpp.hpp>
-#include <rviz_common/display_context.hpp>
-#include <rviz_common/ros_integration/ros_node_abstraction_iface.hpp>
 #include <memory>
 #include <string>
 
@@ -122,6 +122,7 @@ void MultiDataMonitor::updateMultiDataMonitor()
   {
     const auto path = setting_->getPath();
     widget = manager_.build(path, rviz_node);
+    std::cerr << "rviz widget: " << widget << std::endl;
     setting_->setVisible(false);
   }
   catch (const std::exception & error)

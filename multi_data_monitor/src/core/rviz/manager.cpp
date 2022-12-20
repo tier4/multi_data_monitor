@@ -26,6 +26,7 @@ namespace multi_data_monitor
 
 RvizManager::~RvizManager()
 {
+  std::cout << "rviz manager shutdown" << std::endl;
   runner_.shutdown();
 }
 
@@ -34,7 +35,7 @@ QWidget * RvizManager::build(const std::string & path, ros::Node node)
   runner_.shutdown();
   runner_.create(ConfigLoader::Execute(path));
   runner_.start(node);
-  return new QLabel("TEST");
+  return runner_.take_root_widget();
 }
 
 }  // namespace multi_data_monitor

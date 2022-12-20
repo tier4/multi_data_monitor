@@ -44,4 +44,9 @@ void WidgetRunner::shutdown()
   std::cout << "widget removed: " << BasicWidget::removed << std::endl;
 }
 
+QWidget * WidgetRunner::take_root_widget()
+{
+  return widget_loader_.take_root_widget();
+}
+
 }  // namespace multi_data_monitor

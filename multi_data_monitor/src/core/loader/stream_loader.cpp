@@ -33,8 +33,8 @@ StreamLoader::Mapping StreamLoader::create(const StreamList & configs)
   for (const auto & config : configs)
   {
     const auto stream = create_stream(config);
-    stream->setting(config->yaml);
     mapping[config] = streams_.emplace_back(stream);
+    stream->setting(config->yaml);
   }
   for (const auto & [config, stream] : mapping)
   {

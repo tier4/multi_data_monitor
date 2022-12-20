@@ -32,6 +32,7 @@ int main(int argc, char ** argv)
     const auto config = std::string(argv[2]);
     runner.create(ConfigLoader::Execute(scheme + "://" + config));
   }
+  return 0;
 
   rclcpp::init(argc, argv);
   auto node = std::make_shared<rclcpp::Node>("runner");

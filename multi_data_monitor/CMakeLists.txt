@@ -55,6 +55,7 @@ ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
 
 ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
+  "src/plugin/widget/debug_label.hpp"
   "src/plugin/widget/matrix.cpp"
   "src/plugin/widget/simple.cpp"
   "src/plugin/widget/titled.cpp"

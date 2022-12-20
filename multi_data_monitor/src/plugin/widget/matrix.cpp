@@ -14,6 +14,11 @@
 
 #include <multi_data_monitor/widget.hpp>
 #include <QGridLayout>
+#include <QWidget>
+
+// DEBUG
+#include <QLabel>
+#include <iostream>
 
 namespace multi_data_monitor
 {
@@ -29,7 +34,19 @@ SetupWidget Matrix::setup(YAML::Node yaml, const std::vector<ChildWidget> & chil
 {
   (void)yaml;
   (void)children;
-  return {};
+
+  const auto layout = new QGridLayout();
+  for (const auto & child : children)
+  {
+    layout->addWidget(child.widget);
+  }
+
+  const auto widget = new QWidget();
+  widget->setLayout(layout);
+
+  SetupWidget setup;
+  setup.main = widget;
+  return setup;
 }
 
 void Matrix::message(const Packet & packet)

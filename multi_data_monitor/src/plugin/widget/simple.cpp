@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "debug_label.hpp"
 #include <multi_data_monitor/widget.hpp>
 #include <QLabel>
 
@@ -29,7 +30,10 @@ SetupWidget Simple::setup(YAML::Node yaml, const std::vector<ChildWidget> & chil
 {
   (void)yaml;
   (void)children;
-  return {};
+
+  SetupWidget setup;
+  setup.main = new DebugLabel("simple widget");
+  return setup;
 }
 
 void Simple::message(const Packet & packet)
