@@ -16,17 +16,11 @@
 #define MULTI_DATA_MONITOR__PACKET_HPP_
 
 #include <yaml-cpp/yaml.h>
-#include <optional>
 #include <string>
 #include <unordered_map>
 
 namespace multi_data_monitor
 {
-
-struct SetupResult
-{
-  std::optional<std::string> error;
-};
 
 struct Packet
 {

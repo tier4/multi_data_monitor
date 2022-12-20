@@ -4,9 +4,18 @@ stylesheets:
   - { path: package://multi_data_monitor/css/plugins/simple.css, target: multi_data_monitor::Simple }
 
 widgets:
+  - class: relay
+    label: w5
+    refer: w6
+  - class: multi_data_monitor::Simple
+    label: w6
+    input: temp1
+  - class: multi_data_monitor::Simple
+    label: w7
+    input: temp1
   - class: Matrix
     label: root
-    items: [w1, w2, w3, w4, { class: Matrix, items: [w5, w7] }]
+    items: [w1, w2, w3, w4, { class: Matrix, label: m1, items: [w5, w7] }]
   - class: Simple
     label: w1
     input: { class: subscription, topic: /test/header, field: stamp.sec }
@@ -19,15 +28,6 @@ widgets:
   - class: multi_data_monitor::Simple
     label: w4
     input: time1
-  - class: relay
-    label: w5
-    refer: w6
-  - class: multi_data_monitor::Simple
-    label: w6
-    input: temp1
-  - class: multi_data_monitor::Simple
-    label: w7
-    input: temp1
 
 streams:
   - class: print

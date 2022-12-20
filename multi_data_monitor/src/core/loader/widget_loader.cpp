@@ -30,11 +30,18 @@ WidgetLoader::WidgetLoader() : plugins_(plugin::name::package, plugin::name::wid
 
 WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs)
 {
+  std::cout << "data:";
+  for (const auto & data : configs)
+  {
+    std::cout << " " << data->label;
+  }
+  std::cout << std::endl;
+
   std::unordered_map<WidgetLink, Widget> mapping;
   for (const auto & config : configs)
   {
     const auto widget = widgets_.emplace_back(create_widget(config));
-    widget->setup(config->yaml, std::vector<YAML::Node>());
+    widget->setup(config->yaml, std::vector<ChildWidget>());
   }
   return mapping;
 }

@@ -14,6 +14,7 @@
 
 #include "resolve_relation.hpp"
 #include "common/exceptions.hpp"
+#include "common/graph.hpp"
 #include "common/util.hpp"
 #include "common/yaml.hpp"
 #include <functional>
@@ -28,12 +29,12 @@
 namespace multi_data_monitor
 {
 
-template <class T>
-using Graph = std::unordered_map<T, std::vector<T>>;
+using StreamGraph = graph::Graph<StreamLink>;
+using WidgetGraph = graph::Graph<WidgetLink>;
 
-Graph<StreamLink> create_stream_graph(const StreamList & streams)
+StreamGraph create_stream_graph(const StreamList & streams)
 {
-  Graph<StreamLink> graph;
+  StreamGraph graph;
   for (const auto & stream : streams)
   {
     graph[stream] = stream->input ? StreamList{stream->input} : StreamList{};
@@ -41,9 +42,9 @@ Graph<StreamLink> create_stream_graph(const StreamList & streams)
   return graph;
 }
 
-Graph<WidgetLink> create_widget_graph(const WidgetList & widgets)
+WidgetGraph create_widget_graph(const WidgetList & widgets)
 {
-  Graph<WidgetLink> graph;
+  WidgetGraph graph;
   for (const auto & widget : widgets)
   {
     const auto item_link = [](const WidgetItem & item) { return item.link; };
@@ -53,52 +54,18 @@ Graph<WidgetLink> create_widget_graph(const WidgetList & widgets)
 }
 
 template <class T>
-void check_graph_structure(const Graph<T> & graph, bool tree)
+std::vector<T> normalize_graph(const graph::Graph<T> & graph, bool tree)
 {
-  std::unordered_map<T, int> degrees;
-  std::vector<T> nodes;
-  for (const auto & [node, links] : graph)
-  {
-    nodes.push_back(node);
-    for (const auto & link : links)
-    {
-      ++degrees[link];
-    }
-  }
-
-  // Check tree structure and prepare for topological sorting.
-  std::vector<T> topological;
-  for (const auto & node : nodes)
-  {
-    if (tree && 2 <= degrees[node])
-    {
-      throw GraphIsNotTree("graph is not tree");
-    }
-    if (degrees[node] == 0)
-    {
-      topological.push_back(node);
-    }
-  }
-
-  // Check loop structure by topological sorting.
-  size_t count = 0;
-  while (!topological.empty())
-  {
-    const auto node = topological.back();
-    topological.pop_back();
-    ++count;
-    for (const auto & link : graph.at(node))
-    {
-      if (--degrees[link] == 0)
-      {
-        topological.push_back(link);
-      }
-    }
-  }
-  if (nodes.size() != count)
+  const auto result = graph::topological_sort(graph);
+  if (result.size() != graph.size())
   {
     throw GraphCirculation("graph loop is detected");
   }
+  if (tree && !graph::is_tree(graph))
+  {
+    throw GraphIsNotTree("graph is not tree");
+  }
+  return result;
 }
 
 struct ConfigLinks
@@ -242,13 +209,15 @@ ConfigData ReleaseRelation::execute(const ConfigData & input)
   return output;
 }
 
-ConfigData ValidateRelation::execute(const ConfigData & input)
+ConfigData NormalizeRelation::execute(const ConfigData & input)
 {
   const auto stream_graph = create_stream_graph(input.streams);
   const auto widget_graph = create_widget_graph(input.widgets);
-  check_graph_structure(stream_graph, false);
-  check_graph_structure(widget_graph, true);
-  return input;
+
+  ConfigData output;
+  output.streams = normalize_graph(stream_graph, false);
+  output.widgets = normalize_graph(widget_graph, true);
+  return output;
 }
 
 }  // namespace multi_data_monitor

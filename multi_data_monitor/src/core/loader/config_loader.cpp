@@ -41,7 +41,7 @@ ConfigLoader::ConfigLoader()
   parsers_.push_back(std::make_shared<ConnectRelation>());
   parsers_.push_back(std::make_shared<ResolveRelation>());
   parsers_.push_back(std::make_shared<ReleaseRelation>());
-  parsers_.push_back(std::make_shared<ValidateRelation>());
+  parsers_.push_back(std::make_shared<NormalizeRelation>());
 }
 
 void ConfigLoader::hook(HookFunction function)

@@ -42,10 +42,10 @@ public:
   ConfigData execute(const ConfigData & input) override;
 };
 
-class ValidateRelation : public ConfigParserInterface
+class NormalizeRelation : public ConfigParserInterface
 {
 public:
-  std::string name() { return "validate-relation"; }
+  std::string name() { return "normalize-relation"; }
   ConfigData execute(const ConfigData & input) override;
 };
 

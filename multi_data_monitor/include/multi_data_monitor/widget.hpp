@@ -24,9 +24,15 @@ class QWidget;
 namespace multi_data_monitor
 {
 
-struct BuildResult
+struct SetupWidget
 {
   QWidget * main;
+};
+
+struct ChildWidget
+{
+  QWidget * widget;
+  YAML::Node yaml;
 };
 
 class BasicWidget
@@ -39,8 +45,7 @@ public:
   virtual ~BasicWidget() { ++removed; }
 
   // virtual ~BasicWidget() = default;
-  virtual SetupResult setup(YAML::Node yaml, const std::vector<YAML::Node> & items) = 0;
-  virtual BuildResult build(const std::vector<QWidget *> & items) = 0;
+  virtual SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) = 0;
   virtual void message(const Packet & packet) = 0;
 };
 

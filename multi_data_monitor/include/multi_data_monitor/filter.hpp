@@ -24,7 +24,7 @@ class Filter
 {
 public:
   virtual ~Filter() = default;
-  virtual SetupResult setup(YAML::Node yaml) = 0;
+  virtual void setup(YAML::Node yaml) = 0;
   virtual Packet apply(const Packet & packet) = 0;
 };
 
