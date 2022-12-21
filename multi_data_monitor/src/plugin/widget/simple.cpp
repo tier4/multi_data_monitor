@@ -22,7 +22,7 @@ namespace multi_data_monitor
 class Simple : public BasicWidget
 {
 public:
-  SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) override;
+  SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
   void message(const Packet & packet) override;
 
 private:
@@ -30,7 +30,7 @@ private:
   QString title_;
 };
 
-SetupWidget Simple::setup(YAML::Node yaml, const std::vector<ChildWidget> &)
+SetupWidget Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
 {
   title_ = QString::fromStdString(yaml["title"].as<std::string>(""));
   label_ = new QLabel(title_);

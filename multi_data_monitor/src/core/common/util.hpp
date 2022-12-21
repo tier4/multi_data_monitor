@@ -15,6 +15,7 @@
 #ifndef CORE__COMMON__UTIL_HPP_
 #define CORE__COMMON__UTIL_HPP_
 
+#include <algorithm>
 #include <string>
 #include <vector>
 
@@ -45,14 +46,11 @@ std::vector<T> filter(const std::vector<T> & input, const std::function<bool(con
   return result;
 }
 
-template <class T, class R>
-std::vector<R> map(const std::vector<T> & input, const std::function<R(const T &)> function)
+template <class R, class Iterable, class Function>
+std::vector<R> map(const Iterable & input, Function && function)
 {
   std::vector<R> result;
-  for (const auto & data : input)
-  {
-    result.push_back(function(data));
-  }
+  std::transform(std::begin(input), std::end(input), std::back_inserter(result), function);
   return result;
 }
 

@@ -18,8 +18,15 @@ Something went wrong loading the typesupport library for message type std_msgs/U
 
 木構造検出
 ・複数ルート
-・孤立ノード
-
+・ダイヤ型
 
 apply以外にruleを指定したとき
 topicにinputを指定したとき
+
+特殊設定ノード
+- widget1
+- { class: xxx, op: move, col: 1, ros, 1 }
+- widget2
+適用
+- setup(yaml, vector<QWidget>) = 0;
+- setup(yaml, vector<Items>) { setup(yaml, filter(items)); }

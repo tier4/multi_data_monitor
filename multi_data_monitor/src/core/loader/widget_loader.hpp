@@ -16,11 +16,10 @@
 #define CORE__LOADER__WIDGET_LOADER_HPP_
 
 #include "common/typedef.hpp"
+#include <multi_data_monitor/widget.hpp>
 #include <pluginlib/class_loader.hpp>
 #include <memory>
 #include <vector>
-
-class QWidget;
 
 namespace multi_data_monitor
 {

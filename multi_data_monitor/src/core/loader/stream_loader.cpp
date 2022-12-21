@@ -51,9 +51,9 @@ StreamMaps StreamLoader::create(const StreamList & configs, const WidgetMaps & w
   }
   for (const auto & [config, stream] : mapping)
   {
-    if (config->input)
+    for (const auto & item : config->items)
     {
-      mapping[config->input]->connect(stream);
+      mapping[item]->connect(stream);
     }
   }
   return mapping;

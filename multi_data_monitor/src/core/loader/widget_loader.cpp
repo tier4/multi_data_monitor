@@ -15,7 +15,6 @@
 #include "widget_loader.hpp"
 #include "common/exceptions.hpp"
 #include "config/types.hpp"
-#include <multi_data_monitor/widget.hpp>
 #include <QGridLayout>
 #include <QWidget>
 #include <sstream>
@@ -72,13 +71,13 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
     const auto widget = create_widget(config);
     mapping[config] = widgets_.emplace_back(widget);
 
-    std::vector<ChildWidget> children;
+    std::vector<QWidget *> items;
     for (const auto & item : config->items)
     {
       // TODO(Takagi, Isamu): check no child widget
-      children.push_back({containers.at(item.link).main, item.yaml});
+      items.push_back(containers.at(item).main);
     }
-    const auto result = widget->setup(config->yaml, children);
+    const auto result = widget->setup(config->yaml, items);
     containers[config] = result;
     result.main->setParent(&dummy_root_widget);
     result.main->setStyleSheet(get_stylesheet(designs, config->klass));

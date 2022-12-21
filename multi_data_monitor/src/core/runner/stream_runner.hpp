@@ -17,6 +17,7 @@
 
 #include "common/rclcpp.hpp"
 #include "config/types.hpp"
+#include "loader/action_loader.hpp"
 #include "loader/stream_loader.hpp"
 #include "runner/rclcpp_runner.hpp"
 
@@ -33,6 +34,7 @@ public:
 
 private:
   StreamLoader stream_loader_;
+  ActionLoader action_loader_;
   RclcppRunner rclcpp_runner_;
 };
 

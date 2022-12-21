@@ -49,12 +49,6 @@ namespace multi_data_monitor
 using NodeClass = std::string;
 using NodeLabel = std::string;
 
-struct WidgetItem final
-{
-  YAML::Node yaml;
-  WidgetLink link;
-};
-
 struct CommonData
 {
   CommonData(const NodeClass & klass, const NodeLabel & label);
@@ -71,28 +65,31 @@ struct CommonData
 
 struct StreamData final : public CommonData
 {
+  static constexpr auto TypeName = "stream";
   using CommonData::CommonData;
   YAML::Node yaml;
-  StreamLink input;
-  StreamLink refer;
   WidgetLink panel;
   ActionLink apply;
+  StreamLink refer;
+  StreamList items;
 };
 
 struct ActionData final : public CommonData
 {
+  static constexpr auto TypeName = "action";
   using CommonData::CommonData;
   YAML::Node yaml;
   ActionLink refer;
-  std::vector<ActionLink> rules;
+  ActionList items;
 };
 
 struct WidgetData final : public CommonData
 {
+  static constexpr auto TypeName = "widget";
   using CommonData::CommonData;
   YAML::Node yaml;
   WidgetLink refer;
-  std::vector<WidgetItem> items;
+  WidgetList items;
 };
 
 struct DesignData final

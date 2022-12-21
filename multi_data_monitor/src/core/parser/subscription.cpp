@@ -111,7 +111,7 @@ void MergeSubscription::handle_subscription(const StreamLink & input)
   StreamLink topic = topic_data.node;
   StreamLink field = field_data.node;
   input->refer = field;
-  field->input = topic;
+  field->items = StreamList{topic};
   yaml::check_empty(input->yaml);
 }
 

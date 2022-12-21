@@ -180,7 +180,7 @@ StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
   StreamLink stream = data_.create_stream(klass, label, yaml);
   if (input)
   {
-    stream->input = parse_stream_yaml(input);
+    stream->items = StreamList{parse_stream_yaml(input)};
   }
   if (rules)
   {
@@ -210,8 +210,8 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
   {
     StreamLink stream = data_.create_stream(builtin::panel);
     stream->system = true;
-    stream->input = parse_stream_yaml(input);
     stream->panel = widget;
+    stream->items = StreamList{parse_stream_yaml(input)};
   }
   if (items)
   {
@@ -221,7 +221,7 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
     }
     for (const auto & item : items)
     {
-      widget->items.push_back(WidgetItem{YAML::Node(), parse_widget_yaml(item)});
+      widget->items.push_back(parse_widget_yaml(item));
     }
   }
   return widget;
@@ -230,9 +230,9 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
 ActionLink ParseBasicObject::parse_action_list(YAML::Node yaml)
 {
   ActionLink action = data_.create_action(builtin::function);
-  for (const auto & rule : yaml)
+  for (const auto & item : yaml)
   {
-    action->rules.push_back(parse_action_yaml(rule));
+    action->items.push_back(parse_action_yaml(item));
   }
   return action;
 }

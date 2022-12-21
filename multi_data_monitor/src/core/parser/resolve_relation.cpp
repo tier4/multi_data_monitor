@@ -29,109 +29,38 @@
 namespace multi_data_monitor
 {
 
-using StreamGraph = graph::Graph<StreamLink>;
-using WidgetGraph = graph::Graph<WidgetLink>;
-
-StreamGraph create_stream_graph(const StreamList & streams)
+template <class T>
+void connect_labels(const std::vector<T> & nodes)
 {
-  StreamGraph graph;
-  for (const auto & stream : streams)
+  std::unordered_map<std::string, T> labels;
+  for (const auto & node : nodes)
   {
-    graph[stream] = stream->input ? StreamList{stream->input} : StreamList{};
+    const auto & label = node->label;
+    if (!label.empty())
+    {
+      if (labels.count(label))
+      {
+        throw ConfigError::LabelConflict(label, T::element_type::TypeName);
+      }
+      labels[label] = node;
+    }
   }
-  return graph;
-}
-
-WidgetGraph create_widget_graph(const WidgetList & widgets)
-{
-  WidgetGraph graph;
-  for (const auto & widget : widgets)
+  for (const auto & node : nodes)
   {
-    const auto item_link = [](const WidgetItem & item) { return item.link; };
-    graph[widget] = util::map<WidgetItem, WidgetLink>(widget->items, item_link);
+    if (node->klass == builtin::relay)
+    {
+      const auto refer = yaml::take_required(node->yaml, "refer").template as<std::string>();
+      if (labels.count(refer) == 0)
+      {
+        throw ConfigError::LabelNotFound(refer, T::element_type::TypeName);
+      }
+      node->refer = labels.at(refer);
+    }
   }
-  return graph;
 }
 
 template <class T>
-std::vector<T> normalize_graph(const graph::Graph<T> & graph, bool tree)
-{
-  const auto result = graph::topological_sort(graph);
-  if (result.size() != graph.size())
-  {
-    throw GraphCirculation("graph loop is detected");
-  }
-  if (tree && !graph::is_tree(graph))
-  {
-    throw GraphIsNotTree("graph is not tree");
-  }
-  return result;
-}
-
-struct ConfigLinks
-{
-  std::vector<std::reference_wrapper<StreamLink>> to_streams;
-  std::vector<std::reference_wrapper<WidgetLink>> to_widgets;
-};
-
-ConfigLinks create_link_list(const ConfigData & input)
-{
-  std::vector<std::reference_wrapper<StreamLink>> to_streams;
-  std::vector<std::reference_wrapper<WidgetLink>> to_widgets;
-  for (const auto & stream : input.streams)
-  {
-    to_streams.push_back(std::ref(stream->input));
-    to_streams.push_back(std::ref(stream->refer));
-    to_widgets.push_back(std::ref(stream->panel));
-  }
-  for (const auto & widget : input.widgets)
-  {
-    ;
-    to_widgets.push_back(std::ref(widget->refer));
-    for (auto & item : widget->items)
-    {
-      to_widgets.push_back(std::ref(item.link));
-    }
-  }
-
-  ConfigLinks links;
-  const auto has_ref = [](const auto & ref) { return static_cast<bool>(ref.get()); };
-  links.to_streams = util::filter<std::reference_wrapper<StreamLink>>(to_streams, has_ref);
-  links.to_widgets = util::filter<std::reference_wrapper<WidgetLink>>(to_widgets, has_ref);
-  return links;
-}
-
-template <class NodeLink>
-void create_label(const NodeLink & node, std::unordered_map<std::string, NodeLink> & labels)
-{
-  const auto & label = node->label;
-  if (label.empty())
-  {
-    return;
-  }
-  if (labels.count(label))
-  {
-    throw ConfigError::LabelConflict(label, NodeTraits<NodeLink>::Name);
-  }
-  labels[label] = node;
-}
-
-template <class NodeLink>
-void connect_label(const NodeLink & node, const std::unordered_map<std::string, NodeLink> & labels)
-{
-  if (node->klass == builtin::relay)
-  {
-    const auto refer = yaml::take_required(node->yaml, "refer").template as<std::string>();
-    if (labels.count(refer) == 0)
-    {
-      throw ConfigError::LabelNotFound(refer, NodeTraits<NodeLink>::Name);
-    }
-    node->refer = labels.at(refer);
-  }
-}
-
-template <class NodeLink>
-NodeLink resolve_node(const NodeLink & node, std::unordered_set<NodeLink> & visit)
+T resolve_node(const T & node, std::unordered_set<T> & visit)
 {
   if (!node->refer)
   {
@@ -139,85 +68,107 @@ NodeLink resolve_node(const NodeLink & node, std::unordered_set<NodeLink> & visi
   }
   if (visit.count(node))
   {
-    std::vector<std::string> labels;
-    for (const NodeLink & node : visit)
-    {
-      if (!node->label.empty()) labels.push_back(node->label);
-    }
-    throw LabelCirculation("label loop is detected: " + util::join(labels));
+    // TODO(Takagi, Isamu): TypeName and LabelNames
+    throw LabelCirculation("label loop is detected");
   }
   visit.insert(node);
   node->refer = resolve_node(node->refer, visit);
   return node->refer;
 }
 
-template <class NodeLink>
-void resolve_link(std::reference_wrapper<NodeLink> link)
+template <class T>
+void resolve_labels(const std::vector<T> & nodes)
 {
-  std::unordered_set<NodeLink> visit;
-  link.get() = resolve_node(link.get(), visit);
-}
-
-template <class NodeLink, class NodeList = std::vector<NodeLink>, class NodeSet = std::unordered_set<NodeLink>>
-NodeList filter_unused(const NodeList & nodes, const NodeSet & node_used, const std::string & klass)
-{
-  NodeList result;
   for (const auto & node : nodes)
   {
-    if (node->klass == klass)
+    for (auto & item : node->items)
     {
-      if (node_used.count(node) == 0) continue;
-      throw LogicError("ReleaseRelation: unintended stream reverse reference");
+      std::unordered_set<T> visit;
+      item = resolve_node(item, visit);
+    }
+  }
+}
+
+template <class T>
+std::vector<T> filter_unused_nodes(const std::vector<T> & nodes, const std::unordered_set<std::string> & targets)
+{
+  std::unordered_set<T> used;
+  for (const auto & node : nodes)
+  {
+    for (const auto & item : node->items)
+    {
+      used.insert(item);
+    }
+  }
+
+  std::vector<T> result;
+  for (const auto & node : nodes)
+  {
+    if (targets.count(node->klass))
+    {
+      if (used.count(node) == 0) continue;
+      // TODO(Takagi, Isamu): TypeName
+      throw LogicError("ReleaseRelation: unintended reverse reference");
     }
     result.push_back(node);
   }
   return result;
 }
 
+template <class T>
+std::vector<T> normalize_graph(const std::vector<T> & nodes, bool tree)
+{
+  graph::Graph<T> graph;
+  for (const auto & node : nodes)
+  {
+    graph[node] = node->items;
+  }
+
+  const auto result = graph::topological_sort(graph);
+  if (result.size() != graph.size())
+  {
+    // TODO(Takagi, Isamu): TypeName
+    throw GraphCirculation("graph loop is detected");
+  }
+  if (tree && !graph::is_tree(graph))
+  {
+    // TODO(Takagi, Isamu): TypeName
+    throw GraphIsNotTree("graph is not tree");
+  }
+  return result;
+}
+
 ConfigData ConnectRelation::execute(const ConfigData & input)
 {
-  std::unordered_map<std::string, StreamLink> stream_labels;
-  std::unordered_map<std::string, WidgetLink> widget_labels;
-
-  for (const auto & node : input.streams) create_label(node, stream_labels);
-  for (const auto & node : input.widgets) create_label(node, widget_labels);
-  for (const auto & node : input.streams) connect_label(node, stream_labels);
-  for (const auto & node : input.widgets) connect_label(node, widget_labels);
+  connect_labels(input.streams);
+  connect_labels(input.actions);
+  connect_labels(input.widgets);
   return input;
 }
 
 ConfigData ResolveRelation::execute(const ConfigData & input)
 {
-  const auto links = create_link_list(input);
-  for (const auto & link : links.to_streams) resolve_link(link);
-  for (const auto & link : links.to_widgets) resolve_link(link);
+  resolve_labels(input.streams);
+  resolve_labels(input.actions);
+  resolve_labels(input.widgets);
   return input;
 }
 
 ConfigData ReleaseRelation::execute(const ConfigData & input)
 {
-  std::unordered_set<StreamLink> stream_used;
-  std::unordered_set<WidgetLink> widget_used;
-
-  const auto links = create_link_list(input);
-  for (const auto & link : links.to_streams) stream_used.insert(link.get());
-  for (const auto & link : links.to_widgets) widget_used.insert(link.get());
-
   ConfigData output = input;
-  output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::subscription);
-  output.streams = filter_unused<StreamLink>(output.streams, stream_used, builtin::relay);
-  output.widgets = filter_unused<WidgetLink>(output.widgets, widget_used, builtin::relay);
+  output.streams = filter_unused_nodes(input.streams, {builtin::relay, builtin::subscription});
+  output.actions = filter_unused_nodes(input.actions, {builtin::relay});
+  output.widgets = filter_unused_nodes(input.widgets, {builtin::relay});
   return output;
 }
 
 ConfigData NormalizeRelation::execute(const ConfigData & input)
 {
-  const auto stream_graph = create_stream_graph(input.streams);
-  const auto widget_graph = create_widget_graph(input.widgets);
-
   ConfigData output = input;
-  output.streams = normalize_graph(stream_graph, false);
-  output.widgets = normalize_graph(widget_graph, true);
+  output.streams = normalize_graph(input.streams, false);
+  output.actions = normalize_graph(input.actions, false);
+  output.widgets = normalize_graph(input.widgets, true);
   return output;
 }
 

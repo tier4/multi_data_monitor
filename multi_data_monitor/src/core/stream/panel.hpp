@@ -15,7 +15,6 @@
 #ifndef CORE__STREAM__PANEL_HPP_
 #define CORE__STREAM__PANEL_HPP_
 
-#include "common/typedef.hpp"
 #include "stream/basic.hpp"
 
 namespace multi_data_monitor

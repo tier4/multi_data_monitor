@@ -52,21 +52,21 @@ std::string Diagram::convert(const ConfigData & data) const
 
   for (const auto & stream : data.streams)
   {
-    if (stream->refer)
+    if (stream->panel)
     {
-      ss << stream << " --> " << stream->refer << " #line.dashed" << std::endl;
-    }
-    if (stream->input)
-    {
-      ss << stream << " --> " << stream->input << std::endl;
+      ss << stream->panel << " --> " << stream << std::endl;
     }
     if (stream->apply)
     {
       ss << stream << " --> " << stream->apply << std::endl;
     }
-    if (stream->panel)
+    if (stream->refer)
     {
-      ss << stream->panel << " --> " << stream << std::endl;
+      ss << stream << " --> " << stream->refer << " #line.dashed" << std::endl;
+    }
+    for (const auto & item : stream->items)
+    {
+      ss << stream << " --> " << item << std::endl;
     }
   }
 
@@ -76,9 +76,9 @@ std::string Diagram::convert(const ConfigData & data) const
     {
       ss << action << " --> " << action->refer << " #line.dashed" << std::endl;
     }
-    for (const auto & rule : action->rules)
+    for (const auto & item : action->items)
     {
-      ss << action << " --> " << rule << std::endl;
+      ss << action << " --> " << item << std::endl;
     }
   }
 
@@ -90,7 +90,7 @@ std::string Diagram::convert(const ConfigData & data) const
     }
     for (const auto & item : widget->items)
     {
-      ss << widget << " --> " << item.link << std::endl;
+      ss << widget << " --> " << item << std::endl;
     }
   }
 

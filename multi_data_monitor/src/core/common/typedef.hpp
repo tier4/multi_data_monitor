@@ -15,6 +15,7 @@
 #ifndef CORE__COMMON__TYPEDEF_HPP_
 #define CORE__COMMON__TYPEDEF_HPP_
 
+#include "common/container.hpp"
 #include <memory>
 #include <unordered_map>
 #include <vector>
@@ -42,7 +43,7 @@ using Stream = std::shared_ptr<BasicStream>;
 using Action = std::shared_ptr<BasicAction>;
 using Widget = std::shared_ptr<BasicWidget>;
 using StreamMaps = std::unordered_map<StreamLink, Stream>;
-using ActionMaps = std::unordered_map<ActionLink, Action>;
+using ActionMaps = HashMap<ActionLink, Action>;
 using WidgetMaps = std::unordered_map<WidgetLink, Widget>;
 
 }  // namespace multi_data_monitor

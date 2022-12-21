@@ -12,37 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__WIDGET_HPP_
-#define MULTI_DATA_MONITOR__WIDGET_HPP_
+#ifndef CORE__COMMON__CONTAINER_HPP_
+#define CORE__COMMON__CONTAINER_HPP_
 
-#include <multi_data_monitor/packet.hpp>
-#include <memory>
-#include <vector>
-
-class QWidget;
+#include <unordered_map>
 
 namespace multi_data_monitor
 {
 
-struct SetupWidget
-{
-  QWidget * main;
-};
-
-class BasicWidget
+template <class K, class V>
+class HashMap : private std::unordered_map<K, V>
 {
 public:
-  // DEBUG
-  static inline int created = 0;
-  static inline int removed = 0;
-  BasicWidget() { ++created; }
-  virtual ~BasicWidget() { ++removed; }
-
-  // virtual ~BasicWidget() = default;
-  virtual SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & children) = 0;
-  virtual void message([[maybe_unused]] const Packet & packet) {}
+  using std::unordered_map<K, V>::operator[];
+  using std::unordered_map<K, V>::at;
+  using std::unordered_map<K, V>::begin;
+  using std::unordered_map<K, V>::end;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__WIDGET_HPP_
+#endif  // CORE__COMMON__CONTAINER_HPP_

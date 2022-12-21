@@ -24,14 +24,14 @@ namespace multi_data_monitor
 class Titled : public BasicWidget
 {
 public:
-  SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) override;
+  SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
   void message(const Packet & packet) override;
 };
 
-SetupWidget Titled::setup(YAML::Node yaml, const std::vector<ChildWidget> & children)
+SetupWidget Titled::setup(YAML::Node yaml, const std::vector<QWidget *> & items)
 {
   (void)yaml;
-  (void)children;
+  (void)items;
   return {};
 }
 

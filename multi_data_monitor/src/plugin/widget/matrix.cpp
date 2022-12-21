@@ -26,10 +26,10 @@ namespace multi_data_monitor
 class Matrix : public BasicWidget
 {
 public:
-  SetupWidget setup(YAML::Node yaml, const std::vector<ChildWidget> & children) override;
+  SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
 };
 
-SetupWidget Matrix::setup(YAML::Node yaml, const std::vector<ChildWidget> & children)
+SetupWidget Matrix::setup(YAML::Node yaml, const std::vector<QWidget *> & items)
 {
   int cols = 1;
   int rows = 0;
@@ -58,9 +58,9 @@ SetupWidget Matrix::setup(YAML::Node yaml, const std::vector<ChildWidget> & chil
 
   int x = 0;
   int y = 0;
-  for (const auto & child : children)
+  for (const auto & item : items)
   {
-    layout->addWidget(child.widget, y, x);
+    layout->addWidget(item, y, x);
     x += dx;
     y += dy;
     if (cols) y += (x / cols);

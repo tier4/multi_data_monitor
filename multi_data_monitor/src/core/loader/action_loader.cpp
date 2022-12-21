@@ -15,7 +15,8 @@
 #include "action_loader.hpp"
 #include "common/exceptions.hpp"
 #include "config/types.hpp"
-#include <multi_data_monitor/action.hpp>
+#include "filter/function.hpp"
+#include <memory>
 #include <string>
 #include <unordered_map>
 
@@ -41,25 +42,28 @@ ActionLoader::ActionLoader() : plugins_(plugin::name::package, plugin::name::act
 
 ActionMaps ActionLoader::create(const ActionList & configs)
 {
-  std::unordered_map<ActionLink, Action> mapping;
+  ActionMaps mapping;
   for (const auto & config : configs)
   {
-    const auto action = create_action(config);
+    const auto action = create_action(config, mapping);
     mapping[config] = actions_.emplace_back(action);
     action->setup(config->yaml);
-  }
-  for (const auto & [config, action] : mapping)
-  {
-    for (const auto & rule : config->rules)
-    {
-      // mapping[config->input]->connect(stream);
-    }
   }
   return mapping;
 }
 
-Action ActionLoader::create_action(const ActionLink & config)
+Action ActionLoader::create_action(const ActionLink & config, const ActionMaps & mapping)
 {
+  if (config->klass == builtin::function)
+  {
+    for (const auto & item : config->items)
+    {
+      std::cout << config->klass << " " << item << " " << mapping.at(item) << std::endl;
+    }
+    const auto action = std::make_shared<FunctionAction>(nullptr);
+    return action;
+  }
+
   // Search in default plugins if namespace is omitted.
   std::string klass = get_full_plugin_name(config->klass);
   if (!plugins_.isClassAvailable(klass))

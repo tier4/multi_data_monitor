@@ -12,37 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__WIDGET_HPP_
-#define MULTI_DATA_MONITOR__WIDGET_HPP_
-
-#include <multi_data_monitor/packet.hpp>
-#include <memory>
-#include <vector>
-
-class QWidget;
+#include "function.hpp"
 
 namespace multi_data_monitor
 {
 
-struct SetupWidget
+FunctionAction::FunctionAction(Action action)
 {
-  QWidget * main;
-};
+  action_ = action;
+}
 
-class BasicWidget
+void FunctionAction::setup(YAML::Node yaml)
 {
-public:
-  // DEBUG
-  static inline int created = 0;
-  static inline int removed = 0;
-  BasicWidget() { ++created; }
-  virtual ~BasicWidget() { ++removed; }
+  (void)yaml;
+}
 
-  // virtual ~BasicWidget() = default;
-  virtual SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & children) = 0;
-  virtual void message([[maybe_unused]] const Packet & packet) {}
-};
+void FunctionAction::apply(Packet & packet)
+{
+  (void)packet;
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // MULTI_DATA_MONITOR__WIDGET_HPP_

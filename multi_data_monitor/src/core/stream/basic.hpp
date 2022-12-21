@@ -15,16 +15,13 @@
 #ifndef CORE__STREAM__BASIC_HPP_
 #define CORE__STREAM__BASIC_HPP_
 
+#include "common/typedef.hpp"
 #include <multi_data_monitor/packet.hpp>
 #include <memory>
 #include <vector>
 
 namespace multi_data_monitor
 {
-
-struct BasicStream;
-struct InOutStream;
-using Stream = std::shared_ptr<BasicStream>;
 
 struct BasicStream
 {

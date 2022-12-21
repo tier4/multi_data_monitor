@@ -16,6 +16,7 @@
 #define CORE__LOADER__ACTION_LOADER_HPP_
 
 #include "common/typedef.hpp"
+#include <multi_data_monitor/action.hpp>
 #include <pluginlib/class_loader.hpp>
 #include <vector>
 
@@ -30,7 +31,7 @@ public:
   void release();
 
 private:
-  Action create_action(const ActionLink & config);
+  Action create_action(const ActionLink & config, const ActionMaps & mapping);
 
   // The plugin loader must be first for release order.
   pluginlib::ClassLoader<BasicAction> plugins_;
