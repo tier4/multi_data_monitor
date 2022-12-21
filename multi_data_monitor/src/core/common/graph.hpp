@@ -31,7 +31,7 @@ using Graph = std::unordered_map<T, std::vector<T>>;
 template <class T>
 bool is_tree(const Graph<T> & graph)
 {
-  std::unordered_map<T, int> degrees;
+  std::unordered_map<T, size_t> degrees;
   std::vector<T> nodes;
   for (const auto & [node, links] : graph)
   {
@@ -41,7 +41,13 @@ bool is_tree(const Graph<T> & graph)
     }
     nodes.push_back(node);
   }
-  return std::all_of(degrees.begin(), degrees.end(), [](const auto & p) { return p.second < 2; });
+
+  std::unordered_map<size_t, size_t> histogram;
+  for (const auto & node : nodes)
+  {
+    ++histogram[degrees[node]];
+  }
+  return (histogram[0] == 1) && (histogram[1] + 1 == nodes.size());
 }
 
 template <class T>

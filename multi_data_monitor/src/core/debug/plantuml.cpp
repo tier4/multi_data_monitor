@@ -65,7 +65,7 @@ std::string Diagram::convert(const ConfigData & data) const
     }
     if (stream->panel)
     {
-      ss << stream << " --> " << stream->panel << std::endl;
+      ss << stream->panel << " --> " << stream << std::endl;
     }
   }
 
