@@ -12,22 +12,34 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__FILTER_HPP_
-#define MULTI_DATA_MONITOR__FILTER_HPP_
-
-#include <multi_data_monitor/packet.hpp>
+#include <multi_data_monitor/action.hpp>
+#include <fmt/format.h>
+#include <string>
 
 namespace multi_data_monitor
 {
 
-class Filter
+class Precision : public Action
 {
 public:
-  virtual ~Filter() = default;
-  virtual void setup(YAML::Node yaml) = 0;
-  virtual Packet apply(const Packet & packet) = 0;
+  void setup(YAML::Node yaml) override;
+  void apply(Packet & packet) override;
+
+private:
+  int digits_;
 };
+
+void Precision::setup(YAML::Node yaml)
+{
+  digits_ = yaml["digits"].as<int>();
+}
+
+void Precision::apply(Packet & packet)
+{
+  packet.value = fmt::format("{:.{}f}", packet.value.as<double>(), digits_);
+}
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__FILTER_HPP_
+#include <pluginlib/class_list_macros.hpp>
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Precision, multi_data_monitor::Action)

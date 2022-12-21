@@ -30,10 +30,14 @@ private:
   void parse_widget_root(YAML::Node yaml);
   void parse_subscription(YAML::Node yaml);
   StreamLink parse_stream_yaml(YAML::Node yaml);
-  WidgetLink parse_widget_yaml(YAML::Node yaml);
   StreamLink parse_stream_link(YAML::Node yaml);
-  WidgetLink parse_widget_link(YAML::Node yaml);
   StreamLink parse_stream_dict(YAML::Node yaml);
+  ActionLink parse_action_yaml(YAML::Node yaml);
+  ActionLink parse_action_link(YAML::Node yaml);
+  ActionLink parse_action_dict(YAML::Node yaml);
+  ActionLink parse_action_list(YAML::Node yaml);
+  WidgetLink parse_widget_yaml(YAML::Node yaml);
+  WidgetLink parse_widget_link(YAML::Node yaml);
   WidgetLink parse_widget_dict(YAML::Node yaml);
   ConfigData data_;
 };

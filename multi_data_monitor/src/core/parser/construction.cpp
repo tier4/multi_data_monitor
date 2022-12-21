@@ -18,6 +18,9 @@
 #include <functional>
 #include <string>
 
+// DEGUB
+#include <iostream>
+
 namespace multi_data_monitor
 {
 
@@ -111,6 +114,24 @@ StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml)
   throw ConfigError("unexpected stream format");
 }
 
+ActionLink ParseBasicObject::parse_action_yaml(YAML::Node yaml)
+{
+  if (yaml.IsScalar())
+  {
+    return parse_action_link(yaml);
+  }
+  if (yaml.IsMap())
+  {
+    return parse_action_dict(yaml);
+  }
+  if (yaml.IsSequence())
+  {
+    return parse_action_list(yaml);
+  }
+  // TODO(Takagi, Isamu): error message
+  throw ConfigError("unexpected action format");
+}
+
 WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
@@ -133,9 +154,18 @@ StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml)
   return stream;
 }
 
+ActionLink ParseBasicObject::parse_action_link(YAML::Node yaml)
+{
+  ActionLink action = data_.create_action(builtin::relay);
+  action->system = true;
+  action->yaml["refer"] = yaml.as<std::string>();
+  return action;
+}
+
 WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml)
 {
   WidgetLink widget = data_.create_widget(builtin::relay);
+  widget->system = true;
   widget->yaml["refer"] = yaml.as<std::string>();
   return widget;
 }
@@ -145,13 +175,27 @@ StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
   const auto input = yaml::take_optional(yaml, "input");
+  const auto rules = yaml::take_optional(yaml, "rules");
 
   StreamLink stream = data_.create_stream(klass, label, yaml);
   if (input)
   {
     stream->input = parse_stream_yaml(input);
   }
+  if (rules)
+  {
+    stream->apply = parse_action_yaml(rules);
+  }
   return stream;
+}
+
+ActionLink ParseBasicObject::parse_action_dict(YAML::Node yaml)
+{
+  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
+  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
+
+  ActionLink action = data_.create_action(klass, label, yaml);
+  return action;
 }
 
 WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
@@ -181,6 +225,16 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
     }
   }
   return widget;
+}
+
+ActionLink ParseBasicObject::parse_action_list(YAML::Node yaml)
+{
+  ActionLink action = data_.create_action(builtin::function);
+  for (const auto & rule : yaml)
+  {
+    action->rules.push_back(parse_action_yaml(rule));
+  }
+  return action;
 }
 
 }  // namespace multi_data_monitor

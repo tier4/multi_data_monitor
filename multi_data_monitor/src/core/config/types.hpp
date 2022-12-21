@@ -23,14 +23,14 @@
 namespace multi_data_monitor::builtin
 {
 
+constexpr char topic[] = "@topic";
+constexpr char field[] = "@field";
+constexpr char panel[] = "@panel";
 constexpr char apply[] = "apply";
 constexpr char print[] = "print";
 constexpr char relay[] = "relay";
 constexpr char subscription[] = "subscription";
-
-constexpr char topic[] = "@topic";
-constexpr char field[] = "@field";
-constexpr char panel[] = "@panel";
+constexpr char function[] = "function";
 
 }  // namespace multi_data_monitor::builtin
 
@@ -71,7 +71,6 @@ struct CommonData
 struct StreamData final : public CommonData
 {
   using CommonData::CommonData;
-  void dump() const;
   YAML::Node yaml;
   StreamLink input;
   StreamLink refer;
@@ -79,10 +78,17 @@ struct StreamData final : public CommonData
   ActionLink apply;
 };
 
+struct ActionData final : public CommonData
+{
+  using CommonData::CommonData;
+  YAML::Node yaml;
+  ActionLink refer;
+  std::vector<ActionLink> rules;
+};
+
 struct WidgetData final : public CommonData
 {
   using CommonData::CommonData;
-  void dump() const;
   YAML::Node yaml;
   WidgetLink refer;
   std::vector<WidgetItem> items;
@@ -108,9 +114,11 @@ struct ConfigFile final
 struct ConfigData final
 {
   StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
+  ActionLink create_action(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
   WidgetLink create_widget(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
 
   std::vector<StreamLink> streams;
+  std::vector<ActionLink> actions;
   std::vector<WidgetLink> widgets;
   std::vector<DesignLink> designs;
 };

@@ -215,7 +215,7 @@ ConfigData NormalizeRelation::execute(const ConfigData & input)
   const auto stream_graph = create_stream_graph(input.streams);
   const auto widget_graph = create_widget_graph(input.widgets);
 
-  ConfigData output;
+  ConfigData output = input;
   output.streams = normalize_graph(stream_graph, false);
   output.widgets = normalize_graph(widget_graph, true);
   return output;

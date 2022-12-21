@@ -16,7 +16,10 @@ Something went wrong loading the typesupport library for message type std_msgs/U
 
 間違ったプラグイン名を指定している
 
-
 木構造検出
 ・複数ルート
 ・孤立ノード
+
+
+apply以外にruleを指定したとき
+topicにinputを指定したとき

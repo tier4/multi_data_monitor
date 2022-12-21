@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "types.hpp"
-#include <iostream>
+#include <memory>
 
 namespace multi_data_monitor
 {
@@ -28,24 +28,18 @@ CommonData::~CommonData()
   ++removed;
 }
 
-void StreamData::dump() const
-{
-  std::cout << "stream: " << klass << " [" << this << "]" << std::endl;
-  if (!label.empty())
-  {
-    std::cout << " - label: " << label << std::endl;
-  }
-  if (input)
-  {
-    std::cout << " - input: " << input << std::endl;
-  }
-}
-
 StreamLink ConfigData::create_stream(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
 {
   const auto data = std::make_shared<StreamData>(klass, label);
   data->yaml = yaml;
   return streams.emplace_back(data);
+}
+
+ActionLink ConfigData::create_action(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
+{
+  const auto data = std::make_shared<ActionData>(klass, label);
+  data->yaml = yaml;
+  return actions.emplace_back(data);
 }
 
 WidgetLink ConfigData::create_widget(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)

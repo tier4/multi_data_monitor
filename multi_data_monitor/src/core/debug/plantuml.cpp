@@ -20,6 +20,18 @@
 namespace multi_data_monitor::plantuml
 {
 
+template <class T>
+void dump_node(std::ostringstream & ss, const T & data, const std::string & color)
+{
+  const auto label = data->label.empty() ? "" : " [" + data->label + "]";
+
+  ss << "card " << data << " " << color << " [" << std::endl;
+  ss << data->klass << label << std::endl;
+  ss << "---" << std::endl;
+  ss << YAML::Dump(data->yaml) << std::endl;
+  ss << "]" << std::endl;
+}
+
 std::string Diagram::convert(const ConfigData & data) const
 {
   std::ostringstream ss;
@@ -27,30 +39,15 @@ std::string Diagram::convert(const ConfigData & data) const
 
   for (const auto & stream : data.streams)
   {
-    ss << "card " << stream << " #AAFFFF [" << std::endl;
-    ss << stream->klass;
-    if (!stream->label.empty())
-    {
-      ss << " [" << stream->label << "]";
-    }
-    ss << std::endl;
-    ss << "---" << std::endl;
-    ss << YAML::Dump(stream->yaml) << std::endl;
-    ss << "]" << std::endl;
+    dump_node(ss, stream, "#AAFFFF");
   }
-
+  for (const auto & action : data.actions)
+  {
+    dump_node(ss, action, "#FFFFAA");
+  }
   for (const auto & widget : data.widgets)
   {
-    ss << "card " << widget << " #FFAAFF [" << std::endl;
-    ss << widget->klass;
-    if (!widget->label.empty())
-    {
-      ss << " [" << widget->label << "]";
-    }
-    ss << std::endl;
-    ss << "---" << std::endl;
-    ss << YAML::Dump(widget->yaml) << std::endl;
-    ss << "]" << std::endl;
+    dump_node(ss, widget, "#FFAAFF");
   }
 
   for (const auto & stream : data.streams)
@@ -63,21 +60,37 @@ std::string Diagram::convert(const ConfigData & data) const
     {
       ss << stream << " --> " << stream->input << std::endl;
     }
+    if (stream->apply)
+    {
+      ss << stream << " --> " << stream->apply << std::endl;
+    }
     if (stream->panel)
     {
       ss << stream->panel << " --> " << stream << std::endl;
     }
   }
 
+  for (const auto & action : data.actions)
+  {
+    if (action->refer)
+    {
+      ss << action << " --> " << action->refer << " #line.dashed" << std::endl;
+    }
+    for (const auto & rule : action->rules)
+    {
+      ss << action << " --> " << rule << std::endl;
+    }
+  }
+
   for (const auto & widget : data.widgets)
   {
-    for (const auto & item : widget->items)
-    {
-      ss << widget << " --> " << item.link << std::endl;
-    }
     if (widget->refer)
     {
       ss << widget << " --> " << widget->refer << " #line.dashed" << std::endl;
+    }
+    for (const auto & item : widget->items)
+    {
+      ss << widget << " --> " << item.link << std::endl;
     }
   }
 

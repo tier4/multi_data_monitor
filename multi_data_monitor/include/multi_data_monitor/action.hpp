@@ -12,28 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <multi_data_monitor/action.hpp>
-#include <fmt/format.h>
-#include <string>
+#ifndef MULTI_DATA_MONITOR__ACTION_HPP_
+#define MULTI_DATA_MONITOR__ACTION_HPP_
+
+#include <multi_data_monitor/packet.hpp>
 
 namespace multi_data_monitor
 {
 
-class Precision : public multi_data_monitor::Action
+class Action
 {
-private:
-  int precision_;
-
 public:
-  void Initialize(const YAML::Node & yaml) { precision_ = yaml["precision"].as<int>(); }
-  MonitorValues Apply(const MonitorValues & input) override
-  {
-    const auto value = fmt::format("{:.{}f}", input.value.as<double>(), precision_);
-    return {YAML::Node(value), input.attrs};
-  }
+  virtual ~Action() = default;
+  virtual void setup(YAML::Node yaml) = 0;
+  virtual void apply(Packet & packet) = 0;
 };
 
 }  // namespace multi_data_monitor
 
-#include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Precision, multi_data_monitor::Action)
+#endif  // MULTI_DATA_MONITOR__ACTION_HPP_
