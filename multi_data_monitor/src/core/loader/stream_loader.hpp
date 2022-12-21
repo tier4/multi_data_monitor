@@ -31,18 +31,16 @@ namespace multi_data_monitor
 class StreamLoader final
 {
 public:
-  using Mapping = std::unordered_map<StreamLink, Stream>;
   StreamLoader();
-  Mapping create(const StreamList & configs);
+  StreamMaps create(const StreamList & configs);
+  StreamMaps create(const StreamList & configs, const WidgetMaps & widgets);
   void release();
   const auto & topics() { return topics_; }
-  const auto & panels() { return panels_; }
 
 private:
-  Stream create_stream(const StreamLink config);
+  Stream create_stream(const StreamLink & config, const WidgetMaps & widgets);
   std::vector<std::shared_ptr<BasicStream>> streams_;
   std::vector<std::shared_ptr<TopicStream>> topics_;
-  std::vector<std::shared_ptr<PanelStream>> panels_;
 };
 
 }  // namespace multi_data_monitor

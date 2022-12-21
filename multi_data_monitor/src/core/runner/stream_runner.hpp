@@ -27,6 +27,7 @@ class StreamRunner final
 {
 public:
   void create(const ConfigData & config);
+  void create(const ConfigData & config, const WidgetMaps & widgets);
   void start(ros::Node node);
   void shutdown();
 

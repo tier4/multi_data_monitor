@@ -14,11 +14,13 @@
 
 #include "stream_loader.hpp"
 #include "common/exceptions.hpp"
-#include <iostream>
 #include <memory>
 #include <unordered_map>
 #include <utility>
 #include <vector>
+
+// DEBUG
+#include <iostream>
 
 namespace multi_data_monitor
 {
@@ -27,12 +29,17 @@ StreamLoader::StreamLoader()
 {
 }
 
-StreamLoader::Mapping StreamLoader::create(const StreamList & configs)
+StreamMaps StreamLoader::create(const StreamList & configs)
+{
+  return create(configs, WidgetMaps());
+}
+
+StreamMaps StreamLoader::create(const StreamList & configs, const WidgetMaps & widgets)
 {
   std::unordered_map<StreamLink, Stream> mapping;
   for (const auto & config : configs)
   {
-    const auto stream = create_stream(config);
+    const auto stream = create_stream(config, widgets);
     mapping[config] = streams_.emplace_back(stream);
     stream->setting(config->yaml);
   }
@@ -46,15 +53,23 @@ StreamLoader::Mapping StreamLoader::create(const StreamList & configs)
   return mapping;
 }
 
-Stream StreamLoader::create_stream(const StreamLink config)
+template <class Link, class Node>
+Node get_map_link(const std::unordered_map<Link, Node> map, const Link & link)
 {
-  if (config->klass == builtin::panel)
-  {
-    return panels_.emplace_back(std::make_shared<PanelStream>());
-  }
+  return map.count(link) ? map.at(link) : nullptr;
+}
+
+Stream StreamLoader::create_stream(const StreamLink & config, const WidgetMaps & widgets)
+{
   if (config->klass == builtin::topic)
   {
-    return topics_.emplace_back(std::make_shared<TopicStream>());
+    const auto stream = std::make_shared<TopicStream>();
+    return topics_.emplace_back(stream);
+  }
+  if (config->klass == builtin::panel)
+  {
+    const auto widget = get_map_link(widgets, config->panel);
+    return std::make_shared<PanelStream>(widget);
   }
   if (config->klass == builtin::field)
   {
@@ -71,7 +86,6 @@ void StreamLoader::release()
 {
   // TODO(Takagi, Isamu): check use count
   // Release shared_ptr to unload plugins.
-  panels_.clear();
   topics_.clear();
   streams_.clear();
 }

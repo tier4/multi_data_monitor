@@ -19,7 +19,12 @@ namespace multi_data_monitor
 
 void StreamRunner::create(const ConfigData & config)
 {
-  stream_loader_.create(config.streams);
+  return create(config, WidgetMaps());
+}
+
+void StreamRunner::create(const ConfigData & config, const WidgetMaps & widgets)
+{
+  stream_loader_.create(config.streams, widgets);
   rclcpp_runner_.set_topics(stream_loader_.topics());
 }
 

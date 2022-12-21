@@ -15,9 +15,8 @@
 #ifndef CORE__CONFIG__TYPES_HPP_
 #define CORE__CONFIG__TYPES_HPP_
 
+#include "common/typedef.hpp"
 #include <yaml-cpp/yaml.h>
-#include <memory>
-#include <optional>
 #include <string>
 #include <vector>
 
@@ -47,16 +46,6 @@ namespace multi_data_monitor
 using NodeClass = std::string;
 using NodeLabel = std::string;
 
-struct StreamData;
-struct WidgetData;
-struct DesignData;
-using StreamLink = std::shared_ptr<StreamData>;
-using WidgetLink = std::shared_ptr<WidgetData>;
-using DesignLink = std::shared_ptr<DesignData>;
-using StreamList = std::vector<StreamLink>;
-using WidgetList = std::vector<WidgetLink>;
-using DesignList = std::vector<DesignLink>;
-
 struct WidgetItem final
 {
   YAML::Node yaml;
@@ -84,6 +73,8 @@ struct StreamData final : public CommonData
   YAML::Node yaml;
   StreamLink input;
   StreamLink refer;
+  WidgetLink panel;
+  ActionLink apply;
 };
 
 struct WidgetData final : public CommonData
@@ -91,7 +82,6 @@ struct WidgetData final : public CommonData
   using CommonData::CommonData;
   void dump() const;
   YAML::Node yaml;
-  StreamLink input;
   WidgetLink refer;
   std::vector<WidgetItem> items;
 };

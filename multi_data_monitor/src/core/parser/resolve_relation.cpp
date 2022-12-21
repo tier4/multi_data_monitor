@@ -82,10 +82,11 @@ ConfigLinks create_link_list(const ConfigData & input)
   {
     to_streams.push_back(std::ref(stream->input));
     to_streams.push_back(std::ref(stream->refer));
+    to_widgets.push_back(std::ref(stream->panel));
   }
   for (const auto & widget : input.widgets)
   {
-    to_streams.push_back(std::ref(widget->input));
+    ;
     to_widgets.push_back(std::ref(widget->refer));
     for (auto & item : widget->items)
     {

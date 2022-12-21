@@ -57,7 +57,7 @@ WidgetLoader::~WidgetLoader()
 {
 }
 
-WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs, const DesignList & designs)
+WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & designs)
 {
   // Place the dummy root object in stack memory to automatically release Qt objects.
   QWidget dummy_root_widget;
@@ -107,7 +107,7 @@ WidgetLoader::Mapping WidgetLoader::create(const WidgetList & configs, const Des
   return mapping;
 }
 
-Widget WidgetLoader::create_widget(const WidgetLink config)
+Widget WidgetLoader::create_widget(const WidgetLink & config)
 {
   // Search in default plugins if namespace is omitted.
   std::string klass = get_full_plugin_name(config->klass);

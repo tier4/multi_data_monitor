@@ -22,8 +22,8 @@ namespace multi_data_monitor
 
 void WidgetRunner::create(const ConfigData & config)
 {
-  widget_loader_.create(config.widgets, config.designs);
-  stream_runner_.create(config);
+  const auto widgets = widget_loader_.create(config.widgets, config.designs);
+  stream_runner_.create(config, widgets);
 }
 
 void WidgetRunner::start(ros::Node node)

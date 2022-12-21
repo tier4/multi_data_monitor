@@ -13,9 +13,15 @@
 // limitations under the License.
 
 #include "panel.hpp"
+#include <multi_data_monitor/widget.hpp>
 
 namespace multi_data_monitor
 {
+
+PanelStream::PanelStream(Widget widget)
+{
+  widget_ = widget;
+}
 
 void PanelStream::setting(YAML::Node yaml)
 {
@@ -24,7 +30,10 @@ void PanelStream::setting(YAML::Node yaml)
 
 void PanelStream::message(const Packet & packet)
 {
-  (void)packet;
+  if (widget_)
+  {
+    widget_->message(packet);
+  }
 }
 
 }  // namespace multi_data_monitor

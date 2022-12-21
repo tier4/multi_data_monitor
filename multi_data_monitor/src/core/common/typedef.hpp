@@ -16,24 +16,31 @@
 #define CORE__COMMON__TYPEDEF_HPP_
 
 #include <memory>
+#include <unordered_map>
 #include <vector>
 
 namespace multi_data_monitor
 {
 
-struct StreamConfig;
-struct WidgetConfig;
-using StreamData = std::shared_ptr<StreamConfig>;
-using WidgetData = std::shared_ptr<WidgetConfig>;
-using StreamDataList = std::vector<StreamData>;
-using WidgetDataList = std::vector<WidgetData>;
+struct StreamData;
+struct WidgetData;
+struct DesignData;
+struct ActionData;
+using StreamLink = std::shared_ptr<StreamData>;
+using WidgetLink = std::shared_ptr<WidgetData>;
+using DesignLink = std::shared_ptr<DesignData>;
+using ActionLink = std::shared_ptr<ActionData>;
+using StreamList = std::vector<StreamLink>;
+using WidgetList = std::vector<WidgetLink>;
+using DesignList = std::vector<DesignLink>;
+using ActionList = std::vector<ActionLink>;
 
-struct BasicStream;
-struct BasicWidget;
-using StreamNode = std::shared_ptr<BasicStream>;
-using WidgetNode = std::shared_ptr<BasicWidget>;
-using StreamNodeList = std::vector<StreamNode>;
-using WidgetNodeList = std::vector<WidgetNode>;
+class BasicStream;
+class BasicWidget;
+using Stream = std::shared_ptr<BasicStream>;
+using Widget = std::shared_ptr<BasicWidget>;
+using StreamMaps = std::unordered_map<StreamLink, Stream>;
+using WidgetMaps = std::unordered_map<WidgetLink, Widget>;
 
 }  // namespace multi_data_monitor
 

@@ -55,13 +55,17 @@ std::string Diagram::convert(const ConfigData & data) const
 
   for (const auto & stream : data.streams)
   {
+    if (stream->refer)
+    {
+      ss << stream << " --> " << stream->refer << " #line.dashed" << std::endl;
+    }
     if (stream->input)
     {
       ss << stream << " --> " << stream->input << std::endl;
     }
-    if (stream->refer)
+    if (stream->panel)
     {
-      ss << stream << " --> " << stream->refer << " #line.dashed" << std::endl;
+      ss << stream << " --> " << stream->panel << std::endl;
     }
   }
 
@@ -70,10 +74,6 @@ std::string Diagram::convert(const ConfigData & data) const
     for (const auto & item : widget->items)
     {
       ss << widget << " --> " << item.link << std::endl;
-    }
-    if (widget->input)
-    {
-      ss << widget << " --> " << widget->input << std::endl;
     }
     if (widget->refer)
     {

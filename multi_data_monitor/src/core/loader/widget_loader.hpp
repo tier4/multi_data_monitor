@@ -28,17 +28,16 @@ namespace multi_data_monitor
 class WidgetLoader final
 {
 public:
-  using Mapping = std::unordered_map<WidgetLink, Widget>;
   WidgetLoader();
   ~WidgetLoader();
-  Mapping create(const WidgetList & configs, const DesignList & designs);
+  WidgetMaps create(const WidgetList & configs, const DesignList & designs);
   void release();
   QWidget * take_root_widget();
 
 private:
-  Widget create_widget(const WidgetLink config);
+  Widget create_widget(const WidgetLink & config);
 
-  // The plugin loader must be written first for release order.
+  // The plugin loader must be first for release order.
   pluginlib::ClassLoader<BasicWidget> plugins_;
   std::vector<Widget> widgets_;
   std::unique_ptr<QWidget> root_widget_;

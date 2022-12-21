@@ -167,7 +167,7 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
     StreamLink stream = data_.create_stream(builtin::panel);
     stream->system = true;
     stream->input = parse_stream_yaml(input);
-    widget->input = stream;
+    stream->panel = widget;
   }
   if (items)
   {
