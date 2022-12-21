@@ -12,33 +12,26 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__LOADER__STREAM_LOADER_HPP_
-#define CORE__LOADER__STREAM_LOADER_HPP_
+#ifndef CORE__STREAM__APPLY_HPP_
+#define CORE__STREAM__APPLY_HPP_
 
 #include "common/typedef.hpp"
-#include <memory>
-#include <vector>
+#include "stream/basic.hpp"
 
 namespace multi_data_monitor
 {
 
-class TopicStream;
-
-class StreamLoader final
+struct ApplyStream : public InOutStream
 {
 public:
-  StreamLoader();
-  StreamMaps create(const StreamList & configs);
-  StreamMaps create(const StreamList & configs, const WidgetMaps & widgets);
-  void release();
-  const auto & topics() { return topics_; }
+  explicit ApplyStream(Action action);
+  void setting(YAML::Node yaml) override;
+  void message(const Packet & packet) override;
 
 private:
-  Stream create_stream(const StreamLink & config, const WidgetMaps & widgets);
-  std::vector<std::shared_ptr<BasicStream>> streams_;
-  std::vector<std::shared_ptr<TopicStream>> topics_;
+  Action action_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__LOADER__STREAM_LOADER_HPP_
+#endif  // CORE__STREAM__APPLY_HPP_

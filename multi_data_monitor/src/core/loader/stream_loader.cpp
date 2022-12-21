@@ -14,6 +14,12 @@
 
 #include "stream_loader.hpp"
 #include "common/exceptions.hpp"
+#include "config/types.hpp"
+#include "stream/apply.hpp"
+#include "stream/field.hpp"
+#include "stream/panel.hpp"
+#include "stream/print.hpp"
+#include "stream/topic.hpp"
 #include <memory>
 #include <unordered_map>
 #include <utility>
@@ -65,6 +71,11 @@ Stream StreamLoader::create_stream(const StreamLink & config, const WidgetMaps &
   {
     const auto stream = std::make_shared<TopicStream>();
     return topics_.emplace_back(stream);
+  }
+  if (config->klass == builtin::apply)
+  {
+    // const auto widget = get_map_link(widgets, config->panel);
+    return std::make_shared<ApplyStream>(nullptr);
   }
   if (config->klass == builtin::panel)
   {

@@ -42,6 +42,7 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/parser/subscription.cpp"
   "src/core/runner/rclcpp_runner.cpp"
   "src/core/runner/stream_runner.cpp"
+  "src/core/stream/apply.cpp"
   "src/core/stream/basic.cpp"
   "src/core/stream/field.cpp"
   "src/core/stream/panel.cpp"

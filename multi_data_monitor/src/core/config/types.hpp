@@ -23,9 +23,11 @@
 namespace multi_data_monitor::builtin
 {
 
-constexpr char relay[] = "relay";
+constexpr char apply[] = "apply";
 constexpr char print[] = "print";
+constexpr char relay[] = "relay";
 constexpr char subscription[] = "subscription";
+
 constexpr char topic[] = "@topic";
 constexpr char field[] = "@field";
 constexpr char panel[] = "@panel";

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 #include "widget_runner.hpp"
+#include "stream/basic.hpp"
 
 // DEBUG
 #include <iostream>
