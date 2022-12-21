@@ -12,37 +12,31 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__LOADER__WIDGET_LOADER_HPP_
-#define CORE__LOADER__WIDGET_LOADER_HPP_
+#ifndef CORE__LOADER__ACTION_LOADER_HPP_
+#define CORE__LOADER__ACTION_LOADER_HPP_
 
 #include "common/typedef.hpp"
 #include <pluginlib/class_loader.hpp>
-#include <memory>
 #include <vector>
-
-class QWidget;
 
 namespace multi_data_monitor
 {
 
-class WidgetLoader final
+class ActionLoader final
 {
 public:
-  WidgetLoader();
-  ~WidgetLoader();
-  WidgetMaps create(const WidgetList & configs, const DesignList & designs);
+  ActionLoader();
+  ActionMaps create(const ActionList & configs);
   void release();
-  QWidget * take_root_widget();
 
 private:
-  Widget create_widget(const WidgetLink & config);
+  Action create_action(const ActionLink & config);
 
   // The plugin loader must be first for release order.
-  pluginlib::ClassLoader<BasicWidget> plugins_;
-  std::vector<Widget> widgets_;
-  std::unique_ptr<QWidget> root_widget_;
+  pluginlib::ClassLoader<BasicAction> plugins_;
+  std::vector<Action> actions_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__LOADER__WIDGET_LOADER_HPP_
+#endif  // CORE__LOADER__ACTION_LOADER_HPP_

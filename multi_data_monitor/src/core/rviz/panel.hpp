@@ -17,6 +17,7 @@
 
 #include "manager.hpp"
 #include <rviz_common/panel.hpp>
+#include <QWidget>
 #include <memory>
 #include <string>
 

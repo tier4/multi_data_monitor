@@ -20,10 +20,10 @@
 namespace multi_data_monitor
 {
 
-class Action
+class BasicAction
 {
 public:
-  virtual ~Action() = default;
+  virtual ~BasicAction() = default;
   virtual void setup(YAML::Node yaml) = 0;
   virtual void apply(Packet & packet) = 0;
 };

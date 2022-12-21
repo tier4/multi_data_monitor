@@ -49,8 +49,6 @@ public:
   virtual void message([[maybe_unused]] const Packet & packet) {}
 };
 
-using Widget = std::shared_ptr<BasicWidget>;
-
 }  // namespace multi_data_monitor
 
 #endif  // MULTI_DATA_MONITOR__WIDGET_HPP_

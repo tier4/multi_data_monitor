@@ -38,6 +38,7 @@ namespace multi_data_monitor::plugin::name
 {
 
 constexpr char package[] = "multi_data_monitor";
+constexpr char action[] = "multi_data_monitor::BasicAction";
 constexpr char widget[] = "multi_data_monitor::BasicWidget";
 
 }  // namespace multi_data_monitor::plugin::name

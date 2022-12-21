@@ -14,6 +14,8 @@
 
 #include "widget_loader.hpp"
 #include "common/exceptions.hpp"
+#include "config/types.hpp"
+#include <multi_data_monitor/widget.hpp>
 #include <QGridLayout>
 #include <QWidget>
 #include <sstream>
@@ -27,6 +29,7 @@
 namespace multi_data_monitor
 {
 
+// TODO(Takagi, Isamu): merge action loader
 std::string get_full_plugin_name(const std::string & klass)
 {
   if (klass.find("::") != std::string::npos)

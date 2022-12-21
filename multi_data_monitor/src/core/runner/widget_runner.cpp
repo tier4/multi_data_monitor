@@ -14,6 +14,7 @@
 
 #include "widget_runner.hpp"
 #include "stream/basic.hpp"
+#include <multi_data_monitor/widget.hpp>
 
 // DEBUG
 #include <iostream>
