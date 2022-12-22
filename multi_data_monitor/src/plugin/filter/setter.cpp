@@ -14,6 +14,7 @@
 
 #include <multi_data_monitor/filter.hpp>
 #include <functional>
+#include <optional>
 #include <variant>
 
 //
@@ -36,7 +37,7 @@ private:
   template <class T>
   static void init_expr_list(ExprList<T> & expr_list, YAML::Node & yaml);
   template <class T>
-  static bool eval_expr_list(ExprList<T> & expr_list, const T & value);
+  static bool eval_expr_list(const ExprList<T> & expr_list, const T & value);
 
   using TextType = std::string;
   using SintType = int64_t;
@@ -52,12 +53,17 @@ private:
 
   struct PacketAction
   {
-    YAML::Node value;
+    std::optional<YAML::Node> value;
     std::unordered_map<std::string, std::string> attrs;
   };
 
-  Expr expr_;
-  PacketAction action_;
+  struct SetterAction
+  {
+    Expr expr;
+    PacketAction packet;
+  };
+
+  std::vector<SetterAction> actions_;
 };
 
 template <class T, template <class> class F>
@@ -85,7 +91,7 @@ void SetIf::init_expr_list(ExprList<T> & expr_list, YAML::Node & yaml)
 }
 
 template <class T>
-bool SetIf::eval_expr_list(ExprList<T> & expr_list, const T & value)
+bool SetIf::eval_expr_list(const ExprList<T> & expr_list, const T & value)
 {
   for (const auto & expr : expr_list)
   {
@@ -111,10 +117,10 @@ struct SetIf::EvalExpr
 {
 public:
   explicit EvalExpr(YAML::Node yaml) : yaml_(yaml) {}
-  bool operator()(TextExpr & expr) { return eval_expr_list(expr, yaml_.as<TextType>()); }
-  bool operator()(SintExpr & expr) { return eval_expr_list(expr, yaml_.as<SintType>()); }
-  bool operator()(UintExpr & expr) { return eval_expr_list(expr, yaml_.as<UintType>()); }
-  bool operator()(RealExpr & expr) { return eval_expr_list(expr, yaml_.as<RealType>()); }
+  bool operator()(const TextExpr & expr) { return eval_expr_list(expr, yaml_.as<TextType>()); }
+  bool operator()(const SintExpr & expr) { return eval_expr_list(expr, yaml_.as<SintType>()); }
+  bool operator()(const UintExpr & expr) { return eval_expr_list(expr, yaml_.as<UintType>()); }
+  bool operator()(const RealExpr & expr) { return eval_expr_list(expr, yaml_.as<RealType>()); }
 
 private:
   YAML::Node yaml_;
@@ -122,8 +128,9 @@ private:
 
 void SetIf::setup(YAML::Node yaml)
 {
-  const auto get_expr_type = [](const std::string & type) -> Expr
+  const auto get_expr_type = [](const YAML::Node & yaml) -> Expr
   {
+    const auto type = yaml["type"].as<std::string>("undefined");
     if (type == "text") return TextExpr();
     if (type == "uint") return UintExpr();
     if (type == "sint") return SintExpr();
@@ -138,7 +145,7 @@ void SetIf::setup(YAML::Node yaml)
     PacketAction action;
     if (yaml["value"])
     {
-      action.value.reset(yaml["value"]);
+      action.value = yaml["value"];
     }
     if (yaml["attrs"])
     {
@@ -152,23 +159,34 @@ void SetIf::setup(YAML::Node yaml)
     return action;
   };
 
-  action_ = get_packet_action(yaml);
-  expr_ = get_expr_type(yaml["type"].as<std::string>("string"));
-  std::visit(InitExpr(yaml), expr_);
+  if (yaml["list"].IsSequence())
+  {
+    for (const auto & item : yaml["list"])
+    {
+      auto action = get_packet_action(item);
+      auto expr = get_expr_type(item);
+      std::visit(InitExpr(item), expr);
+      actions_.push_back({expr, action});
+    }
+  }
 }
 
 Packet SetIf::apply(const Packet & packet)
 {
-  bool result = std::visit(EvalExpr(packet.value), expr_);
-  if (result)
+  for (const auto & [expr, action] : actions_)
   {
-    YAML::Node value = action_.value ? action_.value : packet.value;
-    Packet::Attrs attrs = action_.attrs;
-    for (const auto & pair : packet.attrs)
+    bool result = std::visit(EvalExpr(packet.value), expr);
+    std::cout << packet.value << " " << result << std::endl;
+    if (result)
     {
-      attrs.insert(pair);
+      YAML::Node value = action.value.value_or(packet.value);
+      Packet::Attrs attrs = action.attrs;
+      for (const auto & pair : packet.attrs)
+      {
+        attrs.insert(pair);
+      }
+      return {value, attrs};
     }
-    return {value, attrs};
   }
   return packet;
 }
