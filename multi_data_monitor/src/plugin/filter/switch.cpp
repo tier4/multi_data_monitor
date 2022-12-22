@@ -71,4 +71,4 @@ public:
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Switch, multi_data_monitor::Action)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Switch, multi_data_monitor::BasicFilter)

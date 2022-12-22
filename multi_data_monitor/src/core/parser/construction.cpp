@@ -114,22 +114,22 @@ StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml)
   throw ConfigError("unexpected stream format");
 }
 
-ActionLink ParseBasicObject::parse_action_yaml(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
   {
-    return parse_action_link(yaml);
+    return parse_filter_link(yaml);
   }
   if (yaml.IsMap())
   {
-    return parse_action_dict(yaml);
+    return parse_filter_dict(yaml);
   }
   if (yaml.IsSequence())
   {
-    return parse_action_list(yaml);
+    return parse_filter_list(yaml);
   }
   // TODO(Takagi, Isamu): error message
-  throw ConfigError("unexpected action format");
+  throw ConfigError("unexpected filter format");
 }
 
 WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml)
@@ -154,12 +154,12 @@ StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml)
   return stream;
 }
 
-ActionLink ParseBasicObject::parse_action_link(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_link(YAML::Node yaml)
 {
-  ActionLink action = data_.create_action(builtin::relay);
-  action->system = true;
-  action->yaml["refer"] = yaml.as<std::string>();
-  return action;
+  FilterLink filter = data_.create_filter(builtin::relay);
+  filter->system = true;
+  filter->yaml["refer"] = yaml.as<std::string>();
+  return filter;
 }
 
 WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml)
@@ -184,18 +184,18 @@ StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
   }
   if (rules)
   {
-    stream->apply = parse_action_yaml(rules);
+    stream->apply = parse_filter_yaml(rules);
   }
   return stream;
 }
 
-ActionLink ParseBasicObject::parse_action_dict(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml)
 {
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
 
-  ActionLink action = data_.create_action(klass, label, yaml);
-  return action;
+  FilterLink filter = data_.create_filter(klass, label, yaml);
+  return filter;
 }
 
 WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
@@ -227,14 +227,14 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
   return widget;
 }
 
-ActionLink ParseBasicObject::parse_action_list(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_list(YAML::Node yaml)
 {
-  ActionLink action = data_.create_action(builtin::function);
+  FilterLink filter = data_.create_filter(builtin::function);
   for (const auto & item : yaml)
   {
-    action->items.push_back(parse_action_yaml(item));
+    filter->items.push_back(parse_filter_yaml(item));
   }
-  return action;
+  return filter;
 }
 
 }  // namespace multi_data_monitor

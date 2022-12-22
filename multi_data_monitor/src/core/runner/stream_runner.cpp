@@ -24,8 +24,8 @@ void StreamRunner::create(const ConfigData & config)
 
 void StreamRunner::create(const ConfigData & config, const WidgetMaps & widgets)
 {
-  const auto actions = action_loader_.create(config.actions);
-  stream_loader_.create(config.streams, widgets);
+  const auto filters = filter_loader_.create(config.filters);
+  stream_loader_.create(config.streams, filters, widgets);
   rclcpp_runner_.set_topics(stream_loader_.topics());
 }
 
@@ -37,7 +37,7 @@ void StreamRunner::start(ros::Node node)
 void StreamRunner::shutdown()
 {
   rclcpp_runner_.shutdown();
-  action_loader_.release();
+  filter_loader_.release();
   stream_loader_.release();
 }
 

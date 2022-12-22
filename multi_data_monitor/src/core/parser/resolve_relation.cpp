@@ -141,7 +141,7 @@ std::vector<T> normalize_graph(const std::vector<T> & nodes, bool tree)
 ConfigData ConnectRelation::execute(const ConfigData & input)
 {
   connect_labels(input.streams);
-  connect_labels(input.actions);
+  connect_labels(input.filters);
   connect_labels(input.widgets);
   return input;
 }
@@ -149,7 +149,7 @@ ConfigData ConnectRelation::execute(const ConfigData & input)
 ConfigData ResolveRelation::execute(const ConfigData & input)
 {
   resolve_labels(input.streams);
-  resolve_labels(input.actions);
+  resolve_labels(input.filters);
   resolve_labels(input.widgets);
   return input;
 }
@@ -158,7 +158,7 @@ ConfigData ReleaseRelation::execute(const ConfigData & input)
 {
   ConfigData output = input;
   output.streams = filter_unused_nodes(input.streams, {builtin::relay, builtin::subscription});
-  output.actions = filter_unused_nodes(input.actions, {builtin::relay});
+  output.filters = filter_unused_nodes(input.filters, {builtin::relay});
   output.widgets = filter_unused_nodes(input.widgets, {builtin::relay});
   return output;
 }
@@ -167,7 +167,7 @@ ConfigData NormalizeRelation::execute(const ConfigData & input)
 {
   ConfigData output = input;
   output.streams = normalize_graph(input.streams, false);
-  output.actions = normalize_graph(input.actions, false);
+  output.filters = normalize_graph(input.filters, false);
   output.widgets = normalize_graph(input.widgets, true);
   return output;
 }

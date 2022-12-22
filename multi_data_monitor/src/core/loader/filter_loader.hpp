@@ -12,32 +12,32 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__LOADER__ACTION_LOADER_HPP_
-#define CORE__LOADER__ACTION_LOADER_HPP_
+#ifndef CORE__LOADER__FILTER_LOADER_HPP_
+#define CORE__LOADER__FILTER_LOADER_HPP_
 
 #include "common/typedef.hpp"
-#include <multi_data_monitor/action.hpp>
+#include <multi_data_monitor/filter.hpp>
 #include <pluginlib/class_loader.hpp>
 #include <vector>
 
 namespace multi_data_monitor
 {
 
-class ActionLoader final
+class FilterLoader final
 {
 public:
-  ActionLoader();
-  ActionMaps create(const ActionList & configs);
+  FilterLoader();
+  FilterMaps create(const FilterList & configs);
   void release();
 
 private:
-  Action create_action(const ActionLink & config, const ActionMaps & mapping);
+  Filter create_filter(const FilterLink & config, const FilterMaps & mapping);
 
   // The plugin loader must be first for release order.
-  pluginlib::ClassLoader<BasicAction> plugins_;
-  std::vector<Action> actions_;
+  pluginlib::ClassLoader<BasicFilter> plugins_;
+  std::vector<Filter> filters_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__LOADER__ACTION_LOADER_HPP_
+#endif  // CORE__LOADER__FILTER_LOADER_HPP_

@@ -2,9 +2,9 @@
   <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Simple"/>
   <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Titled"/>
   <class base_class_type="multi_data_monitor::BasicWidget" type="multi_data_monitor::Matrix"/>
-  <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Format"/>
-  <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Precision"/>
-  <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Switch"/>
-  <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Units"/>
-  <class base_class_type="multi_data_monitor::Action" type="multi_data_monitor::Lines"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Format"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Precision"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Switch"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Units"/>
+  <class base_class_type="multi_data_monitor::BasicFilter" type="multi_data_monitor::Lines"/>
 </library>

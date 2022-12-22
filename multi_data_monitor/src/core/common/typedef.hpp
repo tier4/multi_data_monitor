@@ -24,27 +24,27 @@ namespace multi_data_monitor
 {
 
 struct StreamData;
-struct ActionData;
+struct FilterData;
 struct WidgetData;
 struct DesignData;
 using StreamLink = std::shared_ptr<StreamData>;
 using WidgetLink = std::shared_ptr<WidgetData>;
 using DesignLink = std::shared_ptr<DesignData>;
-using ActionLink = std::shared_ptr<ActionData>;
+using FilterLink = std::shared_ptr<FilterData>;
 using StreamList = std::vector<StreamLink>;
 using WidgetList = std::vector<WidgetLink>;
 using DesignList = std::vector<DesignLink>;
-using ActionList = std::vector<ActionLink>;
+using FilterList = std::vector<FilterLink>;
 
 class BasicStream;
-class BasicAction;
+class BasicFilter;
 class BasicWidget;
 using Stream = std::shared_ptr<BasicStream>;
-using Action = std::shared_ptr<BasicAction>;
+using Filter = std::shared_ptr<BasicFilter>;
 using Widget = std::shared_ptr<BasicWidget>;
-using StreamMaps = std::unordered_map<StreamLink, Stream>;
-using ActionMaps = HashMap<ActionLink, Action>;
-using WidgetMaps = std::unordered_map<WidgetLink, Widget>;
+using StreamMaps = HashMap<StreamLink, Stream>;
+using FilterMaps = HashMap<FilterLink, Filter>;
+using WidgetMaps = HashMap<WidgetLink, Widget>;
 
 }  // namespace multi_data_monitor
 

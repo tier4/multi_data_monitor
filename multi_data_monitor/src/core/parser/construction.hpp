@@ -32,10 +32,10 @@ private:
   StreamLink parse_stream_yaml(YAML::Node yaml);
   StreamLink parse_stream_link(YAML::Node yaml);
   StreamLink parse_stream_dict(YAML::Node yaml);
-  ActionLink parse_action_yaml(YAML::Node yaml);
-  ActionLink parse_action_link(YAML::Node yaml);
-  ActionLink parse_action_dict(YAML::Node yaml);
-  ActionLink parse_action_list(YAML::Node yaml);
+  FilterLink parse_filter_yaml(YAML::Node yaml);
+  FilterLink parse_filter_link(YAML::Node yaml);
+  FilterLink parse_filter_dict(YAML::Node yaml);
+  FilterLink parse_filter_list(YAML::Node yaml);
   WidgetLink parse_widget_yaml(YAML::Node yaml);
   WidgetLink parse_widget_link(YAML::Node yaml);
   WidgetLink parse_widget_dict(YAML::Node yaml);

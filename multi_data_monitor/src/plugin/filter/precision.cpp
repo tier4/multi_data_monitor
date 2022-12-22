@@ -13,29 +13,33 @@
 // limitations under the License.
 
 #include <multi_data_monitor/action.hpp>
-#include <algorithm>
+#include <fmt/format.h>
 #include <string>
 
 namespace multi_data_monitor
 {
 
-class Lines : public multi_data_monitor::Action
+class Precision : public Action
 {
-private:
-  int lines_;
-
 public:
-  void Initialize(const YAML::Node & yaml) { lines_ = yaml["lines"].as<int>(); }
-  MonitorValues Apply(const MonitorValues & input) override
-  {
-    const auto value = input.value.as<std::string>();
-    const auto count = std::count(value.begin(), value.end(), '\n');
-    const auto lines = std::string(std::max(0L, lines_ - count - 1), '\n');
-    return {YAML::Node(value + lines), input.attrs};
-  }
+  void setup(YAML::Node yaml) override;
+  void apply(Packet & packet) override;
+
+private:
+  int digits_;
 };
+
+void Precision::setup(YAML::Node yaml)
+{
+  digits_ = yaml["digits"].as<int>();
+}
+
+void Precision::apply(Packet & packet)
+{
+  packet.value = fmt::format("{:.{}f}", packet.value.as<double>(), digits_);
+}
 
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Lines, multi_data_monitor::Action)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Precision, multi_data_monitor::BasicFilter)

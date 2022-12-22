@@ -28,13 +28,13 @@ class StreamLoader final
 {
 public:
   StreamLoader();
-  StreamMaps create(const StreamList & configs);
-  StreamMaps create(const StreamList & configs, const WidgetMaps & widgets);
+  StreamMaps create(const StreamList & configs, const FilterMaps & filters);
+  StreamMaps create(const StreamList & configs, const FilterMaps & filters, const WidgetMaps & widgets);
   void release();
   const auto & topics() { return topics_; }
 
 private:
-  Stream create_stream(const StreamLink & config, const WidgetMaps & widgets);
+  Stream create_stream(const StreamLink & config, const FilterMaps & filters, const WidgetMaps & widgets);
   std::vector<std::shared_ptr<BasicStream>> streams_;
   std::vector<std::shared_ptr<TopicStream>> topics_;
 };

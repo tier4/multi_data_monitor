@@ -24,6 +24,7 @@ ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
   "src/plugin/widget/matrix.cpp"
   "src/plugin/widget/simple.cpp"
   "src/plugin/widget/titled.cpp"
+  "src/plugin/filter/units.cpp"
 )
 
 ament_auto_add_library(${PROJECT_NAME}_core SHARED
@@ -38,8 +39,8 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/parser/subscription.cpp"
   "src/core/parser/resolve_relation.cpp"
   "src/core/parser/stylesheet.cpp"
-  "src/core/loader/action_loader.cpp"
   "src/core/loader/config_loader.cpp"
+  "src/core/loader/filter_loader.cpp"
   "src/core/loader/stream_loader.cpp"
   "src/core/runner/rclcpp_runner.cpp"
   "src/core/runner/stream_runner.cpp"

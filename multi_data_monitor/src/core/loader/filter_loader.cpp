@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "action_loader.hpp"
+#include "filter_loader.hpp"
 #include "common/exceptions.hpp"
 #include "config/types.hpp"
 #include "filter/function.hpp"
@@ -36,48 +36,43 @@ std::string get_full_plugin_name(const std::string & klass)
   return plugin::name::package + std::string("::") + klass;
 }
 
-ActionLoader::ActionLoader() : plugins_(plugin::name::package, plugin::name::action)
+FilterLoader::FilterLoader() : plugins_(plugin::name::package, plugin::name::filter)
 {
 }
 
-ActionMaps ActionLoader::create(const ActionList & configs)
+FilterMaps FilterLoader::create(const FilterList & configs)
 {
-  ActionMaps mapping;
+  FilterMaps mapping;
   for (const auto & config : configs)
   {
-    const auto action = create_action(config, mapping);
-    mapping[config] = actions_.emplace_back(action);
-    action->setup(config->yaml);
+    const auto filter = create_filter(config, mapping);
+    mapping[config] = filters_.emplace_back(filter);
+    filter->setup(config->yaml);
   }
   return mapping;
 }
 
-Action ActionLoader::create_action(const ActionLink & config, const ActionMaps & mapping)
+Filter FilterLoader::create_filter(const FilterLink & config, const FilterMaps & mapping)
 {
   if (config->klass == builtin::function)
   {
-    for (const auto & item : config->items)
-    {
-      std::cout << config->klass << " " << item << " " << mapping.at(item) << std::endl;
-    }
-    const auto action = std::make_shared<FunctionAction>(nullptr);
-    return action;
+    return std::make_shared<FunctionFilter>(mapping.at(config->items));
   }
 
   // Search in default plugins if namespace is omitted.
   std::string klass = get_full_plugin_name(config->klass);
   if (!plugins_.isClassAvailable(klass))
   {
-    throw ConfigError("unknown action type: " + config->klass);
+    throw ConfigError("unknown filter type: " + config->klass);
   }
   return plugins_.createSharedInstance(klass);
 }
 
-void ActionLoader::release()
+void FilterLoader::release()
 {
   // TODO(Takagi, Isamu): check use count
   // Release shared_ptr to unload plugins.
-  actions_.clear();
+  filters_.clear();
 }
 
 }  // namespace multi_data_monitor

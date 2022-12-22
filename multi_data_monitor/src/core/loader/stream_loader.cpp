@@ -35,17 +35,17 @@ StreamLoader::StreamLoader()
 {
 }
 
-StreamMaps StreamLoader::create(const StreamList & configs)
+StreamMaps StreamLoader::create(const StreamList & configs, const FilterMaps & filters)
 {
-  return create(configs, WidgetMaps());
+  return create(configs, filters, WidgetMaps());
 }
 
-StreamMaps StreamLoader::create(const StreamList & configs, const WidgetMaps & widgets)
+StreamMaps StreamLoader::create(const StreamList & configs, const FilterMaps & filters, const WidgetMaps & widgets)
 {
-  std::unordered_map<StreamLink, Stream> mapping;
+  StreamMaps mapping;
   for (const auto & config : configs)
   {
-    const auto stream = create_stream(config, widgets);
+    const auto stream = create_stream(config, filters, widgets);
     mapping[config] = streams_.emplace_back(stream);
     stream->setting(config->yaml);
   }
@@ -59,13 +59,7 @@ StreamMaps StreamLoader::create(const StreamList & configs, const WidgetMaps & w
   return mapping;
 }
 
-template <class Link, class Node>
-Node get_map_link(const std::unordered_map<Link, Node> map, const Link & link)
-{
-  return map.count(link) ? map.at(link) : nullptr;
-}
-
-Stream StreamLoader::create_stream(const StreamLink & config, const WidgetMaps & widgets)
+Stream StreamLoader::create_stream(const StreamLink & config, const FilterMaps & filters, const WidgetMaps & widgets)
 {
   if (config->klass == builtin::topic)
   {
@@ -74,12 +68,12 @@ Stream StreamLoader::create_stream(const StreamLink & config, const WidgetMaps &
   }
   if (config->klass == builtin::apply)
   {
-    // const auto widget = get_map_link(widgets, config->panel);
-    return std::make_shared<ApplyStream>(nullptr);
+    const auto filter = filters.get(config->apply, nullptr);
+    return std::make_shared<ApplyStream>(filter);
   }
   if (config->klass == builtin::panel)
   {
-    const auto widget = get_map_link(widgets, config->panel);
+    const auto widget = widgets.get(config->panel, nullptr);
     return std::make_shared<PanelStream>(widget);
   }
   if (config->klass == builtin::field)

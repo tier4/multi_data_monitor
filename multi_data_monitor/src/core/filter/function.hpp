@@ -16,20 +16,21 @@
 #define CORE__FILTER__FUNCTION_HPP_
 
 #include "common/typedef.hpp"
-#include <multi_data_monitor/action.hpp>
+#include <multi_data_monitor/filter.hpp>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-struct FunctionAction : public BasicAction
+struct FunctionFilter : public BasicFilter
 {
 public:
-  explicit FunctionAction(Action action);
+  explicit FunctionFilter(const std::vector<Filter> & filters);
   void setup(YAML::Node yaml) override;
-  void apply(Packet & packet) override;
+  Packet apply(const Packet & packet) override;
 
 private:
-  Action action_;
+  std::vector<Filter> filters_;
 };
 
 }  // namespace multi_data_monitor

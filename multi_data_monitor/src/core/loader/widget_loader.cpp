@@ -28,7 +28,7 @@
 namespace multi_data_monitor
 {
 
-// TODO(Takagi, Isamu): merge action loader
+// TODO(Takagi, Isamu): merge filter loader
 std::string get_full_plugin_name(const std::string & klass)
 {
   if (klass.find("::") != std::string::npos)
@@ -63,8 +63,8 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
 {
   // Place the dummy root object in stack memory to automatically release Qt objects.
   QWidget dummy_root_widget;
+  WidgetMaps mapping;
   std::unordered_map<WidgetLink, SetupWidget> containers;
-  std::unordered_map<WidgetLink, Widget> mapping;
 
   for (const auto & config : configs)
   {

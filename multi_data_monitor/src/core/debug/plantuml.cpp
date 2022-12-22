@@ -24,11 +24,13 @@ template <class T>
 void dump_node(std::ostringstream & ss, const T & data, const std::string & color)
 {
   const auto label = data->label.empty() ? "" : " [" + data->label + "]";
-
   ss << "card " << data << " " << color << " [" << std::endl;
   ss << data->klass << label << std::endl;
-  ss << "---" << std::endl;
-  ss << YAML::Dump(data->yaml) << std::endl;
+  if (data->yaml.size())
+  {
+    ss << "---" << std::endl;
+    ss << YAML::Dump(data->yaml) << std::endl;
+  }
   ss << "]" << std::endl;
 }
 
@@ -41,9 +43,9 @@ std::string Diagram::convert(const ConfigData & data) const
   {
     dump_node(ss, stream, "#AAFFFF");
   }
-  for (const auto & action : data.actions)
+  for (const auto & filter : data.filters)
   {
-    dump_node(ss, action, "#FFFFAA");
+    dump_node(ss, filter, "#FFFFAA");
   }
   for (const auto & widget : data.widgets)
   {
@@ -70,15 +72,15 @@ std::string Diagram::convert(const ConfigData & data) const
     }
   }
 
-  for (const auto & action : data.actions)
+  for (const auto & filter : data.filters)
   {
-    if (action->refer)
+    if (filter->refer)
     {
-      ss << action << " --> " << action->refer << " #line.dashed" << std::endl;
+      ss << filter << " --> " << filter->refer << " #line.dashed" << std::endl;
     }
-    for (const auto & item : action->items)
+    for (const auto & item : filter->items)
     {
-      ss << action << " --> " << item << std::endl;
+      ss << filter << " --> " << item << std::endl;
     }
   }
 

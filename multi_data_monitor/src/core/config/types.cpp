@@ -35,11 +35,11 @@ StreamLink ConfigData::create_stream(const NodeClass & klass, const NodeLabel & 
   return streams.emplace_back(data);
 }
 
-ActionLink ConfigData::create_action(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
+FilterLink ConfigData::create_filter(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
 {
-  const auto data = std::make_shared<ActionData>(klass, label);
+  const auto data = std::make_shared<FilterData>(klass, label);
   data->yaml = yaml;
-  return actions.emplace_back(data);
+  return filters.emplace_back(data);
 }
 
 WidgetLink ConfigData::create_widget(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)

@@ -23,12 +23,12 @@ namespace multi_data_monitor
 struct ApplyStream : public InOutStream
 {
 public:
-  explicit ApplyStream(Action action);
+  explicit ApplyStream(Filter filter);
   void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
 
 private:
-  Action action_;
+  Filter filter_;
 };
 
 }  // namespace multi_data_monitor

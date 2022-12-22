@@ -13,23 +13,29 @@
 // limitations under the License.
 
 #include "function.hpp"
+#include <vector>
 
 namespace multi_data_monitor
 {
 
-FunctionAction::FunctionAction(Action action)
+FunctionFilter::FunctionFilter(const std::vector<Filter> & filters)
 {
-  action_ = action;
+  filters_ = filters;
 }
 
-void FunctionAction::setup(YAML::Node yaml)
+void FunctionFilter::setup(YAML::Node yaml)
 {
   (void)yaml;
 }
 
-void FunctionAction::apply(Packet & packet)
+Packet FunctionFilter::apply(const Packet & packet)
 {
-  (void)packet;
+  Packet result = packet;
+  for (const auto & filter : filters_)
+  {
+    result = filter->apply(result);
+  }
+  return result;
 }
 
 }  // namespace multi_data_monitor

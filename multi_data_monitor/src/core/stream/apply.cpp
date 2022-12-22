@@ -13,13 +13,14 @@
 // limitations under the License.
 
 #include "apply.hpp"
+#include <multi_data_monitor/filter.hpp>
 
 namespace multi_data_monitor
 {
 
-ApplyStream::ApplyStream(Action action)
+ApplyStream::ApplyStream(Filter filter)
 {
-  action_ = action;
+  filter_ = filter;
 }
 
 void ApplyStream::setting(YAML::Node yaml)
@@ -29,13 +30,7 @@ void ApplyStream::setting(YAML::Node yaml)
 
 void ApplyStream::message(const Packet & packet)
 {
-  outputs(packet);
-  /*
-  if (action_)
-  {
-    action_->message(packet);
-  }
-  */
+  outputs(filter_ ? filter_->apply(packet) : packet);
 }
 
 }  // namespace multi_data_monitor

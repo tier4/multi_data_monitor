@@ -12,22 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__ACTION_HPP_
-#define MULTI_DATA_MONITOR__ACTION_HPP_
+#ifndef MULTI_DATA_MONITOR__FILTER_HPP_
+#define MULTI_DATA_MONITOR__FILTER_HPP_
 
 #include <multi_data_monitor/packet.hpp>
 
 namespace multi_data_monitor
 {
 
-class BasicAction
+class BasicFilter
 {
 public:
-  virtual ~BasicAction() = default;
+  virtual ~BasicFilter() = default;
   virtual void setup(YAML::Node yaml) = 0;
-  virtual void apply(Packet & packet) = 0;
+  virtual Packet apply(const Packet & packet) = 0;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__ACTION_HPP_
+#endif  // MULTI_DATA_MONITOR__FILTER_HPP_

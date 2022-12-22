@@ -38,7 +38,7 @@ namespace multi_data_monitor::plugin::name
 {
 
 constexpr char package[] = "multi_data_monitor";
-constexpr char action[] = "multi_data_monitor::BasicAction";
+constexpr char filter[] = "multi_data_monitor::BasicFilter";
 constexpr char widget[] = "multi_data_monitor::BasicWidget";
 
 }  // namespace multi_data_monitor::plugin::name
@@ -69,18 +69,18 @@ struct StreamData final : public CommonData
   using CommonData::CommonData;
   YAML::Node yaml;
   WidgetLink panel;
-  ActionLink apply;
+  FilterLink apply;
   StreamLink refer;
   StreamList items;
 };
 
-struct ActionData final : public CommonData
+struct FilterData final : public CommonData
 {
-  static constexpr auto TypeName = "action";
+  static constexpr auto TypeName = "filter";
   using CommonData::CommonData;
   YAML::Node yaml;
-  ActionLink refer;
-  ActionList items;
+  FilterLink refer;
+  FilterList items;
 };
 
 struct WidgetData final : public CommonData
@@ -112,11 +112,11 @@ struct ConfigFile final
 struct ConfigData final
 {
   StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
-  ActionLink create_action(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
+  FilterLink create_filter(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
   WidgetLink create_widget(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
 
   std::vector<StreamLink> streams;
-  std::vector<ActionLink> actions;
+  std::vector<FilterLink> filters;
   std::vector<WidgetLink> widgets;
   std::vector<DesignLink> designs;
 };
