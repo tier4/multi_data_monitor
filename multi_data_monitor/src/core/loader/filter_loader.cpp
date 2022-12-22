@@ -23,18 +23,22 @@
 // DEBUG
 #include <iostream>
 
-namespace multi_data_monitor
+// TODO(Takagi, Isamu): merge filter loader
+namespace
 {
-
-// TODO(Takagi, Isamu): merge widget loader
 std::string get_full_plugin_name(const std::string & klass)
 {
   if (klass.find("::") != std::string::npos)
   {
     return klass;
   }
-  return plugin::name::package + std::string("::") + klass;
+  return multi_data_monitor::plugin::name::package + std::string("::") + klass;
 }
+
+}  // namespace
+
+namespace multi_data_monitor
+{
 
 FilterLoader::FilterLoader() : plugins_(plugin::name::package, plugin::name::filter)
 {

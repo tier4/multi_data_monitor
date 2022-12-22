@@ -17,7 +17,6 @@ class TestNode(rclpy.node.Node):
     def on_timer(self):
         msg = std_msgs.msg.Float64()
         msg.data = 2.0 * math.pi * self.count * 0.01
-        print(msg.data)
         self.pub_double.publish(msg)
         self.count = (self.count + 1) % 100
 

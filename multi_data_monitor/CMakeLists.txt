@@ -19,21 +19,13 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
-ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
-  "src/plugin/widget/debug_label.hpp"
-  "src/plugin/widget/matrix.cpp"
-  "src/plugin/widget/simple.cpp"
-  "src/plugin/widget/titled.cpp"
-  "src/plugin/filter/units.cpp"
-  "src/plugin/filter/precision.cpp"
-)
-
 ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/common/rclcpp.cpp"
   "src/core/common/path.cpp"
   "src/core/common/yaml.cpp"
   "src/core/config/types.cpp"
   "src/core/debug/plantuml.cpp"
+  "src/core/header/widget.cpp"
   "src/core/parser/check_system_class.cpp"
   "src/core/parser/file.cpp"
   "src/core/parser/construction.cpp"
@@ -43,8 +35,10 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/loader/config_loader.cpp"
   "src/core/loader/filter_loader.cpp"
   "src/core/loader/stream_loader.cpp"
+  "src/core/loader/widget_loader.cpp"
   "src/core/runner/rclcpp_runner.cpp"
   "src/core/runner/stream_runner.cpp"
+  "src/core/runner/widget_runner.cpp"
   "src/core/stream/apply.cpp"
   "src/core/stream/basic.cpp"
   "src/core/stream/field.cpp"
@@ -60,12 +54,18 @@ ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
   "src/core/rviz/manager.cpp"
   "src/core/rviz/panel.hpp"
   "src/core/rviz/panel.cpp"
-  "src/core/loader/widget_loader.hpp"
-  "src/core/loader/widget_loader.cpp"
-  "src/core/runner/widget_runner.hpp"
-  "src/core/runner/widget_runner.cpp"
 )
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
+
+ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
+  "src/plugin/widget/debug_label.hpp"
+  "src/plugin/widget/matrix.cpp"
+  "src/plugin/widget/simple.cpp"
+  "src/plugin/widget/titled.cpp"
+  "src/plugin/filter/units.cpp"
+  "src/plugin/filter/precision.cpp"
+)
+target_link_libraries(${PROJECT_NAME}_plugin ${PROJECT_NAME}_core)
 
 ament_auto_add_executable(parser src/tool/parser.cpp)
 target_include_directories(parser PRIVATE src/core)

@@ -31,6 +31,11 @@ struct RuntimeError : public std::runtime_error
   using std::runtime_error::runtime_error;
 };
 
+struct PluginError : public std::runtime_error
+{
+  using std::runtime_error::runtime_error;
+};
+
 struct ConfigError : public std::runtime_error
 {
   using std::runtime_error::runtime_error;

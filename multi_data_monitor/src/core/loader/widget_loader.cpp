@@ -25,18 +25,22 @@
 // DEBUG
 #include <iostream>
 
-namespace multi_data_monitor
-{
-
 // TODO(Takagi, Isamu): merge filter loader
+namespace
+{
 std::string get_full_plugin_name(const std::string & klass)
 {
   if (klass.find("::") != std::string::npos)
   {
     return klass;
   }
-  return plugin::name::package + std::string("::") + klass;
+  return multi_data_monitor::plugin::name::package + std::string("::") + klass;
 }
+
+}  // namespace
+
+namespace multi_data_monitor
+{
 
 QString get_stylesheet(const DesignList & designs, const std::string & klass = "")
 {
@@ -64,23 +68,26 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
   // Place the dummy root object in stack memory to automatically release Qt objects.
   QWidget dummy_root_widget;
   WidgetMaps mapping;
-  std::unordered_map<WidgetLink, SetupWidget> containers;
 
   for (const auto & config : configs)
   {
-    const auto widget = create_widget(config);
-    mapping[config] = widgets_.emplace_back(widget);
+    const auto node = create_widget(config);
+    mapping[config] = widgets_.emplace_back(node);
 
     std::vector<QWidget *> items;
     for (const auto & item : config->items)
     {
-      // TODO(Takagi, Isamu): check no child widget
-      items.push_back(containers.at(item).main);
+      items.push_back(mapping.at(item)->system_get_widget());
     }
-    const auto result = widget->setup(config->yaml, items);
-    containers[config] = result;
-    result.main->setParent(&dummy_root_widget);
-    result.main->setStyleSheet(get_stylesheet(designs, config->klass));
+    node->system_setup(config->yaml, items);
+
+    const auto widget = node->system_get_widget();
+    if (!widget)
+    {
+      throw PluginError("widget plugin does not create object");
+    }
+    widget->setParent(&dummy_root_widget);
+    widget->setStyleSheet(get_stylesheet(designs, config->klass));
   }
 
   root_widget_ = std::make_unique<QWidget>();
@@ -89,7 +96,7 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
 
   if (!configs.empty())
   {
-    QWidget * widget = containers.at(configs.back()).main;
+    QWidget * widget = mapping.at(configs.back())->system_get_widget();
     QLayout * layout = new QGridLayout();
     layout->addWidget(widget);
     // layout->setSpacing(0);
@@ -97,9 +104,9 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
     root_widget_->setLayout(layout);
   }
 
-  for (const auto & [config, setup] : containers)
+  for (const auto & node : widgets_)
   {
-    QWidget * widget = setup.main;
+    QWidget * widget = node->system_get_widget();
     if (widget && widget->parent() == &dummy_root_widget)
     {
       // TODO(Takagi, Isamu): exception or warning

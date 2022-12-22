@@ -20,27 +20,34 @@
 #include <vector>
 
 class QWidget;
+class QLayout;
 
 namespace multi_data_monitor
 {
 
-struct SetupWidget
-{
-  QWidget * main;
-};
-
 class BasicWidget
 {
+protected:
+  virtual void setup(YAML::Node yaml, const std::vector<QWidget *> & items) = 0;
+  virtual void apply([[maybe_unused]] const Packet & packet) {}
+  void register_root_widget(QWidget * widget);
+  void register_root_layout(QLayout * layout);
+  void register_stylesheet_widget(QWidget * widget);
+
 public:
+  QWidget * system_get_widget();
+  void system_setup(YAML::Node yaml, const std::vector<QWidget *> & items);
+  void system_apply(const Packet & packet);
+
   // DEBUG
   static inline int created = 0;
   static inline int removed = 0;
   BasicWidget() { ++created; }
   virtual ~BasicWidget() { ++removed; }
-
   // virtual ~BasicWidget() = default;
-  virtual SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & children) = 0;
-  virtual void message([[maybe_unused]] const Packet & packet) {}
+
+private:
+  QWidget * root_;
 };
 
 }  // namespace multi_data_monitor

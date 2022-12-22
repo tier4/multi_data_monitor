@@ -32,7 +32,7 @@ void PanelStream::message(const Packet & packet)
 {
   if (widget_)
   {
-    widget_->message(packet);
+    widget_->system_apply(packet);
   }
 }
 

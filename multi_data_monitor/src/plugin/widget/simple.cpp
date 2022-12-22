@@ -22,27 +22,25 @@ namespace multi_data_monitor
 class Simple : public BasicWidget
 {
 public:
-  SetupWidget setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
-  void message(const Packet & packet) override;
+  void setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
+  void apply(const Packet & packet) override;
 
 private:
   QLabel * label_;
   QString title_;
 };
 
-SetupWidget Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
+void Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
 {
   title_ = QString::fromStdString(yaml["title"].as<std::string>(""));
   label_ = new QLabel(title_);
   label_->setAlignment(Qt::AlignCenter);
   label_->setToolTip(QString::fromStdString(yaml["notes"].as<std::string>("")));
 
-  SetupWidget setup;
-  setup.main = label_;
-  return setup;
+  register_root_widget(label_);
 }
 
-void Simple::message(const Packet & packet)
+void Simple::apply(const Packet & packet)
 {
   const auto value = QString::fromStdString(packet.value.as<std::string>());
   label_->setText(title_ + value);
