@@ -1,62 +1,17 @@
 version: 2.0
 
 stylesheets:
-  - { path: package://multi_data_monitor/css/plugins/simple.css, class: multi_data_monitor::Simple }
-  - { path: package://multi_data_monitor/css/colors.css, class: Simple }
+  - { path: package://multi_data_monitor/css/plugins/simple.css, class: Simple }
+  - { path: package://multi_data_monitor/css/plugins/titled.css, class: Titled }
+  - { path: package://multi_data_monitor/css/colors.css }
 
 widgets:
-  - class: relay
-    label: w5
-    refer: w6
-  - class: multi_data_monitor::Simple
-    label: w6
-    input: temp1
-  - class: multi_data_monitor::Simple
-    label: w7
-    input: temp1
-  - class: Matrix
-    label: w0
-    cols: 3
-    items: [w1, w2, w3, w4, { class: Matrix, label: m1, items: [w5, w7] }]
   - class: Simple
-    label: w1
     title: title
-    input: { class: subscription, topic: /test/header, field: stamp.sec }
-  - class: multi_data_monitor::Simple
-    label: w2
-    input: { class: subscription, topic: /test/header, field: stamp.nanosec }
-  - class: multi_data_monitor::Simple
-    label: w3
-    input: test-test
-  - class: multi_data_monitor::Simple
-    label: w4
-    input: time1
-
-streams:
-  - class: print
-    title: ===== stamp.sec =====
-    input: { class: subscription, topic: /test/header, field: stamp.sec, qos: dd1, label: test-test }
-  - class: print
-    title: ===== stamp.nanosec =====
-    input: { class: subscription, topic: /test/header, field: stamp.nanosec }
-  - class: relay
-    label: temp1
-    refer: temp2
-  - class: relay
-    label: temp2
-    refer: temp3
-    param: table
-  - class: relay
-    label: temp3
-    refer: uint-data
-
-subscriptions:
-  - name: /test/header
-    type: std_msgs/msg/Header
-    qos: dd1
-    fields:
-      - { name: stamp.sec, label: time1 }
-      - { name: stamp.nanosec, label: time2 }
-  - name: /test/uint32
-    fields:
-      - { name: data, label: uint-data }
+    input:
+      class: apply
+      input: { class: subscription, label: data, topic: /test/uint32, field: data }
+      rules:
+        - { class: SetIf, eq: 1, type: text, value: A, attrs: { color: red } }
+        - { class: SetIf, eq: 2, type: text, value: B, attrs: { color: green } }
+        - { class: SetIf, eq: 3, type: text, value: C, attrs: { color: blue } }

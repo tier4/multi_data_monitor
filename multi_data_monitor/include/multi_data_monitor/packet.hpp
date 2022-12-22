@@ -24,8 +24,9 @@ namespace multi_data_monitor
 
 struct Packet
 {
+  using Attrs = std::unordered_map<std::string, std::string>;
   YAML::Node value;
-  std::unordered_map<std::string, std::string> attrs;
+  Attrs attrs;
 };
 
 }  // namespace multi_data_monitor
