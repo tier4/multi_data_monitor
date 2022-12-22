@@ -25,6 +25,7 @@ ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
   "src/plugin/widget/simple.cpp"
   "src/plugin/widget/titled.cpp"
   "src/plugin/filter/units.cpp"
+  "src/plugin/filter/precision.cpp"
 )
 
 ament_auto_add_library(${PROJECT_NAME}_core SHARED
@@ -86,8 +87,9 @@ if(BUILD_TESTING)
 endif()
 
 install(PROGRAMS
-  scripts/tutorial
+  examples/scripts/tutorial
+  examples/scripts/radian
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_auto_package(INSTALL_TO_SHARE css icons plugins tutorials)
+ament_auto_package(INSTALL_TO_SHARE css examples icons plugins)

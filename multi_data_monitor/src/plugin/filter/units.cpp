@@ -46,7 +46,7 @@ void Units::setup(YAML::Node yaml)
 
 Packet Units::apply(const Packet & packet)
 {
-  const double value = coefficient_ * packet.value.as<double>();
+  const auto value = coefficient_ * packet.value.as<double>();
   return {YAML::Node(value), packet.attrs};
 }
 

@@ -1,0 +1,5 @@
+<launch>
+  <arg name="path" default="$(find-pkg-share multi_data_monitor)/examples/showcase/unit_conversion"/>
+  <node pkg="rviz2" exec="rviz2" name="rviz2" args="-d $(var path)/rviz.yaml"/>
+  <node pkg="multi_data_monitor" exec="radian" name="radian"/>
+</launch>

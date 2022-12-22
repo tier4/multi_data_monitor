@@ -12,18 +12,18 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include <multi_data_monitor/action.hpp>
+#include <multi_data_monitor/filter.hpp>
 #include <fmt/format.h>
 #include <string>
 
 namespace multi_data_monitor
 {
 
-class Precision : public Action
+class Precision : public BasicFilter
 {
 public:
   void setup(YAML::Node yaml) override;
-  void apply(Packet & packet) override;
+  Packet apply(const Packet & packet) override;
 
 private:
   int digits_;
@@ -34,9 +34,10 @@ void Precision::setup(YAML::Node yaml)
   digits_ = yaml["digits"].as<int>();
 }
 
-void Precision::apply(Packet & packet)
+Packet Precision::apply(const Packet & packet)
 {
-  packet.value = fmt::format("{:.{}f}", packet.value.as<double>(), digits_);
+  const auto value = fmt::format("{:.{}f}", packet.value.as<double>(), digits_);
+  return {YAML::Node(value), packet.attrs};
 }
 
 }  // namespace multi_data_monitor

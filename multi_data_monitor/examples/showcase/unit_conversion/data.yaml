@@ -1,0 +1,29 @@
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, class: Simple }
+
+widgets:
+  - class: Matrix
+    items:
+      - { class: Simple, title: "radian: ", input: radian }
+      - { class: Simple, title: "degree: ", input: degree }
+
+streams:
+  - class: subscription
+    label: topic_input
+    topic: /test/radian
+    field: data
+
+  - class: apply
+    label: degree
+    input: topic_input
+    rules:
+      - { class: Units, type: rad_to_deg }
+      - { class: Precision, digits: 3 }
+
+  - class: apply
+    label: radian
+    input: topic_input
+    rules:
+      - { class: Precision, digits: 3 }
