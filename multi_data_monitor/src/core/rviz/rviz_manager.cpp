@@ -12,29 +12,30 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__RVIZ__MANAGER_HPP_
-#define CORE__RVIZ__MANAGER_HPP_
+#include "rviz_manager.hpp"
+#include "loader/config_loader.hpp"
+#include "loader/widget_loader.hpp"
+#include "runner/rclcpp_runner.hpp"
+#include <QLabel>
 
-#include "common/rclcpp.hpp"
-#include "runner/widget_runner.hpp"
-#include <memory>
-#include <string>
-
-class QWidget;
+// DEBUG
+#include <iostream>
 
 namespace multi_data_monitor
 {
 
-class RvizManager final
+RvizManager::~RvizManager()
 {
-public:
-  ~RvizManager();
-  QWidget * build(const std::string & path, ros::Node node);
+  std::cout << "rviz manager shutdown" << std::endl;
+  runner_.shutdown();
+}
 
-private:
-  WidgetRunner runner_;
-};
+QWidget * RvizManager::build(const std::string & path, ros::Node node)
+{
+  runner_.shutdown();
+  runner_.create(ConfigLoader::Execute(path));
+  runner_.start(node);
+  return runner_.take_root_widget();
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // CORE__RVIZ__MANAGER_HPP_

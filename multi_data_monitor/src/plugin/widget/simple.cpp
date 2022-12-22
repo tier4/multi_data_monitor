@@ -38,6 +38,7 @@ void Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
   label_->setToolTip(QString::fromStdString(yaml["notes"].as<std::string>("")));
 
   register_root_widget(label_);
+  register_stylesheet_widget(label_);
 }
 
 void Simple::apply(const Packet & packet)

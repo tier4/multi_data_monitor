@@ -26,56 +26,38 @@ class Titled : public BasicWidget
 public:
   void setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
   void apply(const Packet & packet) override;
+
+private:
+  QLabel * value_;
+  QLabel * title_;
 };
 
-void Titled::setup(YAML::Node yaml, const std::vector<QWidget *> & items)
+void Titled::setup(YAML::Node yaml, const std::vector<QWidget *> &)
 {
-  (void)yaml;
-  (void)items;
+  value_ = new QLabel();
+  title_ = new QLabel(QString::fromStdString(yaml["title"].as<std::string>("")));
+  value_->setAlignment(Qt::AlignCenter);
+  title_->setAlignment(Qt::AlignCenter);
+
+  auto * layout = new QVBoxLayout();
+  layout->addWidget(value_);
+  layout->addWidget(title_);
+  layout->setSpacing(0);
+  layout->setContentsMargins(0, 0, 0, 0);
+
+  auto * widget = new QWidget();
+  widget->setToolTip(QString::fromStdString(yaml["notes"].as<std::string>("")));
+  widget->setLayout(layout);
+  register_root_widget(widget);
+  register_stylesheet_widget(value_, "value");
+  register_stylesheet_widget(title_, "title");
 }
 
 void Titled::apply(const Packet & packet)
 {
-  (void)packet;
+  const auto value = QString::fromStdString(packet.value.as<std::string>());
+  value_->setText(value);
 }
-
-/*
-class Titled : public BasicWidget
-{
-private:
-  QLabel * value_;
-  QLabel * title_;
-
-public:
-  Instance Create(const YAML::Node params) override
-  {
-    value_ = new QLabel();
-    title_ = new QLabel(QString::fromStdString(params["title"].as<std::string>("")));
-    value_->setAlignment(Qt::AlignCenter);
-    title_->setAlignment(Qt::AlignCenter);
-    value_->setProperty("class", "value");
-    title_->setProperty("class", "title");
-
-    auto * layout = new QVBoxLayout();
-    layout->addWidget(value_);
-    layout->addWidget(title_);
-    layout->setSpacing(0);
-    layout->setContentsMargins(0, 0, 0, 0);
-
-    auto * widget = new QWidget();
-    widget->setToolTip(QString::fromStdString(params["notes"].as<std::string>("")));
-    widget->setLayout(layout);
-    return widget;
-  }
-
-  void Callback(const MonitorValues & input) override
-  {
-    const auto value = QString::fromStdString(input.value.as<std::string>());
-    value_->setText(value);
-    UpdateProperties(input, value_);
-  }
-};
-*/
 
 }  // namespace multi_data_monitor
 

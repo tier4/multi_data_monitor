@@ -50,10 +50,10 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
 target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)
 
 ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
-  "src/core/rviz/manager.hpp"
-  "src/core/rviz/manager.cpp"
-  "src/core/rviz/panel.hpp"
-  "src/core/rviz/panel.cpp"
+  "src/core/rviz/rviz_manager.hpp"
+  "src/core/rviz/rviz_manager.cpp"
+  "src/core/rviz/rviz_panel.hpp"
+  "src/core/rviz/rviz_panel.cpp"
 )
 target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
 

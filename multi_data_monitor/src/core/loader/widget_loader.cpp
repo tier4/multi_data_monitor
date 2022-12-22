@@ -80,14 +80,8 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
       items.push_back(mapping.at(item)->system_get_widget());
     }
     node->system_setup(config->yaml, items);
-
-    const auto widget = node->system_get_widget();
-    if (!widget)
-    {
-      throw PluginError("widget plugin does not create object");
-    }
-    widget->setParent(&dummy_root_widget);
-    widget->setStyleSheet(get_stylesheet(designs, config->klass));
+    node->system_get_widget()->setParent(&dummy_root_widget);
+    node->system_set_stylesheet(get_stylesheet(designs, config->klass));
   }
 
   root_widget_ = std::make_unique<QWidget>();

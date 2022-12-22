@@ -12,10 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__RVIZ__PANEL_HPP_
-#define CORE__RVIZ__PANEL_HPP_
+#ifndef CORE__RVIZ__RVIZ_PANEL_HPP_
+#define CORE__RVIZ__RVIZ_PANEL_HPP_
 
-#include "manager.hpp"
+#include "rviz_manager.hpp"
 #include <rviz_common/panel.hpp>
 #include <QWidget>
 #include <memory>
@@ -65,4 +65,4 @@ private:
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__RVIZ__PANEL_HPP_
+#endif  // CORE__RVIZ__RVIZ_PANEL_HPP_

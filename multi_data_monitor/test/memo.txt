@@ -32,3 +32,4 @@ topicにinputを指定したとき
 - setup(yaml, vector<Items>) { setup(yaml, filter(items)); }
 
 プラグイン初期化中・処理中の例外処理
+Attrにclassという名前を使っていないか。

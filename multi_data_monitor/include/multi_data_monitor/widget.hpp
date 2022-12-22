@@ -16,9 +16,10 @@
 #define MULTI_DATA_MONITOR__WIDGET_HPP_
 
 #include <multi_data_monitor/packet.hpp>
-#include <memory>
+#include <string>
 #include <vector>
 
+class QString;
 class QWidget;
 class QLayout;
 
@@ -32,12 +33,13 @@ protected:
   virtual void apply([[maybe_unused]] const Packet & packet) {}
   void register_root_widget(QWidget * widget);
   void register_root_layout(QLayout * layout);
-  void register_stylesheet_widget(QWidget * widget);
+  void register_stylesheet_widget(QWidget * widget, const std::string & target = "");
 
 public:
   QWidget * system_get_widget();
   void system_setup(YAML::Node yaml, const std::vector<QWidget *> & items);
   void system_apply(const Packet & packet);
+  void system_set_stylesheet(const QString & stylesheet);
 
   // DEBUG
   static inline int created = 0;
@@ -48,6 +50,7 @@ public:
 
 private:
   QWidget * root_;
+  std::vector<QWidget *> stylesheet_widgets_;
 };
 
 }  // namespace multi_data_monitor
