@@ -52,7 +52,46 @@ Packet SetIf::apply(const Packet & packet)
   return action_->eval(packet.value) ? action_->apply(packet) : packet;
 }
 
+class SetFirstIf : public BasicFilter
+{
+public:
+  void setup(YAML::Node yaml) override;
+  Packet apply(const Packet & packet) override;
+
+private:
+  std::vector<std::unique_ptr<SetIfAction>> actions_;
+};
+
+void SetFirstIf::setup(YAML::Node yaml)
+{
+  const auto type = yaml["type"].as<std::string>();
+  const auto list = yaml["list"];
+  yaml.remove("type");
+  yaml.remove("list");
+
+  if (list.IsSequence())
+  {
+    for (auto item : list)
+    {
+      actions_.push_back(std::make_unique<SetIfAction>(type, item));
+    }
+  }
+}
+
+Packet SetFirstIf::apply(const Packet & packet)
+{
+  for (const auto & action : actions_)
+  {
+    if (action->eval(packet.value))
+    {
+      return action->apply(packet);
+    }
+  }
+  return packet;
+}
+
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
 PLUGINLIB_EXPORT_CLASS(multi_data_monitor::SetIf, multi_data_monitor::BasicFilter)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::SetFirstIf, multi_data_monitor::BasicFilter)

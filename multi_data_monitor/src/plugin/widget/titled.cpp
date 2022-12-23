@@ -25,7 +25,7 @@ class Titled : public BasicWidget
 {
 public:
   void setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
-  void apply(const Packet & packet) override;
+  void apply(YAML::Node yaml) override;
 
 private:
   QLabel * value_;
@@ -53,9 +53,9 @@ void Titled::setup(YAML::Node yaml, const std::vector<QWidget *> &)
   register_stylesheet_widget(title_, "title");
 }
 
-void Titled::apply(const Packet & packet)
+void Titled::apply(YAML::Node yaml)
 {
-  const auto value = QString::fromStdString(packet.value.as<std::string>());
+  const auto value = QString::fromStdString(yaml.as<std::string>());
   value_->setText(value);
 }
 

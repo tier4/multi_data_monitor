@@ -23,26 +23,26 @@
 namespace
 {
 
-using StylesheetWidgets = std::vector<QWidget *>;
-using Attributes = std::unordered_map<std::string, std::string>;
+using multi_data_monitor::Packet;
 
-bool validate_stylesheet_widgets(const StylesheetWidgets & widgets)
+bool validate_stylesheet_widgets(const std::vector<QWidget *> & widgets)
 {
   std::unordered_set<QWidget *> collection(widgets.begin(), widgets.end());
   return widgets.size() == collection.size();
 }
 
-void update_property(const StylesheetWidgets & widgets, const Attributes & attributes)
+void update_property(QWidget * widget, const Packet::Attrs & prevs, const Packet::Attrs & attrs)
 {
-  for (const auto & widget : widgets)
+  for (const auto & [name, attr] : prevs)
   {
-    for (const auto & [name, attr] : attributes)
-    {
-      widget->setProperty(name.c_str(), attr.c_str());
-    }
-    widget->style()->unpolish(widget);
-    widget->style()->polish(widget);
+    widget->setProperty(name.c_str(), QVariant());
   }
+  for (const auto & [name, attr] : attrs)
+  {
+    widget->setProperty(name.c_str(), attr.c_str());
+  }
+  widget->style()->unpolish(widget);
+  widget->style()->polish(widget);
 }
 
 }  // namespace
@@ -79,8 +79,12 @@ void BasicWidget::system_setup(YAML::Node yaml, const std::vector<QWidget *> & i
 
 void BasicWidget::system_apply(const Packet & packet)
 {
-  apply(packet);
-  update_property(stylesheet_widgets_, packet.attrs);
+  for (const auto & widget : stylesheet_widgets_)
+  {
+    update_property(widget, prev_attrs_, packet.attrs);
+    prev_attrs_ = packet.attrs;
+  }
+  apply(packet.value);
 }
 
 void BasicWidget::system_set_stylesheet(const QString & stylesheet)

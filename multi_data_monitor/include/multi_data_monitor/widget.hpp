@@ -30,7 +30,7 @@ class BasicWidget
 {
 protected:
   virtual void setup(YAML::Node yaml, const std::vector<QWidget *> & items) = 0;
-  virtual void apply([[maybe_unused]] const Packet & packet) {}
+  virtual void apply([[maybe_unused]] YAML::Node yaml) {}
   void register_root_widget(QWidget * widget);
   void register_root_layout(QLayout * layout);
   void register_stylesheet_widget(QWidget * widget, const std::string & target = "");
@@ -51,6 +51,7 @@ public:
 private:
   QWidget * root_;
   std::vector<QWidget *> stylesheet_widgets_;
+  Packet::Attrs prev_attrs_;
 };
 
 }  // namespace multi_data_monitor

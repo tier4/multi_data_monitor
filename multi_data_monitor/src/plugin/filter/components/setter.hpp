@@ -49,7 +49,7 @@ public:
     }
   }
 
-  Packet apply(const Packet & packet)
+  Packet apply(const Packet & packet) const
   {
     std::unordered_map<std::string, std::string> attrs;
     attrs.insert(attrs_.begin(), attrs_.end());

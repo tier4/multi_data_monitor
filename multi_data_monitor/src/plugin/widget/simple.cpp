@@ -23,7 +23,7 @@ class Simple : public BasicWidget
 {
 public:
   void setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
-  void apply(const Packet & packet) override;
+  void apply(YAML::Node yaml) override;
 
 private:
   QLabel * label_;
@@ -41,9 +41,9 @@ void Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
   register_stylesheet_widget(label_);
 }
 
-void Simple::apply(const Packet & packet)
+void Simple::apply(YAML::Node yaml)
 {
-  const auto value = QString::fromStdString(packet.value.as<std::string>());
+  const auto value = QString::fromStdString(yaml.as<std::string>());
   label_->setText(title_ + value);
 }
 
