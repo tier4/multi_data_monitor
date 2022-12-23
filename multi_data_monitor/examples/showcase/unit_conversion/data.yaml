@@ -19,7 +19,7 @@ streams:
     label: degree
     input: topic_input
     rules:
-      - { class: Units, type: rad_to_deg }
+      - { class: Units, mode: rad_to_deg }
       - { class: Precision, digits: 3 }
 
   - class: apply

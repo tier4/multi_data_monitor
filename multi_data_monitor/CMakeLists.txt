@@ -62,7 +62,8 @@ ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
   "src/plugin/widget/matrix.cpp"
   "src/plugin/widget/simple.cpp"
   "src/plugin/widget/titled.cpp"
-  "src/plugin/filter/setter.cpp"
+  "src/plugin/filter/components/conditions.cpp"
+  "src/plugin/filter/set_if.cpp"
   "src/plugin/filter/units.cpp"
   "src/plugin/filter/precision.cpp"
 )

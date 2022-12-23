@@ -57,7 +57,15 @@ QWidget * BasicWidget::system_get_widget()
 
 void BasicWidget::system_setup(YAML::Node yaml, const std::vector<QWidget *> & items)
 {
-  setup(yaml, items);
+  // TODO(Takagi, Isamu): more plugin info
+  try
+  {
+    setup(yaml, items);
+  }
+  catch (const std::exception & error)
+  {
+    throw PluginError(error.what());
+  }
 
   if (!root_)
   {

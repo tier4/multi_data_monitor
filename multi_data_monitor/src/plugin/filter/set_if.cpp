@@ -12,45 +12,47 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+#include "components/conditions.hpp"
+#include "components/setter.hpp"
 #include <multi_data_monitor/filter.hpp>
-#include <cmath>
-#include <string>
+
+//
+#include <iostream>
 
 namespace multi_data_monitor
 {
 
-class Units : public BasicFilter
+class SetIfAction : private SetAction, Condition
+{
+public:
+  SetIfAction(const std::string & type, YAML::Node & yaml) : SetAction(yaml), Condition(type, yaml) {}
+  using Condition::eval;
+  using SetAction::apply;
+};
+
+class SetIf : public BasicFilter
 {
 public:
   void setup(YAML::Node yaml) override;
   Packet apply(const Packet & packet) override;
 
 private:
-  double coefficient_;
+  std::unique_ptr<SetIfAction> action_;
 };
 
-void Units::setup(YAML::Node yaml)
+void SetIf::setup(YAML::Node yaml)
 {
-  const auto mode = yaml["mode"].as<std::string>();
-  coefficient_ = 1.0;
-
-  // clang-format off
-  if (mode == "mps_to_kph") { coefficient_ = 1.0 * 3.6; return; }
-  if (mode == "kph_to_mps") { coefficient_ = 1.0 / 3.6; return; }
-  if (mode == "deg_to_rad") { coefficient_ = M_PI / 180.0; return; }
-  if (mode == "rad_to_deg") { coefficient_ = 180.0 / M_PI; return; }
-  // clang-format on
-
-  // TODO(Takagi, Isamu): error handling
+  const auto type = yaml["type"].as<std::string>();
+  yaml.remove("type");
+  action_ = std::make_unique<SetIfAction>(type, yaml);
 }
 
-Packet Units::apply(const Packet & packet)
+Packet SetIf::apply(const Packet & packet)
 {
-  const auto value = coefficient_ * packet.value.as<double>();
-  return {YAML::Node(value), packet.attrs};
+  return action_->eval(packet.value) ? action_->apply(packet) : packet;
 }
 
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Units, multi_data_monitor::BasicFilter)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::SetIf, multi_data_monitor::BasicFilter)

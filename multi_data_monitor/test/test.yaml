@@ -11,16 +11,4 @@ widgets:
       class: apply
       input: { class: subscription, label: data, topic: /test/uint32, field: data }
       rules:
-        class: SetFirstIf
-        list:
-          - { eq: 1, type: text, value: A, attrs: { back-color: red } }
-          - { eq: 2, type: text, value: B, attrs: { back-color: lime } }
-          - { eq: 3, type: text, value: C, attrs: { back-color: blue } }
-          - { value: ERROR, attrs: { back-color: none } }
-
-aaa:
-  rules:
-    - { class: SetIf, eq: 1, type: text, value: A, attrs: { back-color: red } }
-    - { class: SetIf, eq: 2, type: text, value: B, attrs: { back-color: lime } }
-    - { class: SetIf, eq: 3, type: text, value: C, attrs: { back-color: blue } }
-    - { class: SetIf, value: ERROR, attrs: { back-color: none } }
+        - { class: SetIf, type: text, eq: 1, value: A, attrs: { back-color: red } }

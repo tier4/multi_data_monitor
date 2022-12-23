@@ -51,7 +51,16 @@ FilterMaps FilterLoader::create(const FilterList & configs)
   {
     const auto filter = create_filter(config, mapping);
     mapping[config] = filters_.emplace_back(filter);
-    filter->setup(config->yaml);
+
+    // TODO(Takagi, Isamu): more plugin info
+    try
+    {
+      filter->setup(config->yaml);
+    }
+    catch (const std::exception & error)
+    {
+      throw PluginError(config->klass + ".setup: " + error.what());
+    }
   }
   return mapping;
 }

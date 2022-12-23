@@ -12,22 +12,28 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__PACKET_HPP_
-#define MULTI_DATA_MONITOR__PACKET_HPP_
+#ifndef PLUGIN__FILTER__COMPONENTS__CONDITIONS_HPP_
+#define PLUGIN__FILTER__COMPONENTS__CONDITIONS_HPP_
 
 #include <yaml-cpp/yaml.h>
+#include <memory>
 #include <string>
-#include <unordered_map>
 
 namespace multi_data_monitor
 {
 
-struct Packet
+class Condition
 {
-  YAML::Node value;
-  std::unordered_map<std::string, std::string> attrs;
+public:
+  Condition(const std::string & type, YAML::Node & yaml);
+  ~Condition();
+  bool eval(const YAML::Node & yaml) const;
+
+private:
+  struct Impl;
+  std::unique_ptr<Impl> impl_;
 };
 
 }  // namespace multi_data_monitor
 
-#endif  // MULTI_DATA_MONITOR__PACKET_HPP_
+#endif  // PLUGIN__FILTER__COMPONENTS__CONDITIONS_HPP_
