@@ -11,7 +11,7 @@ widgets:
       class: apply
       input: { class: subscription, label: data, topic: /test/uint32, field: data }
       rules:
-        class: SetIf
+        class: SetFirstIf
         list:
           - { eq: 1, type: text, value: A, attrs: { back-color: red } }
           - { eq: 2, type: text, value: B, attrs: { back-color: lime } }
