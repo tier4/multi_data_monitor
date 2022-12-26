@@ -34,7 +34,6 @@ public:
   const auto & topics() { return topics_; }
 
 private:
-  Stream create_stream(const StreamLink & config, const FilterMaps & filters, const WidgetMaps & widgets);
   std::vector<std::shared_ptr<BasicStream>> streams_;
   std::vector<std::shared_ptr<TopicStream>> topics_;
 };

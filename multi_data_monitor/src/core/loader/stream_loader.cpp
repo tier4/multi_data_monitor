@@ -31,6 +31,45 @@
 namespace multi_data_monitor
 {
 
+struct StreamLoaderObjects
+{
+  const FilterMaps & filters;
+  const WidgetMaps & widgets;
+  std::unordered_map<StreamLink, std::shared_ptr<TopicStream>> topics;
+  std::unordered_map<StreamLink, std::shared_ptr<FieldStream>> fields;
+};
+
+Stream create_stream(const StreamLink & config, StreamLoaderObjects & objects)
+{
+  if (config->klass == builtin::apply)
+  {
+    const auto filter = objects.filters.get(config->apply, nullptr);
+    return std::make_shared<ApplyStream>(filter);
+  }
+  if (config->klass == builtin::panel)
+  {
+    const auto widget = objects.widgets.get(config->panel, nullptr);
+    return std::make_shared<PanelStream>(widget);
+  }
+  if (config->klass == builtin::topic)
+  {
+    const auto stream = std::make_shared<TopicStream>();
+    objects.topics[config] = stream;
+    return stream;
+  }
+  if (config->klass == builtin::field)
+  {
+    const auto stream = std::make_shared<FieldStream>();
+    objects.fields[config] = stream;
+    return stream;
+  }
+  if (config->klass == builtin::print)
+  {
+    return std::make_shared<PrintStream>();
+  }
+  throw ConfigError("unknown stream type: " + config->klass);
+}
+
 StreamLoader::StreamLoader()
 {
 }
@@ -42,13 +81,23 @@ StreamMaps StreamLoader::create(const StreamList & configs, const FilterMaps & f
 
 StreamMaps StreamLoader::create(const StreamList & configs, const FilterMaps & filters, const WidgetMaps & widgets)
 {
+  StreamLoaderObjects objects = {filters, widgets, {}, {}};
   StreamMaps mapping;
   for (const auto & config : configs)
   {
-    const auto stream = create_stream(config, filters, widgets);
+    const auto stream = create_stream(config, objects);
     mapping[config] = streams_.emplace_back(stream);
+  }
+  for (const auto & [config, topic] : objects.topics)
+  {
+    topics_.push_back(topic);
+  }
+
+  for (const auto & [config, stream] : mapping)
+  {
     stream->setting(config->yaml);
   }
+
   for (const auto & [config, stream] : mapping)
   {
     for (const auto & item : config->items)
@@ -56,35 +105,15 @@ StreamMaps StreamLoader::create(const StreamList & configs, const FilterMaps & f
       mapping[item]->connect(stream);
     }
   }
-  return mapping;
-}
+  for (const auto & [config, field] : objects.fields)
+  {
+    for (const auto & item : config->items)
+    {
+      field->validate(objects.topics.at(item));
+    }
+  }
 
-Stream StreamLoader::create_stream(const StreamLink & config, const FilterMaps & filters, const WidgetMaps & widgets)
-{
-  if (config->klass == builtin::topic)
-  {
-    const auto stream = std::make_shared<TopicStream>();
-    return topics_.emplace_back(stream);
-  }
-  if (config->klass == builtin::apply)
-  {
-    const auto filter = filters.get(config->apply, nullptr);
-    return std::make_shared<ApplyStream>(filter);
-  }
-  if (config->klass == builtin::panel)
-  {
-    const auto widget = widgets.get(config->panel, nullptr);
-    return std::make_shared<PanelStream>(widget);
-  }
-  if (config->klass == builtin::field)
-  {
-    return std::make_shared<FieldStream>();
-  }
-  if (config->klass == builtin::print)
-  {
-    return std::make_shared<PrintStream>();
-  }
-  throw ConfigError("unknown stream type: " + config->klass);
+  return mapping;
 }
 
 void StreamLoader::release()

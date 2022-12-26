@@ -31,4 +31,9 @@ void FieldStream::message(const Packet & packet)
   outputs({property_.apply(packet.value), packet.attrs});
 }
 
+void FieldStream::validate(const std::shared_ptr<TopicStream> & topic)
+{
+  topic->validate(property_);
+}
+
 }  // namespace multi_data_monitor

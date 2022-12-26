@@ -16,7 +16,9 @@
 #define CORE__STREAM__FIELD_HPP_
 
 #include "stream/basic.hpp"
+#include "stream/topic.hpp"
 #include <generic_type_utility/generic_property.hpp>
+#include <memory>
 
 namespace multi_data_monitor
 {
@@ -26,6 +28,7 @@ struct FieldStream : public InOutStream
 public:
   void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
+  void validate(const std::shared_ptr<TopicStream> & topic);
 
 private:
   generic_type_utility::GenericProperty property_;

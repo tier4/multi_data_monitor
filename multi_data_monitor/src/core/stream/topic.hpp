@@ -19,6 +19,7 @@
 #include "stream/basic.hpp"
 #include <memory>
 #include <string>
+#include <vector>
 
 namespace multi_data_monitor
 {
@@ -32,6 +33,7 @@ public:
   void message(const Packet & packet) override;
   void update(ros::Node node);
   void shutdown();
+  void validate(const generic_type_utility::GenericProperty & property);
 
 private:
   void create_subscription(ros::Node node);
@@ -40,6 +42,9 @@ private:
   std::string type_;
   std::string qos_;
   std::unique_ptr<generic_type_utility::GenericMessage> generic_;
+  std::vector<generic_type_utility::GenericProperty> properties_;
+
+  bool sub_error_;
   ros::Subscription sub_;
 };
 

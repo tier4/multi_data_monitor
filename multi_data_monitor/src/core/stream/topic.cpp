@@ -123,6 +123,7 @@ void TopicStream::setting(YAML::Node yaml)
   name_ = yaml::take_required(yaml, "name").as<std::string>("");
   type_ = yaml::take_optional(yaml, "type").as<std::string>("");
   qos_ = yaml::take_optional(yaml, "qos").as<std::string>("");
+  sub_error_ = false;
 }
 
 void TopicStream::message(const Packet & packet)
@@ -132,7 +133,7 @@ void TopicStream::message(const Packet & packet)
 
 void TopicStream::update(ros::Node node)
 {
-  if (!sub_)
+  if (!sub_ && !sub_error_)
   {
     create_subscription(node);
   }
@@ -193,7 +194,17 @@ void TopicStream::create_subscription(ros::Node node)
     message(Packet{value, attrs});
   };
 
+  RCLCPP_INFO_STREAM(node->get_logger(), "start subscription: " + name_ + " [" + type + "]");
   generic_ = std::make_unique<generic_type_utility::GenericMessage>(type);
+  for (const auto & property : properties_)
+  {
+    if (!generic_->validate(property))
+    {
+      sub_error_ = true;
+      RCLCPP_ERROR_STREAM(node->get_logger(), "invalid property: " + property.path() + " [" + type + "]");
+      return;
+    }
+  }
   sub_ = node->create_generic_subscription(name_, type, convert_qos(qos), callback);
 }
 
@@ -201,6 +212,11 @@ void TopicStream::remove_subscription()
 {
   generic_.reset();
   sub_.reset();
+}
+
+void TopicStream::validate(const generic_type_utility::GenericProperty & property)
+{
+  properties_.push_back(property);
 }
 
 }  // namespace multi_data_monitor
