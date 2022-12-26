@@ -15,7 +15,7 @@
 #ifndef CORE__RUNNER__WIDGET_RUNNER_HPP_
 #define CORE__RUNNER__WIDGET_RUNNER_HPP_
 
-#include "common/rclcpp.hpp"
+#include "common/typedef.hpp"
 #include "config/types.hpp"
 #include "loader/widget_loader.hpp"
 #include "runner/stream_runner.hpp"

@@ -15,7 +15,7 @@
 #ifndef CORE__RUNNER__RCLCPP_RUNNER_HPP_
 #define CORE__RUNNER__RCLCPP_RUNNER_HPP_
 
-#include "common/rclcpp.hpp"
+#include "common/typedef.hpp"
 #include <memory>
 #include <vector>
 

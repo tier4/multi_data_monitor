@@ -15,7 +15,7 @@
 #ifndef CORE__RUNNER__STREAM_RUNNER_HPP_
 #define CORE__RUNNER__STREAM_RUNNER_HPP_
 
-#include "common/rclcpp.hpp"
+#include "common/typedef.hpp"
 #include "config/types.hpp"
 #include "loader/filter_loader.hpp"
 #include "loader/stream_loader.hpp"

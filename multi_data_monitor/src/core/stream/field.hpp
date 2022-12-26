@@ -16,7 +16,7 @@
 #define CORE__STREAM__FIELD_HPP_
 
 #include "stream/basic.hpp"
-#include <generic_type_utility/type/access.hpp>
+#include <generic_type_utility/generic_property.hpp>
 
 namespace multi_data_monitor
 {
@@ -28,7 +28,7 @@ public:
   void message(const Packet & packet) override;
 
 private:
-  generic_type_utility::TypeAccess access_;
+  generic_type_utility::GenericProperty property_;
 };
 
 }  // namespace multi_data_monitor

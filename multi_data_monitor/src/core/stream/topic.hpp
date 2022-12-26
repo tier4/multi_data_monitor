@@ -15,17 +15,10 @@
 #ifndef CORE__STREAM__TOPIC_HPP_
 #define CORE__STREAM__TOPIC_HPP_
 
-#include "common/rclcpp.hpp"
+#include "common/typedef.hpp"
 #include "stream/basic.hpp"
 #include <memory>
 #include <string>
-
-namespace generic_type_utility
-{
-
-class GenericMessage;
-
-}
 
 namespace multi_data_monitor
 {
@@ -33,6 +26,8 @@ namespace multi_data_monitor
 struct TopicStream : public InOutStream
 {
 public:
+  TopicStream();
+  ~TopicStream() override;
   void setting(YAML::Node yaml) override;
   void message(const Packet & packet) override;
   void update(ros::Node node);
@@ -44,7 +39,7 @@ private:
   std::string name_;
   std::string type_;
   std::string qos_;
-  std::shared_ptr<generic_type_utility::GenericMessage> generic_;
+  std::unique_ptr<generic_type_utility::GenericMessage> generic_;
   ros::Subscription sub_;
 };
 

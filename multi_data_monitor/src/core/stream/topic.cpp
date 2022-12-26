@@ -16,18 +16,44 @@
 #include "common/exceptions.hpp"
 #include "common/util.hpp"
 #include "common/yaml.hpp"
-#include <generic_type_utility/generic_type_utility.hpp>
+#include <generic_type_utility/generic_message.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <memory>
 #include <string>
 #include <unordered_map>
 #include <unordered_set>
 
-namespace multi_data_monitor
+namespace
 {
+
+std::string convert_qos(const rclcpp::QoS & qos)
+{
+  // clang-format off
+  static const std::unordered_map<rmw_qos_reliability_policy_t, std::string> reliabilities =
+  {
+    {RMW_QOS_POLICY_RELIABILITY_SYSTEM_DEFAULT, "d"},
+    {RMW_QOS_POLICY_RELIABILITY_RELIABLE,       "r"},
+    {RMW_QOS_POLICY_RELIABILITY_BEST_EFFORT,    "b"}
+  };
+  static const std::unordered_map<rmw_qos_durability_policy_t, std::string> durabilities =
+  {
+    {RMW_QOS_POLICY_DURABILITY_SYSTEM_DEFAULT,  "d"},
+    {RMW_QOS_POLICY_DURABILITY_TRANSIENT_LOCAL, "t"},
+    {RMW_QOS_POLICY_DURABILITY_VOLATILE,        "v"}
+  };
+  // clang-format on
+
+  const auto get_str = [](const auto & map, const auto & qos) { return map.count(qos) ? map.at(qos) : "x"; };
+  const auto profile = qos.get_rmw_qos_profile();
+  const auto reliability = get_str(reliabilities, profile.reliability);
+  const auto durability = get_str(durabilities, profile.durability);
+  return reliability + durability + std::to_string(profile.depth);
+}
 
 rclcpp::QoS convert_qos(const std::string text)
 {
+  using multi_data_monitor::ConfigError;
+
   // clang-format off
   static const std::unordered_map<std::string, rmw_qos_reliability_policy_t> reliabilities =
   {
@@ -79,6 +105,19 @@ rclcpp::QoS convert_qos(const std::string text)
   return qos;
 }
 
+}  // namespace
+
+namespace multi_data_monitor
+{
+
+TopicStream::TopicStream()
+{
+}
+
+TopicStream::~TopicStream()
+{
+}
+
 void TopicStream::setting(YAML::Node yaml)
 {
   name_ = yaml::take_required(yaml, "name").as<std::string>("");
@@ -123,7 +162,7 @@ void TopicStream::create_subscription(ros::Node node)
     for (const auto & info : infos)
     {
       types.insert(info.topic_type());
-      qoses.insert(ros::to_string(info.qos_profile()));
+      qoses.insert(convert_qos(info.qos_profile()));
     }
 
     if (type.empty())
@@ -149,12 +188,12 @@ void TopicStream::create_subscription(ros::Node node)
 
   const auto callback = [this](const std::shared_ptr<const rclcpp::SerializedMessage> serialized)
   {
-    const auto value = generic_->ConvertYAML(*serialized);
+    const auto value = generic_->deserialize(*serialized);
     const auto attrs = std::unordered_map<std::string, std::string>();
     message(Packet{value, attrs});
   };
 
-  generic_ = std::make_shared<generic_type_utility::GenericMessage>(type);
+  generic_ = std::make_unique<generic_type_utility::GenericMessage>(type);
   sub_ = node->create_generic_subscription(name_, type, convert_qos(qos), callback);
 }
 

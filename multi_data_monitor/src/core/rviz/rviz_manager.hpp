@@ -15,7 +15,7 @@
 #ifndef CORE__RVIZ__RVIZ_MANAGER_HPP_
 #define CORE__RVIZ__RVIZ_MANAGER_HPP_
 
-#include "common/rclcpp.hpp"
+#include "common/typedef.hpp"
 #include "runner/widget_runner.hpp"
 #include <memory>
 #include <string>

@@ -48,4 +48,31 @@ using WidgetMaps = HashMap<WidgetLink, Widget>;
 
 }  // namespace multi_data_monitor
 
+namespace generic_type_utility
+{
+
+class GenericMessage;
+class GenericProperty;
+
+}  // namespace generic_type_utility
+
+namespace rclcpp
+{
+
+class Node;
+class TimerBase;
+class GenericSubscription;
+class QoS;
+
+}  // namespace rclcpp
+
+namespace multi_data_monitor::ros
+{
+
+using Node = std::shared_ptr<rclcpp::Node>;
+using Timer = std::shared_ptr<rclcpp::TimerBase>;
+using Subscription = std::shared_ptr<rclcpp::GenericSubscription>;
+
+}  // namespace multi_data_monitor::ros
+
 #endif  // CORE__COMMON__TYPEDEF_HPP_
