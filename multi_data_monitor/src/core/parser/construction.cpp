@@ -46,9 +46,15 @@ void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self,
 ConfigData ParseBasicObject::execute(ConfigFile & file)
 {
   parse(file.yaml, "subscriptions", this, &ParseBasicObject::parse_subscription);
+  parse(file.yaml, "filters", this, &ParseBasicObject::parse_filter_root);
   parse(file.yaml, "streams", this, &ParseBasicObject::parse_stream_root);
   parse(file.yaml, "widgets", this, &ParseBasicObject::parse_widget_root);
   return data_;
+}
+
+void ParseBasicObject::parse_filter_root(YAML::Node yaml)
+{
+  parse_filter_yaml(yaml);
 }
 
 void ParseBasicObject::parse_stream_root(YAML::Node yaml)
@@ -176,6 +182,20 @@ FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml)
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
 
   FilterLink filter = data_.create_filter(klass, label, yaml);
+  if (klass == builtin::function)
+  {
+    YAML::Node rules = yaml::take_required(yaml, "rules");
+    if (!rules.IsSequence())
+    {
+      YAML::Node array;
+      array.push_back(rules);
+      rules.reset(array);
+    }
+    for (const auto & rule : rules)
+    {
+      filter->items.push_back(parse_filter_yaml(rule));
+    }
+  }
   return filter;
 }
 
@@ -193,7 +213,8 @@ StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
   }
   if (rules)
   {
-    stream->apply = parse_filter_yaml(rules);  // TODO(Takagi, Isamu): check if class is apply type
+    // TODO(Takagi, Isamu): check if class is apply
+    stream->apply = parse_filter_yaml(rules);
   }
   return stream;
 }

@@ -90,6 +90,19 @@ void resolve_labels(const std::vector<T> & nodes)
 }
 
 template <class T>
+void resolve_filter(const std::vector<T> & nodes)
+{
+  for (const auto & node : nodes)
+  {
+    if (node->apply)
+    {
+      std::unordered_set<FilterLink> visit;
+      node->apply = resolve_node(node->apply, visit);
+    }
+  }
+}
+
+template <class T>
 std::vector<T> filter_unused_nodes(const std::vector<T> & nodes, const std::unordered_set<std::string> & targets)
 {
   std::unordered_set<T> used;
@@ -148,6 +161,7 @@ ConfigData ConnectRelation::execute(const ConfigData & input)
 
 ConfigData ResolveRelation::execute(const ConfigData & input)
 {
+  resolve_filter(input.streams);
   resolve_labels(input.streams);
   resolve_labels(input.filters);
   resolve_labels(input.widgets);

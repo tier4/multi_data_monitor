@@ -26,6 +26,7 @@ public:
   ConfigData execute(ConfigFile & file);
 
 private:
+  void parse_filter_root(YAML::Node yaml);
   void parse_stream_root(YAML::Node yaml);
   void parse_widget_root(YAML::Node yaml);
   void parse_subscription(YAML::Node yaml);

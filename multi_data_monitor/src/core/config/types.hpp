@@ -111,12 +111,12 @@ struct ConfigFile final
 
 struct ConfigData final
 {
-  StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
   FilterLink create_filter(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
+  StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
   WidgetLink create_widget(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
 
-  std::vector<StreamLink> streams;
   std::vector<FilterLink> filters;
+  std::vector<StreamLink> streams;
   std::vector<WidgetLink> widgets;
   std::vector<DesignLink> designs;
 };

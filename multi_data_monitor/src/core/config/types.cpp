@@ -28,18 +28,18 @@ CommonData::~CommonData()
   ++removed;
 }
 
-StreamLink ConfigData::create_stream(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
-{
-  const auto data = std::make_shared<StreamData>(klass, label);
-  data->yaml = yaml;
-  return streams.emplace_back(data);
-}
-
 FilterLink ConfigData::create_filter(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
 {
   const auto data = std::make_shared<FilterData>(klass, label);
   data->yaml = yaml;
   return filters.emplace_back(data);
+}
+
+StreamLink ConfigData::create_stream(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
+{
+  const auto data = std::make_shared<StreamData>(klass, label);
+  data->yaml = yaml;
+  return streams.emplace_back(data);
 }
 
 WidgetLink ConfigData::create_widget(const NodeClass & klass, const NodeLabel & label, YAML::Node yaml)
