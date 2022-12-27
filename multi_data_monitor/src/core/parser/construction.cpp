@@ -100,20 +100,6 @@ void ParseBasicObject::parse_subscription(YAML::Node topic)
   }
 }
 
-StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml)
-{
-  if (yaml.IsScalar())
-  {
-    return parse_stream_link(yaml);
-  }
-  if (yaml.IsMap())
-  {
-    return parse_stream_dict(yaml);
-  }
-  // TODO(Takagi, Isamu): error message
-  throw ConfigError("unexpected stream format");
-}
-
 FilterLink ParseBasicObject::parse_filter_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
@@ -132,6 +118,20 @@ FilterLink ParseBasicObject::parse_filter_yaml(YAML::Node yaml)
   throw ConfigError("unexpected filter format");
 }
 
+StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml)
+{
+  if (yaml.IsScalar())
+  {
+    return parse_stream_link(yaml);
+  }
+  if (yaml.IsMap())
+  {
+    return parse_stream_dict(yaml);
+  }
+  // TODO(Takagi, Isamu): error message
+  throw ConfigError("unexpected stream format");
+}
+
 WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml)
 {
   if (yaml.IsScalar())
@@ -146,14 +146,6 @@ WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml)
   throw ConfigError("unexpected widget format");
 }
 
-StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml)
-{
-  StreamLink stream = data_.create_stream(builtin::relay);
-  stream->system = true;
-  stream->yaml["refer"] = yaml.as<std::string>();
-  return stream;
-}
-
 FilterLink ParseBasicObject::parse_filter_link(YAML::Node yaml)
 {
   FilterLink filter = data_.create_filter(builtin::relay);
@@ -162,12 +154,29 @@ FilterLink ParseBasicObject::parse_filter_link(YAML::Node yaml)
   return filter;
 }
 
+StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml)
+{
+  StreamLink stream = data_.create_stream(builtin::relay);
+  stream->system = true;
+  stream->yaml["refer"] = yaml.as<std::string>();
+  return stream;
+}
+
 WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml)
 {
   WidgetLink widget = data_.create_widget(builtin::relay);
   widget->system = true;
   widget->yaml["refer"] = yaml.as<std::string>();
   return widget;
+}
+
+FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml)
+{
+  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
+  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
+
+  FilterLink filter = data_.create_filter(klass, label, yaml);
+  return filter;
 }
 
 StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
@@ -184,35 +193,20 @@ StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
   }
   if (rules)
   {
-    stream->apply = parse_filter_yaml(rules);
+    stream->apply = parse_filter_yaml(rules);  // TODO(Takagi, Isamu): check if class is apply type
   }
   return stream;
-}
-
-FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml)
-{
-  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
-  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
-
-  FilterLink filter = data_.create_filter(klass, label, yaml);
-  return filter;
 }
 
 WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
 {
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
-  const auto input = yaml::take_optional(yaml, "input");
   const auto items = yaml::take_optional(yaml, "items");
+  const auto input = yaml::take_optional(yaml, "input");
+  const auto rules = yaml::take_optional(yaml, "rules");
 
   WidgetLink widget = data_.create_widget(klass, label, yaml);
-  if (input)
-  {
-    StreamLink stream = data_.create_stream(builtin::panel);
-    stream->system = true;
-    stream->panel = widget;
-    stream->items = StreamList{parse_stream_yaml(input)};
-  }
   if (items)
   {
     if (!items.IsSequence())
@@ -222,6 +216,23 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
     for (const auto & item : items)
     {
       widget->items.push_back(parse_widget_yaml(item));
+    }
+  }
+
+  if (input)
+  {
+    StreamLink panel = data_.create_stream(builtin::panel);
+    panel->system = true;
+    panel->panel = widget;
+    panel->items = StreamList{parse_stream_yaml(input)};
+
+    if (rules)
+    {
+      StreamLink apply = data_.create_stream(builtin::apply);
+      apply->system = true;
+      apply->apply = parse_filter_yaml(rules);
+      apply->items = panel->items;
+      panel->items = StreamList{apply};
     }
   }
   return widget;

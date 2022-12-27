@@ -37,6 +37,11 @@
 - Conditions
 - ValueAttrs
 
+## Subscription Nodes
+
+- SubscriptionTopic
+- SubscriptionField
+
 ## System Nodes
 
 これらのノードを直接使うことはありません。

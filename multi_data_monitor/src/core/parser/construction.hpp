@@ -29,13 +29,13 @@ private:
   void parse_stream_root(YAML::Node yaml);
   void parse_widget_root(YAML::Node yaml);
   void parse_subscription(YAML::Node yaml);
-  StreamLink parse_stream_yaml(YAML::Node yaml);
-  StreamLink parse_stream_link(YAML::Node yaml);
-  StreamLink parse_stream_dict(YAML::Node yaml);
   FilterLink parse_filter_yaml(YAML::Node yaml);
   FilterLink parse_filter_link(YAML::Node yaml);
   FilterLink parse_filter_dict(YAML::Node yaml);
   FilterLink parse_filter_list(YAML::Node yaml);
+  StreamLink parse_stream_yaml(YAML::Node yaml);
+  StreamLink parse_stream_link(YAML::Node yaml);
+  StreamLink parse_stream_dict(YAML::Node yaml);
   WidgetLink parse_widget_yaml(YAML::Node yaml);
   WidgetLink parse_widget_link(YAML::Node yaml);
   WidgetLink parse_widget_dict(YAML::Node yaml);
