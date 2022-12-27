@@ -49,7 +49,7 @@ public:
   // virtual ~BasicWidget() = default;
 
 private:
-  QWidget * root_;
+  QWidget * root_ = nullptr;
   std::vector<QWidget *> stylesheet_widgets_;
   Packet::Attrs prev_attrs_;
 };
