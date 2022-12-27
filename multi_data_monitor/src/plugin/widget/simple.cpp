@@ -26,14 +26,27 @@ public:
   void apply(YAML::Node yaml) override;
 
 private:
+  bool is_constant_;
+  std::string title_;
   QLabel * label_;
-  QString title_;
 };
 
 void Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
 {
-  title_ = QString::fromStdString(yaml["title"].as<std::string>(""));
-  label_ = new QLabel(title_);
+  std::string initial_value;
+  if (yaml["const"])
+  {
+    is_constant_ = true;
+    initial_value = yaml["const"].as<std::string>("");
+  }
+  else
+  {
+    is_constant_ = false;
+    initial_value = yaml["value"].as<std::string>("");
+  }
+  title_ = yaml["title"].as<std::string>("");
+
+  label_ = new QLabel(QString::fromStdString(title_ + initial_value));
   label_->setAlignment(Qt::AlignCenter);
   label_->setToolTip(QString::fromStdString(yaml["notes"].as<std::string>("")));
 
@@ -43,8 +56,11 @@ void Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
 
 void Simple::apply(YAML::Node yaml)
 {
-  const auto value = QString::fromStdString(yaml.as<std::string>());
-  label_->setText(title_ + value);
+  if (!is_constant_)
+  {
+    const auto value = yaml.as<std::string>();
+    label_->setText(QString::fromStdString(title_ + value));
+  }
 }
 
 }  // namespace multi_data_monitor
