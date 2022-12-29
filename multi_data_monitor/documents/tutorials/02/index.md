@@ -1,46 +1,5 @@
 # データの表示
 
-## コンフィグファイルの読み込み
-
-まずは最も簡単なサンプルを表示させてみましょう。RViz にパネルを追加して [package://multi_data_monitor/tutorials/02/display1.yaml](display1.yaml) と入力します。また、新しく端末を開いて multi data monitor のワークスペースに移動し、以下のコマンドを実行します。
-
-```bash
-source install/setup.bash
-ros2 run multi_data_monitor tutorial
-```
-
-このノードは動作の確認用に 0 から 4 までカウントするトピックを流しています。先ほど開いた Rviz のパネルではこのデータを表示するように設定しているため、以下のようにトピックのデータが表示されます。
-
-![display1](display1.png)
-
-## コンフィグファイルの構成
-
-先ほと使用したコンフィグファイルは以下のようになっています。まずはじめにバージョン情報を `version` で指定します。これはドットで区切られた２つの整数からなる文字列で、コンフィグファイルの互換性を確認するために使用されます。次にスタイルを `stylesheets` で設定していますが、これは別の章で説明するので詳細は省きます。簡単に触れておくと枠線やフォントサイズなどの設定が入っています。最も重要なのは `widgets` 以下で、トピックの指定や表示に関する設定を行っています。
-
-```yaml
-version: 1.0
-
-stylesheets:
-  - { path: package://multi_data_monitor/css/plugins/simple.css, target: multi_data_monitor::Simple }
-
-widgets:
-  root:
-    class: multi_data_monitor::Simple
-    input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
-```
-
-基本的な仕組みとして `widgets` の直下にある `root` という名前は特別な意味を持っており、プログラムは最初にこの名前のデータをウィジェットとして読み込みます。ウィジェットはデータを表示するオブジェクトで、以下のように `class` にウィジェットの名前を `input` に入力ストリームを指定します。ウィジェットの種類によりデータを様々な形式で表示できます。ここでは組み込みの multi_data_monitor::Simple を指定しています。
-
-```yaml
-{ class: <plugin>, input: <stream> }
-```
-
-続いて `input` にはストリームを指定します。ストリームはデータを表現するオブジェクトで実体は YAML データです。ここではストリームとしてトピックを指定しています。トピックは以下の形式で表現され、トピック名、データ名、メッセージ名を指定することで subscription が作成されます。このデータが上記のウィジェットの入力に設定されているため、ウィジェットにはトピックの内容が表示されます。
-
-```yaml
-{ model: topic, name: <topic-name>, data: <data-name>, type: <type-name> }
-```
-
 ## ウィジェットの種類
 
 ウィジェットより様々な形式でデータを表示できます。再び RViz を開いて [package://multi_data_monitor/tutorials/02/display2.yaml](display2.yaml) と入力してください。動作確認用のノードも先程と同じように起動します。このファイルでは multi_data_monitor::Title というウィジェットが使われており、データの下にタイトルを表示するデザインになっています。

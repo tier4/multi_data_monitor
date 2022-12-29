@@ -1,8 +1,8 @@
 version: 2.0
 
 stylesheets:
-  - { path: package://multi_data_monitor/css/plugins/simple.css, class: Simple }
-  - { path: package://multi_data_monitor/css/plugins/titled.css, class: Titled }
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+  - { path: package://multi_data_monitor/css/plugins/titled.css, target: Titled }
   - { path: package://multi_data_monitor/css/colors.css }
 
 widgets:
