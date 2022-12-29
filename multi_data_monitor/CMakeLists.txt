@@ -89,7 +89,7 @@ endif()
 
 install(PROGRAMS
   examples/scripts/tutorial
-  examples/scripts/radian
+  examples/scripts/count
   DESTINATION lib/${PROJECT_NAME}
 )
 
