@@ -1,12 +1,9 @@
 # config node object
 
-## T.B.D.
+## Common Objects
 
 - [ConfigFile](common/config-file.md)
-- Stylesheet
-
-## Nodes
-
+- [Stylesheet](common/stylesheet.md)
 - BasicNode
 - [WidgetLike](common/widget-like.md)
 - [StreamLike](common/stream-like.md)
