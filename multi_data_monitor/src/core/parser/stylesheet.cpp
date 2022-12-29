@@ -74,7 +74,7 @@ DesignLink ParseStyleSheet::parse_stylesheet(YAML::Node yaml)
   }
 
   DesignLink design = std::make_shared<DesignData>();
-  design->klass = yaml::take_optional(yaml, "class").as<std::string>("");
+  design->klass = yaml::take_optional(yaml, "target").as<std::string>("");
   design->stylesheet = load_file(yaml::take_required(yaml, "path").as<std::string>());
   return design;
 }
