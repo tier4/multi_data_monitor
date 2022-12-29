@@ -31,16 +31,15 @@ source install/setup.bash
 ros2 run multi_data_monitor count
 ```
 
-続いて、別の端末から RViz を起動し、パネルを追加して `package://multi_data_monitor/examples/tutorials/01/minimum.yaml` と入力します。次に OK ボタンを押して表示が切り替わったら読み込み完了です。
+続いて、別の端末から RViz を起動し、パネルを追加して以下の[ファイル](../../../examples/tutorials/01/simple.yaml)のパスを入力します。次に OK ボタンを押して表示が切り替わったら読み込み完了です。
 
-```bash
-source install/setup.bash
-rviz2
+```txt
+package://multi_data_monitor/examples/tutorials/01/simple.yaml
 ```
 
 最初に起動したテスト用のノードは 0 から 4 までカウントするトピックを流しています。そして、先ほど開いた Rviz のパネルではこのデータを表示するように設定しているため、以下のようにトピックのデータが表示されます。
 
-![minimum](minimum.png)
+![simple](simple.png)
 
 ## コンフィグファイルの構成
 
@@ -70,7 +69,7 @@ streams:
 ```yaml
 widgets:
   - class: Simple
-    input: { class: subscription, label: s1, topic: /example/count/uint32, field: data }
+    input: { class: subscription, topic: /example/count/uint32, field: data }
 ```
 
 他にも、一部の組み込みオブジェクトにはシンタックスシュガーが用意されています。例えば `subscription` には以下のようにコンフィグファイル直下に専用のセクションが用意されており、複数のフィールドを持つトピックを効率的に定義できます。詳細はオブジェクトに関するドキュメントを参照してください。

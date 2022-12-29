@@ -1,67 +1,33 @@
-# データの表示
+# ウィジェットについて
 
 ## ウィジェットの種類
 
-ウィジェットより様々な形式でデータを表示できます。再び RViz を開いて [package://multi_data_monitor/tutorials/02/display2.yaml](display2.yaml) と入力してください。動作確認用のノードも先程と同じように起動します。このファイルでは multi_data_monitor::Title というウィジェットが使われており、データの下にタイトルを表示するデザインになっています。
+ウィジェットには表示ウィジェットと配置ウィジェットの２種類があります。表示ウィジェットは前章の `Simple` のようにストリームからデータを受け取って表示するものですが、配置ウィジェットはストリームではなく他のウィジェットを `items` として受け取って配置を行います。このとき、ウィジェットの接続関係は木構造になっている必要があり、パネルには木構造の根となるオブジェトが自動的に選択されます。
 
-![display2](display2.png)
+## 表示ウィジェット
 
-また、他のウィジェットを受け取って配置するウィジェットも存在しています。これらのウィジェットにより、複数のデータを並べて表示することができます。同様に [package://multi_data_monitor/tutorials/02/display3.yaml](display3.yaml) を表示してみてください。これに使われている multi_data_monitor::Matrix ウィジェットは `input` がなく `children` に並べたいウィジェットを指定します。
+表示ウィジェットの例として `Titled` を紹介します。再び RViz を開いて以下の[ファイル](../../../examples/tutorials/02/titled.yaml)を読み込んでください。動作確認用のノードも先程と同じように起動します。このウィジェットはデータの下にタイトルを表示するデザインになっています。
 
-```yaml
-{ class: <plugin>, children: [<widget>, <widget>, ...] }
+```txt
+package://multi_data_monitor/examples/tutorials/02/titled.yaml
 ```
 
-![display3](display3.png)
+![titled](titled.png)
 
-## ウィジェットの分割定義
+## 配置ウィジェット
 
-今度は [package://multi_data_monitor/tutorials/02/display4.yaml](display4.yaml) を表示してみてください。先程と同じレイアウトでデータが表示されていますがコンフィグファイルの記述は異なっています。
+配置ウィジェットからは `Matrix` を紹介します。再び RViz を開いて以下の[ファイル](../../../examples/tutorials/02/matrix1.yaml)を読み込んでください。動作確認用のノードも先程と同じように起動します。このウィジェットは他のウィジェットを行列状に並べることができます。
 
-```yaml
-widgets:
-  root:
-    class: multi_data_monitor::Matrix
-    cols: 3
-    rows: 2
-    children:
-      - class: multi_data_monitor::Simple
-        input: { model: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
-      - class: multi_data_monitor::Simple
-        input: { model: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
-      - class: multi_data_monitor::Simple
-        input: { model: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
-      - class: multi_data_monitor::Simple
-        input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+```txt
+package://multi_data_monitor/examples/tutorials/02/matrix1.yaml
 ```
 
-ウィジェットには `root` 以外の好きな名前をつけることができ `widgets` の直下に任意の名前を付けてウィジェットを定義できます。名前を付けたウィジェットは `children` など本来ウィジェットを指定する場所にて、直接オブジェクトを設定する代わりに付けた名前の文字列を使用することができます。
+![matrix1](matrix1.png)
 
-```yaml
-widgets:
-  root:
-    class: multi_data_monitor::Matrix
-    cols: 3
-    rows: 2
-    children:
-      - view1
-      - view2
-      - view3
-      - view4
+また、`Matrix` 自身もウィジェットであるため、入れ子して以下の[ファイル](../../../examples/tutorials/02/matrix2.yaml)のような複雑なレイアウトを作成することも可能です。
 
-  view1:
-    class: multi_data_monitor::Simple
-    input: { model: topic, name: /test/header, data: stamp.sec, type: std_msgs/msg/Header }
-
-  view2:
-    class: multi_data_monitor::Simple
-    input: { model: topic, name: /test/header, data: stamp.nanosec, type: std_msgs/msg/Header }
-
-  view3:
-    class: multi_data_monitor::Simple
-    input: { model: topic, name: /test/header, data: frame_id, type: std_msgs/msg/Header }
-
-  view4:
-    class: multi_data_monitor::Simple
-    input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
+```txt
+package://multi_data_monitor/examples/tutorials/02/matrix2.yaml
 ```
+
+![matrix2](matrix2.png)
