@@ -1,40 +1,26 @@
-# データの加工
+# ストリームについて
 
-## データのフィルター処理
+## ストリームのデータ
 
-例えば単位が m/s のデータを km/h で表示したいことがあります。このディレクトリにある [process1.yaml](process1.yaml) を読み込むと、トピックで指定したデータが左側にはそのまま m/s で表示され、右側には km/h に変換した結果が表示されます。
+ストリームはデータの流れを制御していて YAML 形式のデータが流れています。また、スタイルを設定するために文字列型の key value 形式のデータも流れていますが、これはスタイルシートの章で詳しく解説します。ユーザーは基本的に、データの入力を行う `subscription` と、データの加工を行う `apply` の２つを使用し、その結果をウィジェットに渡すことになります。
 
-![process1](process1.png)
+他にもデバッグ用にデータの表示を行う `print` や、システムが内部的に用いる `@topic` や `@field` などの特殊なストリームがありますが、ユーザーがこれらを直接利用することはありません。これらのストリームについて知りたい場合はクラスリファレンス (T.B.D.) を参照してください。
 
-これを実現しているのがフィルターで、以下のように`input` で指定したストリームのデータを任意のルールに従って変換します。フィルターもトピックと同じくストリームなので、ウィジェットの `input` に指定すれば変換した結果を画面に表示できます。
+## データの入力
 
-```yaml
-{ model: filter, input: <stream>, rules: [<action1>, <action2>, ...] }
-```
+ROS のトピックからデータを取得するには `subscription` を使用します。対象のトピックを `topic` に、アクセスしたいフィールドを `field` に指定します。階層化されたフィールドにアクセスする場合は `foo.bar.baz` とドットで区切り、配列を参照する場合は `name@1` とアットサインに続けてインデックスを指定します。トピックの型や QoS が指定されていない場合、対象のトピックの設定を見て自動的に解決します。また、トピックやフィールドに同じ文字列を指定すると自動的にマージされます。
 
-変換のルールはアクションを使って指定します。今回は multi_data_monitor::Units を使って単位の変換を行っていて、このアクションはパラメータに `type: mps_to_kph` を指定すると m/s から km/h への変換だと解釈します。
+以下が `subscription` を使用した設定ファイルの例です。また `subscription` にはシンタックスシュガーが用意されており、設定ファイルの直下に専用のセクションを記載することができます。
 
-```yaml
-{ class: <plugin>, ... <optional parameters> }
-```
+[package://multi_data_monitor/documents/tutorials/03/subscription1.yaml](subscription1.yaml)
+[package://multi_data_monitor/documents/tutorials/03/subscription2.yaml](subscription2.yaml)
 
-これらを全てまとめるとこのようになります。上記の process1.yaml ではトピックのデータを複数の入力で使えるようにストリームに名前を付けて扱っています。ストリームはコンフィグファイルの直下に `streams` というキーを作成し、その下に `widgets` と同じく任意の名前でオブジェクトを作成できます。
+![subscription](subscription.png)
 
-```yaml
-class: multi_data_monitor::Simple
-input:
-  model: filter
-  input: { model: topic, name: /test/double, data: data, type: std_msgs/msg/Float64 }
-  rules:
-    - { class: multi_data_monitor::Units, type: mps_to_kph }
-```
+## データの加工
 
-## アクションの指定
+データを加工するには `apply` を使用します。これは入力されたデータにフィルターを適用するストリームです。フィルターについては次の章を参照してください。
 
-フィルターには複数のアクションを設定可能で、指定した順番で適用されます。これを用いて [process2.yaml](process2.yaml) では km/h に変換した結果をフォーマットしています。
+## データの確認
 
-![process2](process2.png)
-
-このコンフィグファイルにおけるデータの流れを図に示すと以下のようになります。データを複数の入力に分岐させない限り、フィルターに複数のアクションをまとめた方が簡潔に記述できます。
-
-![process2-data-flow](process2.drawio.svg)
+デバッグ用のストリームは現在開発中です。

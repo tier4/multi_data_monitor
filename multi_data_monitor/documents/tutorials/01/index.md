@@ -24,17 +24,17 @@ RViz のメニューからパネルを追加すると以下のようなウィジ
 
 ## コンフィグファイルの読み込み
 
-まずは、最も単純な構成でデータを表示してみましょう。テスト用のトピックを流すために、新しく端末を開いて multi_data_monitor のワークスペースに移動し、以下のコマンドを実行します。
+まずは、最も単純な構成でデータを表示します。テスト用のトピックを流すために、新しく端末を開いて multi_data_monitor のワークスペースに移動し、以下のコマンドを実行します。
 
 ```bash
 source install/setup.bash
-ros2 run multi_data_monitor count
+ros2 run multi_data_monitor example
 ```
 
-続いて、別の端末から RViz を起動し、パネルを追加して以下の[ファイル](../../../examples/tutorials/01/simple.yaml)のパスを入力します。次に OK ボタンを押して表示が切り替わったら読み込み完了です。
+続いて、別の端末から RViz を起動し、パネルを追加して以下のパスを入力します。次に OK ボタンを押して表示が切り替わったら読み込み完了です。
 
 ```txt
-package://multi_data_monitor/examples/tutorials/01/simple.yaml
+package://multi_data_monitor/documents/tutorials/01/simple1.yaml
 ```
 
 最初に起動したテスト用のノードは 0 から 4 までカウントするトピックを流しています。そして、先ほど開いた Rviz のパネルではこのデータを表示するように設定しているため、以下のようにトピックのデータが表示されます。
@@ -44,6 +44,8 @@ package://multi_data_monitor/examples/tutorials/01/simple.yaml
 ## コンフィグファイルの構成
 
 先ほと使用したコンフィグファイルは以下のようになっています。まずはじめにバージョン情報を `version` で指定します。これはドットで区切られた２つの整数からなる文字列で、コンフィグファイルの互換性を確認するために使用されます。次にスタイルを `stylesheets` で設定していますが、これは別の章で説明するので詳細は省きます。簡単に触れておくと枠線やフォントサイズなどの設定が入っています。最も重要なのは `widgets` と `streams` の内容で、トピックの指定や表示に関する設定を行っています。
+
+[package://multi_data_monitor/documents/tutorials/01/simple1.yaml](simple1.yaml)
 
 ```yaml
 version: 2.0
@@ -62,25 +64,19 @@ streams:
 
 ウィジェットは RViz での表示を制御するオブジェクトです。こちらも `class` の種類に応じて様々な形式でデータを表示できます。ここで設定している `Simple` は入力されたデータを文字列として解釈し、そのまま画面に表示するオブジェクトです。入力は `input` にストリームオブジェクトを指定します。サンプルではストリームオブジェクトの `label` で指定した `s1` という名前を設定しています。これにより、ストリームが受信したトピックのデータがウィジェットにまで届き、画面に表示されるようになります。
 
-## その他の便利な記載方法
+## コンフィグファイルの文法
 
-サンプルのコンフィグファイルではウィジェットとストリームを別々に定義した上でラベルを使って接続していましたが、以下のようにストリームの定義をウィジェットの入力として直接記載することもできます。
+サンプルのコンフィグファイルではウィジェットとストリームを別々に定義した上でラベルを使って接続していましたが、以下のようにストリームの定義をウィジェットの入力として直接記載することもできます。また、いくつかの頻出する用途についてはシンタックスシュガーが用意されている場合もあります。詳細についてはクラスリファレンス (T.B.D.) を参照してください。
+
+[package://multi_data_monitor/documents/tutorials/01/simple2.yaml](simple2.yaml)
 
 ```yaml
+version: 2.0
+
+stylesheets:
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+
 widgets:
   - class: Simple
-    input: { class: subscription, topic: /example/count/uint32, field: data }
-```
-
-他にも、一部の組み込みオブジェクトにはシンタックスシュガーが用意されています。例えば `subscription` には以下のようにコンフィグファイル直下に専用のセクションが用意されており、複数のフィールドを持つトピックを効率的に定義できます。詳細はオブジェクトに関するドキュメントを参照してください。
-
-```yaml
-subscriptions:
-  - name: /example/header
-    type: std_msgs/msg/Header
-    qos: rt1
-    fields:
-      - { name: stamp.sec, label: sec }
-      - { name: stamp.nanosec, label: nsec }
-      - { name: frame_id, label: frame }
+    input: { class: subscription, label: s1, topic: /example/count/uint32, field: data }
 ```

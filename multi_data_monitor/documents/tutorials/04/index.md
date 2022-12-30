@@ -1,59 +1,40 @@
-# スタイルシート
+# ストリーム
 
-## スタイルの指定
+## データのフィルター処理
 
-スタイルの指定には Qt Style Sheets がそのまま使われています。コンフィグファイルの `stylesheets` は配列になっており、各要素で以下のようにスタイルシートのパスを指定します。特定のウィジェットにのみスタイルを反映したい場合は `target` にウィジェットの名前を記載してください。省略した場合は全てのウィジェットに適用されます。複数の要素で同じウィジェットを指定した場合、ファイルの内容を結合して適用します。
+例えば単位が m/s のデータを km/h で表示したいことがあります。このディレクトリにある [process1.yaml](process1.yaml) を読み込むと、トピックで指定したデータが左側にはそのまま m/s で表示され、右側には km/h に変換した結果が表示されます。
 
-```yaml
-{ path: <path>, target: <plugin> }
-```
+![process1](process1.png)
 
-サンプルとして以下のファイルを用意しました。スタイルシートの文法については Qt のドキュメントを参照してください。また、対象とするウィジェットの構成に合わせてクラスセレクタを使用する場合、各ウィジェットの詳細を参照して使用されている Qt のクラス情報を確認してください。
-
-- [style1.yaml](style1.yaml) / [style1.css](style1.css)
-
-  ![style1](style1.png)
-
-- [style2.yaml](style2.yaml) / [style2.css](style2.css)
-
-  ![style2](style2.png)
-
-- [style3.yaml](style3.yaml) / [style3.css](style3.css)
-
-  ![style3](style3.png)
-
-## 属性セレクター
-
-スタイルシートの記述で以下のように属性セレクターを指定すると、データが特定の条件を満たした時のみスタイルを適用することができます。以前のストリームの説明では実体として YAML データが流れていると解説しましたが、実際には YAML データに加えて属性データも流れており、この属性の値に従ってスタイルが適用されます。
-
-```css
-* [name="value"] {
-  color: red;
-}
-```
-
-アクションの中には属性データを変更するものがあります。ここでは `multi_data_monitor::Switch` を使って属性を設定します。このアクションを使うと、データが指定した値と一致した時に値と属性をぞれぞれ書き換えることができます。まずは以下のように複数のスタイルを用意し、属性の `test` の値によって文字色が変わるようにしておきます。
-
-```css
-* [test="one"]   { color: red;   }
-* [test="two"]   { color: green; }
-* [test="three"] { color: blue;  }
-```
-
-続いてアクションを使って属性を設定します。今回は値が 1〜3 の時に表示を英語に置き換え、先ほと設定した属性が適用されるようにしました。値が一致しないときには `default` の設定が適用されるので属性は空になりスタイルがクリアされます。
+これを実現しているのがフィルターで、以下のように`input` で指定したストリームのデータを任意のルールに従って変換します。フィルターもトピックと同じくストリームなので、ウィジェットの `input` に指定すれば変換した結果を画面に表示できます。
 
 ```yaml
-class: multi_data_monitor::Switch
-default: { value: UNKNOWN, attrs: { test: "" } }
-mapping:
-  1: { value: ONE, attrs: { test: one } }
-  2: { value: TWO, attrs: { test: two } }
-  3: { value: THREE, attrs: { test: three } }
+{ model: filter, input: <stream>, rules: [<action1>, <action2>, ...] }
 ```
 
-サンプルファイル ([style4.yaml](style4.yaml) / [style4.css](style4.css)) ではアクションの効果が分かりやすいように元の値と並べて表示しています。
+変換のルールはアクションを使って指定します。今回は multi_data_monitor::Units を使って単位の変換を行っていて、このアクションはパラメータに `type: mps_to_kph` を指定すると m/s から km/h への変換だと解釈します。
 
-![style4-1](style4-1.png)
-![style4-2](style4-2.png)
-![style4-3](style4-3.png)
-![style4-4](style4-4.png)
+```yaml
+{ class: <plugin>, ... <optional parameters> }
+```
+
+これらを全てまとめるとこのようになります。上記の process1.yaml ではトピックのデータを複数の入力で使えるようにストリームに名前を付けて扱っています。ストリームはコンフィグファイルの直下に `streams` というキーを作成し、その下に `widgets` と同じく任意の名前でオブジェクトを作成できます。
+
+```yaml
+class: multi_data_monitor::Simple
+input:
+  model: filter
+  input: { model: topic, name: /test/double, data: data, type: std_msgs/msg/Float64 }
+  rules:
+    - { class: multi_data_monitor::Units, type: mps_to_kph }
+```
+
+## アクションの指定
+
+フィルターには複数のアクションを設定可能で、指定した順番で適用されます。これを用いて [process2.yaml](process2.yaml) では km/h に変換した結果をフォーマットしています。
+
+![process2](process2.png)
+
+このコンフィグファイルにおけるデータの流れを図に示すと以下のようになります。データを複数の入力に分岐させない限り、フィルターに複数のアクションをまとめた方が簡潔に記述できます。
+
+![process2-data-flow](process2.drawio.svg)

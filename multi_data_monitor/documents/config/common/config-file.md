@@ -1,5 +1,9 @@
 # ConfigFile
 
+## Description
+
+コンフィグファイルを構成する最上位のオブジェクトです。コンフィグファイル全体は辞書型のデータである必要があります。
+
 ## Format
 
 | Key Name      | Value Type                                                   | Description                                                     |

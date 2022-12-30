@@ -45,6 +45,7 @@ void Simple::setup(YAML::Node yaml, const std::vector<QWidget *> &)
     initial_value = yaml["value"].as<std::string>("");
   }
   title_ = yaml["title"].as<std::string>("");
+  title_ = title_.empty() ? "" : title_ + ": ";
 
   label_ = new QLabel(QString::fromStdString(title_ + initial_value));
   label_->setAlignment(Qt::AlignCenter);

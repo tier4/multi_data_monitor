@@ -1,49 +1,46 @@
 # config node object
 
-## Common Objects
+## Common objects
 
 - [ConfigFile](common/config-file.md)
 - [Stylesheet](common/stylesheet.md)
-- BasicNode
-- [WidgetLike](common/widget-like.md)
-- [StreamLike](common/stream-like.md)
-- [FilterLike](common/filter-like.md)
+- [Widgets](common/widget-like.md) (WidgetLike / WidgetNode / WidgetRelay)
+- [Streams](common/stream-like.md) (StreamLike / StreamNode / StreamRelay)
+- [Filters](common/filter-like.md) (FilterLike, FilterNode, FilterRelay)
 
-## Widget Nodes
+## Widget classes
 
 - Simple
 - Titled
 - Matrix
 
-## Stream Nodes
+## Stream classes
 
-- Subscription
-- Apply
-- Print
+- subscription
+- apply
+- print
+- @topic
+- @field
+- @panel
 
-## Filter Nodes
+## Filter classes
 
-- Function
+- function
 - SetIf
 - SetFirstIf
 - Units
 - Precision
 
-フィルターの設定時に共通利用されます。
+## Filter components
+
+フィルタークラスの設定にて共通で利用するプロパティーの集合です。
 
 - Conditions
 - ValueAttrs
 
-## Subscription Nodes
+## Subscription objects
+
+コンフィグファイル直下の `subscriptions` セクションで使用するオブジェクトです。
 
 - SubscriptionTopic
 - SubscriptionField
-
-## System Nodes
-
-これらのノードを直接使うことはありません。
-
-- Relay
-- Panel
-- Topic
-- Field
