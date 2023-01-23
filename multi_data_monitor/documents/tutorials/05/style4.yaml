@@ -1,22 +1,30 @@
-version: 1.0
+version: 2.0
 
 stylesheets:
-  - { path: package://multi_data_monitor/tutorials/04/style4.css }
+  - { path: package://multi_data_monitor/css/plugins/simple.css, target: Simple }
+  - { path: package://multi_data_monitor/css/colors.css }
 
 widgets:
-  root:
-    class: multi_data_monitor::Matrix
-    children:
-      - class: multi_data_monitor::Simple
-        input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
-      - class: multi_data_monitor::Simple
-        input:
-          model: filter
-          input: { model: topic, name: /test/uint32, data: data, type: std_msgs/msg/UInt32 }
-          rules:
-            - class: multi_data_monitor::Switch
-              default: { value: UNKNOWN, attrs: { test: "" } }
-              mapping:
-                1: { value: ONE, attrs: { test: one } }
-                2: { value: TWO, attrs: { test: two } }
-                3: { value: THREE, attrs: { test: three } }
+  - class: Matrix
+    rows: 1
+    items:
+      - class: Simple
+        value: UNKNOWN
+        input: state
+      - class: Simple
+        value: UNKNOWN
+        input: state
+        rules:
+          class: SetFirstIf
+          type: uint
+          list:
+            - { eq: 1, value: ONE, attrs: { back-color: yellow } }
+            - { eq: 2, value: TWO, attrs: { back-color: lime } }
+            - { eq: 3, value: THREE, attrs: { back-color: cyan } }
+            - { value: ERROR }
+
+streams:
+  - class: subscription
+    label: state
+    topic: /example/count/uint32
+    field: data
