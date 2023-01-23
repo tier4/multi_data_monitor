@@ -1,40 +1,27 @@
-# ストリーム
+# フィルターについて
 
-## データのフィルター処理
+## フィルターの適用
 
-例えば単位が m/s のデータを km/h で表示したいことがあります。このディレクトリにある [process1.yaml](process1.yaml) を読み込むと、トピックで指定したデータが左側にはそのまま m/s で表示され、右側には km/h に変換した結果が表示されます。
+例えば単位が m/s のデータを km/h で表示したいことがあります。以下の設定ファイルではトピックのデータが左側にはそのまま m/s で表示され、右側には km/h に変換した結果が表示されます。
 
-![process1](process1.png)
+[package://multi_data_monitor/documents/tutorials/04/filter1.yaml](filter1.yaml)
 
-これを実現しているのがフィルターで、以下のように`input` で指定したストリームのデータを任意のルールに従って変換します。フィルターもトピックと同じくストリームなので、ウィジェットの `input` に指定すれば変換した結果を画面に表示できます。
+![filter1](filter1.png)
 
-```yaml
-{ model: filter, input: <stream>, rules: [<action1>, <action2>, ...] }
-```
+これを実現しているのがフィルターです。フィルターは関数のようなもので、設定ファイルの `filters` セクションに処理の内容を記載します。これををストリームの `apply` クラスの `rules` に指定することで、そのストリームに入力されたデータにフィルターの処理が適用されます。
 
-変換のルールはアクションを使って指定します。今回は multi_data_monitor::Units を使って単位の変換を行っていて、このアクションはパラメータに `type: mps_to_kph` を指定すると m/s から km/h への変換だと解釈します。
+![graph](graph.drawio.svg)
 
-```yaml
-{ class: <plugin>, ... <optional parameters> }
-```
+## フィルターの組み合わせ
 
-これらを全てまとめるとこのようになります。上記の process1.yaml ではトピックのデータを複数の入力で使えるようにストリームに名前を付けて扱っています。ストリームはコンフィグファイルの直下に `streams` というキーを作成し、その下に `widgets` と同じく任意の名前でオブジェクトを作成できます。
+ストリームの `apply` クラスには複数のフィルターを指定できます。複数のフィルターを配列として `rules` に設定するとそれらが順番に適用されます。以下の設定ファイルでは、単位の変換に加えて小数点の桁数指定を行っています。
 
-```yaml
-class: multi_data_monitor::Simple
-input:
-  model: filter
-  input: { model: topic, name: /test/double, data: data, type: std_msgs/msg/Float64 }
-  rules:
-    - { class: multi_data_monitor::Units, type: mps_to_kph }
-```
+[package://multi_data_monitor/documents/tutorials/04/filter2.yaml](filter2.yaml)
 
-## アクションの指定
+![filter2](filter2.png)
 
-フィルターには複数のアクションを設定可能で、指定した順番で適用されます。これを用いて [process2.yaml](process2.yaml) では km/h に変換した結果をフォーマットしています。
+また、複数のフィルターをまとめて一つのフィルターを定義することもできます。この場合は `function` という組み込みのフィルターを利用します。このフィルターは `apply` ストリームと同様に `rules` を設定できるので、ここに適用したいフィルターを列挙します。
 
-![process2](process2.png)
+[package://multi_data_monitor/documents/tutorials/04/filter3.yaml](filter3.yaml)
 
-このコンフィグファイルにおけるデータの流れを図に示すと以下のようになります。データを複数の入力に分岐させない限り、フィルターに複数のアクションをまとめた方が簡潔に記述できます。
-
-![process2-data-flow](process2.drawio.svg)
+![filter3](filter3.png)
