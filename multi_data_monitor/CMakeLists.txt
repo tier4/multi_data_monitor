@@ -19,35 +19,60 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 add_compile_definitions(FMT_HEADER_ONLY)
 
-ament_auto_add_library(${PROJECT_NAME} SHARED
-  src/core/widget.hpp
-  src/core/widget.cpp
-  src/core/errors.hpp
-  src/core/errors.cpp
-  src/core/config.hpp
-  src/core/config.cpp
-  src/core/loader.hpp
-  src/core/loader.cpp
-  src/core/stream.hpp
-  src/core/stream.cpp
-  src/core/topic.hpp
-  src/core/topic.cpp
-  src/header/design.cpp
-  src/plugin/format.cpp
-  src/plugin/precision.cpp
-  src/plugin/switch.cpp
-  src/plugin/lines.cpp
-  src/plugin/units.cpp
-  src/plugin/matrix.cpp
-  src/plugin/simple.cpp
-  src/plugin/title.cpp
+ament_auto_add_library(${PROJECT_NAME}_core SHARED
+  "src/core/common/path.cpp"
+  "src/core/common/yaml.cpp"
+  "src/core/config/types.cpp"
+  "src/core/debug/plantuml.cpp"
+  "src/core/header/widget.cpp"
+  "src/core/parser/check_system_class.cpp"
+  "src/core/parser/file.cpp"
+  "src/core/parser/construction.cpp"
+  "src/core/parser/subscription.cpp"
+  "src/core/parser/resolve_relation.cpp"
+  "src/core/parser/stylesheet.cpp"
+  "src/core/loader/config_loader.cpp"
+  "src/core/loader/filter_loader.cpp"
+  "src/core/loader/stream_loader.cpp"
+  "src/core/loader/widget_loader.cpp"
+  "src/core/runner/rclcpp_runner.cpp"
+  "src/core/runner/stream_runner.cpp"
+  "src/core/runner/widget_runner.cpp"
+  "src/core/stream/apply.cpp"
+  "src/core/stream/basic.cpp"
+  "src/core/stream/field.cpp"
+  "src/core/stream/panel.cpp"
+  "src/core/stream/print.cpp"
+  "src/core/stream/topic.cpp"
+  "src/core/filter/function.cpp"
 )
-target_link_libraries(${PROJECT_NAME} ${QT_LIBRARIES})
+target_include_directories(${PROJECT_NAME}_core PRIVATE src/core)
 
-ament_auto_add_executable(debug
-  src/debug.cpp
+ament_auto_add_library(${PROJECT_NAME}_rviz SHARED
+  "src/core/rviz/rviz_manager.hpp"
+  "src/core/rviz/rviz_manager.cpp"
+  "src/core/rviz/rviz_panel.hpp"
+  "src/core/rviz/rviz_panel.cpp"
 )
-target_link_libraries(debug ${PROJECT_NAME})
+target_include_directories(${PROJECT_NAME}_rviz PRIVATE src/core)
+
+ament_auto_add_library(${PROJECT_NAME}_plugin SHARED
+  "src/plugin/widget/debug_label.hpp"
+  "src/plugin/widget/matrix.cpp"
+  "src/plugin/widget/simple.cpp"
+  "src/plugin/widget/titled.cpp"
+  "src/plugin/filter/components/conditions.cpp"
+  "src/plugin/filter/set_if.cpp"
+  "src/plugin/filter/units.cpp"
+  "src/plugin/filter/precision.cpp"
+)
+target_link_libraries(${PROJECT_NAME}_plugin ${PROJECT_NAME}_core)
+
+ament_auto_add_executable(parser src/tool/parser.cpp)
+target_include_directories(parser PRIVATE src/core)
+
+ament_auto_add_executable(runner src/tool/runner.cpp)
+target_include_directories(runner PRIVATE src/core)
 
 pluginlib_export_plugin_description_file(rviz_common plugins/rviz.xml)
 pluginlib_export_plugin_description_file(multi_data_monitor plugins/builtins.xml)
@@ -55,11 +80,16 @@ pluginlib_export_plugin_description_file(multi_data_monitor plugins/builtins.xml
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
   ament_lint_auto_find_test_dependencies()
+  find_package(ament_cmake_gtest REQUIRED)
+  ament_add_gtest(${PROJECT_NAME}_gtest test/test.cpp)
+  target_compile_definitions(${PROJECT_NAME}_gtest PRIVATE TEST_YAML="${CMAKE_CURRENT_SOURCE_DIR}/test/yaml/")
+  target_include_directories(${PROJECT_NAME}_gtest PRIVATE src/core)
+  target_link_libraries(${PROJECT_NAME}_gtest ${PROJECT_NAME}_core)
 endif()
 
 install(PROGRAMS
-  scripts/tutorial
+  scripts/example
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_auto_package(INSTALL_TO_SHARE css icons plugins tutorials)
+ament_auto_package(INSTALL_TO_SHARE css documents icons plugins)

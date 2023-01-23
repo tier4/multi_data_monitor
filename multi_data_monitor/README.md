@@ -1,3 +1,9 @@
 # multi_data_monitor
 
-- [Tutorials](./tutorials/index.md)
+## Tutorials
+
+- [Basic operation](./documents/tutorials/01/index.md)
+- [Widgets](./documents/tutorials/02/index.md)
+- [Streams](./documents/tutorials/03/index.md)
+- [Filters](./documents/tutorials/04/index.md)
+- [Stylesheets](./documents/tutorials/05/index.md)
