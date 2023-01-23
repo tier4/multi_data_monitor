@@ -88,8 +88,8 @@ if(BUILD_TESTING)
 endif()
 
 install(PROGRAMS
-  examples/scripts/example
+  scripts/example
   DESTINATION lib/${PROJECT_NAME}
 )
 
-ament_auto_package(INSTALL_TO_SHARE css documents examples icons plugins)
+ament_auto_package(INSTALL_TO_SHARE css documents icons plugins)
