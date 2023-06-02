@@ -11,9 +11,9 @@
 
 ## Widget plugins
 
-- Simple
-- Titled
-- Matrix
+- [Simple](./widgets/simple.md)
+- [Titled](./widgets/titled.md)
+- [Matrix](./widgets/matrix.md)
 
 ## Stream plugins
 
