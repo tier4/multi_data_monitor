@@ -8,8 +8,7 @@
 - [Filters](./documents/tutorials/04/index.md)
 - [Stylesheets](./documents/tutorials/05/index.md)
 
-## Tools
+## Documents
 
 - [Command line tools](./documents/develop/command-line.md)
-
-## Format
+- [Config file format](./documents/classes/index.md)
