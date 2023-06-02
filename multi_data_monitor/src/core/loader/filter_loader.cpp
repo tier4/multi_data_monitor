@@ -20,9 +20,6 @@
 #include <string>
 #include <unordered_map>
 
-// DEBUG
-#include <iostream>
-
 // TODO(Takagi, Isamu): merge filter loader
 namespace
 {

@@ -16,9 +16,6 @@
 #include "components/setter.hpp"
 #include <multi_data_monitor/filter.hpp>
 
-//
-#include <iostream>
-
 namespace multi_data_monitor
 {
 

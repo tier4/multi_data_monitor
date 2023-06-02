@@ -16,10 +16,6 @@
 #include <QGridLayout>
 #include <QWidget>
 
-// DEBUG
-#include <QLabel>
-#include <iostream>
-
 namespace multi_data_monitor
 {
 

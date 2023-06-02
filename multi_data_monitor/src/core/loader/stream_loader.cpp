@@ -25,9 +25,6 @@
 #include <utility>
 #include <vector>
 
-// DEBUG
-#include <iostream>
-
 namespace multi_data_monitor
 {
 

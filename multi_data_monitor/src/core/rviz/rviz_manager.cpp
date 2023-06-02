@@ -18,15 +18,11 @@
 #include "runner/rclcpp_runner.hpp"
 #include <QLabel>
 
-// DEBUG
-#include <iostream>
-
 namespace multi_data_monitor
 {
 
 RvizManager::~RvizManager()
 {
-  std::cout << "rviz manager shutdown" << std::endl;
   runner_.shutdown();
 }
 

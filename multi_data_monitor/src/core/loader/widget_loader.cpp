@@ -22,7 +22,7 @@
 #include <unordered_map>
 #include <vector>
 
-// DEBUG
+// TODO(Takagi, Isamu): exception or warning
 #include <iostream>
 
 // TODO(Takagi, Isamu): merge filter loader

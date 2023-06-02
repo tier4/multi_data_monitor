@@ -23,9 +23,6 @@
 #include <unordered_set>
 #include <vector>
 
-//
-#include <iostream>
-
 namespace multi_data_monitor
 {
 

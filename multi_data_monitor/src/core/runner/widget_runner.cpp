@@ -16,9 +16,6 @@
 #include "stream/basic.hpp"
 #include <multi_data_monitor/widget.hpp>
 
-// DEBUG
-#include <iostream>
-
 namespace multi_data_monitor
 {
 
@@ -37,15 +34,6 @@ void WidgetRunner::shutdown()
 {
   stream_runner_.shutdown();
   widget_loader_.release();
-
-  std::cout << "config created: " << CommonData::created << std::endl;
-  std::cout << "config created: " << CommonData::removed << std::endl;
-  std::cout << "design created: " << DesignData::created << std::endl;
-  std::cout << "design removed: " << DesignData::removed << std::endl;
-  std::cout << "stream created: " << BasicStream::created << std::endl;
-  std::cout << "stream removed: " << BasicStream::removed << std::endl;
-  std::cout << "widget created: " << BasicWidget::created << std::endl;
-  std::cout << "widget removed: " << BasicWidget::removed << std::endl;
 }
 
 QWidget * WidgetRunner::take_root_widget()

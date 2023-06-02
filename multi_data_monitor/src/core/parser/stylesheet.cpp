@@ -21,9 +21,6 @@
 #include <memory>
 #include <string>
 
-// DEBUG
-#include <iostream>
-
 namespace multi_data_monitor
 {
 

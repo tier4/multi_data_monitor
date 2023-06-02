@@ -18,9 +18,6 @@
 #include <functional>
 #include <string>
 
-// DEGUB
-#include <iostream>
-
 namespace multi_data_monitor
 {
 

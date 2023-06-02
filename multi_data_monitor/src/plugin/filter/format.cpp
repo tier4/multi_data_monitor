@@ -37,6 +37,7 @@ public:
     if (type == "uint64") { type_ = Type::Uint64; }
     if (type == "sint64") { type_ = Type::Sint64; }
     // clang-format on
+
     // TODO(Takagi, Isamu): warning
   }
   MonitorValues Apply(const MonitorValues & input) override
