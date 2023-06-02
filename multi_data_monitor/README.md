@@ -7,3 +7,9 @@
 - [Streams](./documents/tutorials/03/index.md)
 - [Filters](./documents/tutorials/04/index.md)
 - [Stylesheets](./documents/tutorials/05/index.md)
+
+## Tools
+
+- [Command line tools](./documents/develop/command-line.md)
+
+## Format

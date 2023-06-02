@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__DEBUG__PLANTUML_HPP_
-#define CORE__DEBUG__PLANTUML_HPP_
+#ifndef CORE__CONFIG__PLANTUML_HPP_
+#define CORE__CONFIG__PLANTUML_HPP_
 
 #include "config/types.hpp"
 #include <string>
@@ -30,4 +30,4 @@ public:
 
 }  // namespace multi_data_monitor::plantuml
 
-#endif  // CORE__DEBUG__PLANTUML_HPP_
+#endif  // CORE__CONFIG__PLANTUML_HPP_

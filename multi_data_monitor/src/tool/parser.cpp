@@ -12,40 +12,54 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "debug/plantuml.hpp"
+#include "config/plantuml.hpp"
 #include "loader/config_loader.hpp"
 #include "loader/stream_loader.hpp"
 #include <iostream>
 using namespace multi_data_monitor;  // NOLINT
 
-ConfigData load(const std::string & path)
+ConfigData load(const std::string & path, const std::set<std::string> & option)
 {
-  const auto func = [](int step, const std::string & name, const ConfigData & data)
+  const auto step_hook = [](int step, const std::string & name, const ConfigData & data)
   {
     const auto diagram = plantuml::Diagram();
     const auto filename = std::to_string(step) + "-" + name;
-    diagram.write(data, "graphs/step" + filename + ".plantuml");
+    const auto filepath = "step" + filename + ".plantuml";
+    std::cout << "write " << filepath << std::endl;
+    diagram.write(data, filepath);
   };
-  return ConfigLoader::Execute(path, func);
+
+  const auto last_hook = [](int, const std::string &, const ConfigData & data)
+  {
+    const auto diagram = plantuml::Diagram();
+    const auto filepath = "multi-data-monitor.plantuml";
+    std::cout << "write " << filepath << std::endl;
+    diagram.write(data, filepath);
+  };
+
+  ConfigLoader loader;
+  if (option.count("--plantuml"))
+  {
+    loader.set_last_hook(last_hook);
+  }
+  if (option.count("--plantuml-all"))
+  {
+    loader.set_step_hook(step_hook);
+  }
+  return loader.execute(path);
 }
 
 int main(int argc, char ** argv)
 {
-  if (argc != 3)
+  if (argc < 3)
   {
-    std::cerr << "usage: command <scheme> <config-file-path>" << std::endl;
+    std::cerr << "usage: command <scheme> <path> [options]" << std::endl;
     return 1;
   }
 
-  StreamLoader stream_loader;
-  {
-    const auto scheme = std::string(argv[1]);
-    const auto config = std::string(argv[2]);
-    const auto data = load(scheme + "://" + config);
-  }
-
-  std::cout << CommonData::created << std::endl;
-  std::cout << CommonData::removed << std::endl;
-  std::cout << DesignData::created << std::endl;
-  std::cout << DesignData::removed << std::endl;
+  const auto scheme = std::string(argv[1]);
+  const auto config = std::string(argv[2]);
+  const auto option = std::set<std::string>(argv + 3, argv + argc);
+  load(scheme + "://" + config, option);
+  std::cout << "Config file parsed." << std::endl;
 }

@@ -28,13 +28,6 @@ ConfigData ConfigLoader::Execute(const std::string & path)
   return ConfigLoader().execute(path);
 }
 
-ConfigData ConfigLoader::Execute(const std::string & path, HookFunction function)
-{
-  ConfigLoader loader = ConfigLoader();
-  loader.hook(function);
-  return loader.execute(path);
-}
-
 ConfigLoader::ConfigLoader()
 {
   parsers_.push_back(std::make_shared<MergeSubscription>());
@@ -45,9 +38,14 @@ ConfigLoader::ConfigLoader()
   parsers_.push_back(std::make_shared<NormalizeRelation>());
 }
 
-void ConfigLoader::hook(HookFunction function)
+void ConfigLoader::set_step_hook(HookFunction hook)
 {
-  function_ = function;
+  step_hook_ = hook;
+}
+
+void ConfigLoader::set_last_hook(HookFunction hook)
+{
+  last_hook_ = hook;
 }
 
 ConfigData ConfigLoader::execute(const std::string & path) const
@@ -55,18 +53,23 @@ ConfigData ConfigLoader::execute(const std::string & path) const
   auto file = ConfigFileLoader().execute(path);
   auto data = ParseBasicObject().execute(file);
 
-  if (function_)
+  if (step_hook_)
   {
-    function_(0, "construct-node", data);
+    step_hook_(0, "construct-node", data);
   }
   for (size_t i = 0; i < parsers_.size(); ++i)
   {
     data = parsers_[i]->execute(data);
-    if (function_)
+    if (step_hook_)
     {
-      function_(i + 1, parsers_[i]->name(), data);
+      step_hook_(i + 1, parsers_[i]->name(), data);
     }
   }
+  if (last_hook_)
+  {
+    last_hook_(0, "", data);
+  }
+
   data.designs = ParseStyleSheet().execute(file);
   return data;
 }

@@ -26,17 +26,18 @@ namespace multi_data_monitor
 class ConfigLoader final
 {
 public:
-  using HookFunction = std::function<void(int, const std::string &, const ConfigData &)>;
-  static ConfigData Execute(const std::string & path);
-  static ConfigData Execute(const std::string & path, HookFunction function);
-
-private:
+  static ConfigData Execute(const std::string & path);  // oneline function
   ConfigLoader();
   ConfigData execute(const std::string & path) const;
-  void hook(HookFunction function);
 
+  using HookFunction = std::function<void(int, const std::string &, const ConfigData &)>;
+  void set_step_hook(HookFunction hook);
+  void set_last_hook(HookFunction hook);
+
+private:
   std::vector<std::shared_ptr<ConfigParserInterface>> parsers_;
-  HookFunction function_;
+  HookFunction step_hook_;
+  HookFunction last_hook_;
 };
 
 }  // namespace multi_data_monitor
