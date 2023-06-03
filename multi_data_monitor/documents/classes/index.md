@@ -26,13 +26,13 @@
 
 ## Filter plugins
 
-- function
-- Access
-- Dump
-- Units
-- Precision
-- SetIf
-- SetFirstIf
+- [function](./filter/function.md)
+- [Access](./filter/access.md)
+- [Dump](./filter/dump.md)
+- [Units](./filter/units.md)
+- [Precision](./filter/precision.md)
+- [SetIf](./filter/set-if.md)
+- [SetFirstIf](./filter/set-first-if.md)
 
 ## Filter components
 

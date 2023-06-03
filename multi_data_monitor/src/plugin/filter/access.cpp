@@ -45,7 +45,7 @@ void Access::setup(YAML::Node yaml)
       // TODO(Takagi, Isamu): warning
       break;
   }
-  value_ = yaml["value"];
+  value_ = yaml["fails"];
 }
 
 Packet Access::apply(const Packet & packet)
