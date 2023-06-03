@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package format="2">
   <name>multi_data_monitor</name>
-  <version>0.0.0</version>
+  <version>2.0.0</version>
   <description>The multi_data_monitor package</description>
   <maintainer email="isamu.takagi@tier4.jp">Takagi, Isamu</maintainer>
   <license>Apache License 2.0</license>
