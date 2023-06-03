@@ -17,12 +17,12 @@
 
 ## Stream plugins
 
-- subscription
-- apply
-- print
-- @topic
-- @field
-- @panel
+- [subscription](./stream/subscription.md)
+- [apply](./stream/apply.md)
+- [print](./stream/print.md)
+- [@topic](./stream/system-topic.md)
+- [@field](./stream/system-field.md)
+- [@panel](./stream/system-panel.md)
 
 ## Filter plugins
 
