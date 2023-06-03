@@ -30,12 +30,12 @@ IncludeCategories:
   - Regex: <.*\.h>
     Priority: 4
     CaseSensitive: true
-  # Other Package headers
-  - Regex: <.*>
-    Priority: 3
-    CaseSensitive: true
   # Qt Package headers
   - Regex: <Q.*>
+    Priority: 3
+    CaseSensitive: true
+  # Other Package headers
+  - Regex: <.*>
     Priority: 2
     CaseSensitive: true
   # Local package headers

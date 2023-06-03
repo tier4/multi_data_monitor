@@ -1,9 +1,7 @@
 extends: default
 
 rules:
-  line-length:
-    level: error
-    max: 120
+  line-length: disable
   document-start:
     level: error
     present: false # Don't need document start markers
