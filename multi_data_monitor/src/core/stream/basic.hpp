@@ -26,13 +26,13 @@ namespace multi_data_monitor
 struct BasicStream
 {
 public:
-  // DEBUG
+  // TODO(Takagi, Isamu): Remove debug code.
+  // virtual ~BasicStream() = default;
   static inline int created = 0;
   static inline int removed = 0;
   BasicStream() { ++created; }
   virtual ~BasicStream() { ++removed; }
 
-  // virtual ~BasicStream() = default;
   virtual void setting(YAML::Node yaml) = 0;
   virtual void connect(Stream stream);
   virtual void message(const Packet & packet) = 0;

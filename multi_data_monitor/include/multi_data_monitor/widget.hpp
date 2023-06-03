@@ -41,12 +41,12 @@ public:
   void system_apply(const Packet & packet);
   void system_set_stylesheet(const QString & stylesheet);
 
-  // DEBUG
+  // TODO(Takagi, Isamu): Remove debug code.
+  // virtual ~BasicWidget() = default;
   static inline int created = 0;
   static inline int removed = 0;
   BasicWidget() { ++created; }
   virtual ~BasicWidget() { ++removed; }
-  // virtual ~BasicWidget() = default;
 
 private:
   QWidget * root_ = nullptr;

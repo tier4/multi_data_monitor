@@ -53,6 +53,8 @@ struct CommonData
 {
   CommonData(const NodeClass & klass, const NodeLabel & label);
   virtual ~CommonData();
+
+  // TODO(Takagi, Isamu): Remove debug code.
   static inline int created = 0;
   static inline int removed = 0;
 
@@ -94,6 +96,7 @@ struct WidgetData final : public CommonData
 
 struct DesignData final
 {
+  // TODO(Takagi, Isamu): Remove debug code.
   DesignData() { ++created; }
   ~DesignData() { ++removed; }
   static inline int created = 0;
