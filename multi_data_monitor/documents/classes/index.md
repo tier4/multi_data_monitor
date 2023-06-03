@@ -36,8 +36,8 @@
 
 ## Filter components
 
-- Conditions
-- ValueAttrs
+- [Conditions](./others/conditions.md)
+- [ValueAttrs](./others/value-attrs.md)
 
 ## Subscription settings
 
