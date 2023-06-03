@@ -21,7 +21,7 @@ namespace multi_data_monitor
 
 class Matrix : public BasicWidget
 {
-public:
+protected:
   void setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
 };
 

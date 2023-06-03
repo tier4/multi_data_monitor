@@ -77,11 +77,11 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
     std::vector<QWidget *> items;
     for (const auto & item : config->items)
     {
-      items.push_back(mapping.at(item)->system_get_widget());
+      items.push_back(mapping.at(item)->call_get_widget());
     }
-    node->system_setup(config->yaml, items);
-    node->system_get_widget()->setParent(&dummy_root_widget);
-    node->system_set_stylesheet(get_stylesheet(designs, config->klass));
+    node->call_setup(config->yaml, items);
+    node->call_get_widget()->setParent(&dummy_root_widget);
+    node->call_set_stylesheet(get_stylesheet(designs, config->klass));
   }
 
   root_widget_ = std::make_unique<QWidget>();
@@ -90,7 +90,7 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
 
   if (!configs.empty())
   {
-    QWidget * widget = mapping.at(configs.back())->system_get_widget();
+    QWidget * widget = mapping.at(configs.back())->call_get_widget();
     QLayout * layout = new QGridLayout();
     layout->addWidget(widget);
     // layout->setSpacing(0);
@@ -100,7 +100,7 @@ WidgetMaps WidgetLoader::create(const WidgetList & configs, const DesignList & d
 
   for (const auto & node : widgets_)
   {
-    QWidget * widget = node->system_get_widget();
+    QWidget * widget = node->call_get_widget();
     if (widget && widget->parent() == &dummy_root_widget)
     {
       // TODO(Takagi, Isamu): exception or warning

@@ -50,12 +50,12 @@ void update_property(QWidget * widget, const Packet::Attrs & prevs, const Packet
 namespace multi_data_monitor
 {
 
-QWidget * BasicWidget::system_get_widget()
+QWidget * BasicWidget::call_get_widget()
 {
   return root_;
 }
 
-void BasicWidget::system_setup(YAML::Node yaml, const std::vector<QWidget *> & items)
+void BasicWidget::call_setup(YAML::Node yaml, const std::vector<QWidget *> & items)
 {
   // TODO(Takagi, Isamu): more plugin info
   try
@@ -77,17 +77,26 @@ void BasicWidget::system_setup(YAML::Node yaml, const std::vector<QWidget *> & i
   }
 }
 
-void BasicWidget::system_apply(const Packet & packet)
+void BasicWidget::call_apply(const Packet & packet)
 {
   for (const auto & widget : stylesheet_widgets_)
   {
     update_property(widget, prev_attrs_, packet.attrs);
     prev_attrs_ = packet.attrs;
   }
-  apply(packet.value);
+
+  // TODO(Takagi, Isamu): more plugin info
+  try
+  {
+    apply(packet.value);
+  }
+  catch (const std::exception & error)
+  {
+    throw PluginError(error.what());
+  }
 }
 
-void BasicWidget::system_set_stylesheet(const QString & stylesheet)
+void BasicWidget::call_set_stylesheet(const QString & stylesheet)
 {
   for (const auto & widget : stylesheet_widgets_)
   {

@@ -36,10 +36,10 @@ protected:
   void register_stylesheet_widget(QWidget * widget, const std::string & target = "");
 
 public:
-  QWidget * system_get_widget();
-  void system_setup(YAML::Node yaml, const std::vector<QWidget *> & items);
-  void system_apply(const Packet & packet);
-  void system_set_stylesheet(const QString & stylesheet);
+  QWidget * call_get_widget();
+  void call_setup(YAML::Node yaml, const std::vector<QWidget *> & items);
+  void call_apply(const Packet & packet);
+  void call_set_stylesheet(const QString & stylesheet);
 
   // TODO(Takagi, Isamu): Remove debug code.
   // virtual ~BasicWidget() = default;

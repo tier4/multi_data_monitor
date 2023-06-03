@@ -23,7 +23,7 @@ namespace multi_data_monitor
 
 class Titled : public BasicWidget
 {
-public:
+protected:
   void setup(YAML::Node yaml, const std::vector<QWidget *> & items) override;
   void apply(YAML::Node yaml) override;
 
