@@ -17,7 +17,7 @@ ROS のトピックを購読するストリームを作成します。
 
 ## QoS
 
-トピックの QoS は三文字以上の文字列で表現されます。最初の文字は reliability を、次の文字は `d, t, v` durability を表します。
+トピックの QoS は三文字以上の文字列で表現されます。最初の文字は reliability を、次の文字は durability を表します。
 三文字目以降は depth を示す数字で、全体として `dd5` や `rt1` のような文字列になります。各文字の意味については以下のテーブルを参照してください。
 
 | Reliability | Description    | Durability | Description     |
