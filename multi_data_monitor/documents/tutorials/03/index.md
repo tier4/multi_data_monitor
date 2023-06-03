@@ -10,7 +10,7 @@
 
 ROS のトピックからデータを取得するには `subscription` を使用します。対象のトピックを `topic` に、アクセスしたいフィールドを `field` に指定します。階層化されたフィールドにアクセスする場合は `foo.bar.baz` とドットで区切り、配列を参照する場合は `name@1` とアットサインに続けてインデックスを指定します。トピックの型や QoS が指定されていない場合、対象のトピックの設定を見て自動的に解決します。また、複数の `subscription` でトピックやフィールドが重複する場合は自動的にマージされるため、同じトピックのフィールドを異なる箇所で指定しても問題ありません。
 
-以下が `subscription` を使用した設定ファイルの例です。また `subscription` にはシンタックスシュガーが用意されており、設定ファイルの直下に専用のセクションを記載することができます。
+以下が `subscription` を使用した設定ファイルの例です。また `subscription` には別記法が用意されており、設定ファイルの直下に専用のセクションを記載することができます。
 
 [package://multi_data_monitor/documents/tutorials/03/subscription1.yaml](subscription1.yaml)
 [package://multi_data_monitor/documents/tutorials/03/subscription2.yaml](subscription2.yaml)
