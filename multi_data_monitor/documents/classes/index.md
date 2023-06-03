@@ -34,12 +34,8 @@
 - [SetIf](./filter/set-if.md)
 - [SetFirstIf](./filter/set-first-if.md)
 
-## Filter components
+## Others
 
+- [TopicDefinition](./others/topic-definition.md)
 - [Conditions](./others/conditions.md)
 - [ValueAttrs](./others/value-attrs.md)
-
-## Subscription settings
-
-- SubscriptionTopic
-- SubscriptionField
