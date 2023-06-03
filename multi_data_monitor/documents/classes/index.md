@@ -1,4 +1,4 @@
-# config node object
+# Config file format
 
 ## Common objects
 
