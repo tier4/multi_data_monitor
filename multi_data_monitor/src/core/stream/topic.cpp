@@ -154,7 +154,7 @@ void TopicStream::create_subscription(ros::Node node)
     const auto infos = node->get_publishers_info_by_topic(name_);
     if (infos.empty())
     {
-      RCLCPP_WARN_STREAM(node->get_logger(), "no topic info: " + name_);
+      RCLCPP_DEBUG_STREAM(node->get_logger(), "no topic info: " + name_);
       return;
     }
 

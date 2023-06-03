@@ -124,7 +124,6 @@ void MultiDataMonitor::updateMultiDataMonitor()
   {
     const auto path = setting_->getPath();
     widget = manager_.build(path, rviz_node);
-    std::cerr << "rviz widget: " << widget << std::endl;
     setting_->setVisible(false);
   }
   catch (const std::exception & error)
