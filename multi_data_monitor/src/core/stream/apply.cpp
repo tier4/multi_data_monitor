@@ -30,7 +30,7 @@ void ApplyStream::setting(YAML::Node yaml)
 
 void ApplyStream::message(const Packet & packet)
 {
-  outputs(filter_ ? filter_->apply(packet) : packet);
+  outputs(filter_ ? filter_->call_apply(packet) : packet);
 }
 
 }  // namespace multi_data_monitor

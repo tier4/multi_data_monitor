@@ -33,7 +33,7 @@ Packet FunctionFilter::apply(const Packet & packet)
   Packet result = packet;
   for (const auto & filter : filters_)
   {
-    result = filter->apply(result);
+    result = filter->call_apply(result);
   }
   return result;
 }

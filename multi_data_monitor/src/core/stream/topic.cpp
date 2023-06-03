@@ -187,11 +187,18 @@ void TopicStream::create_subscription(ros::Node node)
     }
   }
 
-  const auto callback = [this](const std::shared_ptr<const rclcpp::SerializedMessage> serialized)
+  const auto callback = [this, node](const std::shared_ptr<const rclcpp::SerializedMessage> serialized)
   {
     const auto value = generic_->deserialize(*serialized);
     const auto attrs = std::unordered_map<std::string, std::string>();
-    message(Packet{value, attrs});
+    try
+    {
+      message(Packet{value, attrs});
+    }
+    catch (const std::exception & error)
+    {
+      RCLCPP_ERROR_STREAM(node->get_logger(), error.what());
+    }
   };
 
   RCLCPP_INFO_STREAM(node->get_logger(), "start subscription: " + name_ + " [" + type + "]");

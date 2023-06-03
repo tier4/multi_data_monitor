@@ -52,7 +52,7 @@ FilterMaps FilterLoader::create(const FilterList & configs)
     // TODO(Takagi, Isamu): more plugin info
     try
     {
-      filter->setup(config->yaml);
+      filter->call_setup(config->yaml);
     }
     catch (const std::exception & error)
     {

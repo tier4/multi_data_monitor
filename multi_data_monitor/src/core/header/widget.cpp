@@ -64,7 +64,7 @@ void BasicWidget::call_setup(YAML::Node yaml, const std::vector<QWidget *> & ite
   }
   catch (const std::exception & error)
   {
-    throw PluginError(error.what());
+    throw PluginError(error.what() + std::string(" from ") + typeid(*this).name());
   }
 
   if (!root_)
@@ -92,7 +92,7 @@ void BasicWidget::call_apply(const Packet & packet)
   }
   catch (const std::exception & error)
   {
-    throw PluginError(error.what());
+    throw PluginError(error.what() + std::string(" from ") + typeid(*this).name());
   }
 }
 

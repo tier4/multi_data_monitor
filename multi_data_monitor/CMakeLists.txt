@@ -24,6 +24,7 @@ ament_auto_add_library(${PROJECT_NAME}_core SHARED
   "src/core/common/yaml.cpp"
   "src/core/config/types.cpp"
   "src/core/config/plantuml.cpp"
+  "src/core/header/filter.cpp"
   "src/core/header/widget.cpp"
   "src/core/parser/check_system_class.cpp"
   "src/core/parser/file.cpp"

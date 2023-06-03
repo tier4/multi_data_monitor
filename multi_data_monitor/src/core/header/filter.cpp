@@ -1,4 +1,4 @@
-// Copyright 2022 Takagi, Isamu
+// Copyright 2023 Takagi, Isamu
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -12,26 +12,36 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef MULTI_DATA_MONITOR__FILTER_HPP_
-#define MULTI_DATA_MONITOR__FILTER_HPP_
-
-#include <multi_data_monitor/packet.hpp>
+#include "common/exceptions.hpp"
+#include <multi_data_monitor/filter.hpp>
 
 namespace multi_data_monitor
 {
 
-class BasicFilter
+void BasicFilter::call_setup(YAML::Node yaml)
 {
-protected:
-  virtual void setup(YAML::Node yaml) = 0;
-  virtual Packet apply(const Packet & packet) = 0;
+  // TODO(Takagi, Isamu): more plugin info
+  try
+  {
+    setup(yaml);
+  }
+  catch (const std::exception & error)
+  {
+    throw PluginError(error.what() + std::string(" from ") + typeid(*this).name());
+  }
+}
 
-public:
-  virtual ~BasicFilter() = default;
-  void call_setup(YAML::Node yaml);
-  Packet call_apply(const Packet & packet);
-};
+Packet BasicFilter::call_apply(const Packet & packet)
+{
+  // TODO(Takagi, Isamu): more plugin info
+  try
+  {
+    return apply(packet);
+  }
+  catch (const std::exception & error)
+  {
+    throw PluginError(error.what() + std::string(" from ") + typeid(*this).name());
+  }
+}
 
 }  // namespace multi_data_monitor
-
-#endif  // MULTI_DATA_MONITOR__FILTER_HPP_
