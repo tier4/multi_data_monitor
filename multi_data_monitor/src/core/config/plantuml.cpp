@@ -26,6 +26,7 @@ void dump_node(std::ostringstream & ss, const T & data, const std::string & colo
   const auto label = data->label.empty() ? "" : " [" + data->label + "]";
   ss << "card " << data << " " << color << " [" << std::endl;
   ss << data->klass << label << std::endl;
+  ss << data->track.text() << std::endl;
   if (data->yaml.size())
   {
     ss << "---" << std::endl;

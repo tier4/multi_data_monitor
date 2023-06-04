@@ -21,7 +21,7 @@
 namespace multi_data_monitor
 {
 
-using RootFunc = void (ParseBasicObject::*)(YAML::Node);
+using RootFunc = void (ParseBasicObject::*)(YAML::Node, const NodeTrack & track);
 
 void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self, RootFunc func)
 {
@@ -34,9 +34,9 @@ void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self,
   {
     throw ConfigError("config section '" + name + "' is not a sequence");
   }
-  for (const auto & node : nodes)
+  for (size_t i = 0; i < nodes.size(); ++i)
   {
-    std::invoke(func, self, node);
+    std::invoke(func, self, nodes[i], NodeTrack::Create(name, i));
   }
 }
 
@@ -49,22 +49,22 @@ ConfigData ParseBasicObject::execute(ConfigFile & file)
   return data_;
 }
 
-void ParseBasicObject::parse_filter_root(YAML::Node yaml)
+void ParseBasicObject::parse_filter_root(YAML::Node yaml, const NodeTrack & track)
 {
-  parse_filter_yaml(yaml);
+  parse_filter_yaml(yaml, track);
 }
 
-void ParseBasicObject::parse_stream_root(YAML::Node yaml)
+void ParseBasicObject::parse_stream_root(YAML::Node yaml, const NodeTrack & track)
 {
-  parse_stream_yaml(yaml);
+  parse_stream_yaml(yaml, track);
 }
 
-void ParseBasicObject::parse_widget_root(YAML::Node yaml)
+void ParseBasicObject::parse_widget_root(YAML::Node yaml, const NodeTrack & track)
 {
-  parse_widget_yaml(yaml);
+  parse_widget_yaml(yaml, track);
 }
 
-void ParseBasicObject::parse_subscription(YAML::Node topic)
+void ParseBasicObject::parse_subscription(YAML::Node topic, const NodeTrack & track)
 {
   if (!topic.IsMap())
   {
@@ -98,87 +98,87 @@ void ParseBasicObject::parse_subscription(YAML::Node topic)
     yaml["field-type"] = field_type;
     yaml["qos"] = topic_qos;
 
-    const auto stream = data_.create_stream(builtin::subscription, label, yaml);
+    const auto stream = data_.create_stream(builtin::subscription, track, label, yaml);
     stream->system = true;
   }
 }
 
-FilterLink ParseBasicObject::parse_filter_yaml(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_yaml(YAML::Node yaml, const NodeTrack & track)
 {
   if (yaml.IsScalar())
   {
-    return parse_filter_link(yaml);
+    return parse_filter_link(yaml, track);
   }
   if (yaml.IsMap())
   {
-    return parse_filter_dict(yaml);
+    return parse_filter_dict(yaml, track);
   }
   if (yaml.IsSequence())
   {
-    return parse_filter_list(yaml);
+    return parse_filter_list(yaml, track);
   }
   // TODO(Takagi, Isamu): error message
   throw ConfigError("unexpected filter format");
 }
 
-StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml)
+StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml, const NodeTrack & track)
 {
   if (yaml.IsScalar())
   {
-    return parse_stream_link(yaml);
+    return parse_stream_link(yaml, track);
   }
   if (yaml.IsMap())
   {
-    return parse_stream_dict(yaml);
+    return parse_stream_dict(yaml, track);
   }
   // TODO(Takagi, Isamu): error message
   throw ConfigError("unexpected stream format");
 }
 
-WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml)
+WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml, const NodeTrack & track)
 {
   if (yaml.IsScalar())
   {
-    return parse_widget_link(yaml);
+    return parse_widget_link(yaml, track);
   }
   if (yaml.IsMap())
   {
-    return parse_widget_dict(yaml);
+    return parse_widget_dict(yaml, track);
   }
   // TODO(Takagi, Isamu): error message
   throw ConfigError("unexpected widget format");
 }
 
-FilterLink ParseBasicObject::parse_filter_link(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_link(YAML::Node yaml, const NodeTrack & track)
 {
-  FilterLink filter = data_.create_filter(builtin::relay);
+  FilterLink filter = data_.create_filter(builtin::relay, track);
   filter->system = true;
   filter->yaml["refer"] = yaml.as<std::string>();
   return filter;
 }
 
-StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml)
+StreamLink ParseBasicObject::parse_stream_link(YAML::Node yaml, const NodeTrack & track)
 {
-  StreamLink stream = data_.create_stream(builtin::relay);
+  StreamLink stream = data_.create_stream(builtin::relay, track);
   stream->system = true;
   stream->yaml["refer"] = yaml.as<std::string>();
   return stream;
 }
 
-WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml)
+WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml, const NodeTrack & track)
 {
-  WidgetLink widget = data_.create_widget(builtin::relay);
+  WidgetLink widget = data_.create_widget(builtin::relay, track);
   widget->system = true;
   widget->yaml["refer"] = yaml.as<std::string>();
   return widget;
 }
 
-FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml, const NodeTrack & track)
 {
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
 
-  FilterLink filter = data_.create_filter(klass, label, yaml);
+  FilterLink filter = data_.create_filter(klass, track, label, yaml);
   if (klass == builtin::function)
   {
     YAML::Node rules = yaml::take_required(yaml, "rules");
@@ -187,36 +187,37 @@ FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml)
       YAML::Node array;
       array.push_back(rules);
       rules.reset(array);
+      throw ConfigError("function property 'rules' is not a sequence");
     }
-    for (const auto & rule : rules)
+    for (size_t i = 0; i < rules.size(); ++i)
     {
-      filter->items.push_back(parse_filter_yaml(rule));
+      filter->items.push_back(parse_filter_yaml(rules[i], track.rules(i)));
     }
   }
   return filter;
 }
 
-StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml)
+StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml, const NodeTrack & track)
 {
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
   const auto input = yaml::take_optional(yaml, "input");
   const auto rules = yaml::take_optional(yaml, "rules");
 
-  StreamLink stream = data_.create_stream(klass, label, yaml);
+  StreamLink stream = data_.create_stream(klass, track, label, yaml);
   if (input)
   {
-    stream->items = StreamList{parse_stream_yaml(input)};
+    stream->items = StreamList{parse_stream_yaml(input, track.input())};
   }
   if (rules)
   {
     // TODO(Takagi, Isamu): check if class is apply
-    stream->apply = parse_filter_yaml(rules);
+    stream->apply = parse_filter_yaml(rules, track.rules());
   }
   return stream;
 }
 
-WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
+WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml, const NodeTrack & track)
 {
   const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
   const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
@@ -224,31 +225,32 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
   const auto input = yaml::take_optional(yaml, "input");
   const auto rules = yaml::take_optional(yaml, "rules");
 
-  WidgetLink widget = data_.create_widget(klass, label, yaml);
+  WidgetLink widget = data_.create_widget(klass, track, label, yaml);
   if (items)
   {
     if (!items.IsSequence())
     {
       throw ConfigError("widget property 'items' is not a sequence");
     }
-    for (const auto & item : items)
+    for (size_t i = 0; i < items.size(); ++i)
     {
-      widget->items.push_back(parse_widget_yaml(item));
+      widget->items.push_back(parse_widget_yaml(items[i], track.items(i)));
     }
   }
 
+  // TODO(Takagi, Isamu): error when only rules
   if (input)
   {
-    StreamLink panel = data_.create_stream(builtin::panel);
+    StreamLink panel = data_.create_stream(builtin::panel, track.panel());
     panel->system = true;
     panel->panel = widget;
-    panel->items = StreamList{parse_stream_yaml(input)};
+    panel->items = StreamList{parse_stream_yaml(input, track.input())};
 
     if (rules)
     {
-      StreamLink apply = data_.create_stream(builtin::apply);
+      StreamLink apply = data_.create_stream(builtin::apply, track.apply());
       apply->system = true;
-      apply->apply = parse_filter_yaml(rules);
+      apply->apply = parse_filter_yaml(rules, track.rules());
       apply->items = panel->items;
       panel->items = StreamList{apply};
     }
@@ -256,12 +258,12 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml)
   return widget;
 }
 
-FilterLink ParseBasicObject::parse_filter_list(YAML::Node yaml)
+FilterLink ParseBasicObject::parse_filter_list(YAML::Node yaml, const NodeTrack & track)
 {
-  FilterLink filter = data_.create_filter(builtin::function);
-  for (const auto & item : yaml)
+  FilterLink filter = data_.create_filter(builtin::function, track);
+  for (size_t i = 0; i < yaml.size(); ++i)
   {
-    filter->items.push_back(parse_filter_yaml(item));
+    filter->items.push_back(parse_filter_yaml(yaml[i], track.rules(i)));
   }
   return filter;
 }

@@ -116,7 +116,7 @@ void MergeSubscription::create_topic(const std::string & name, const std::string
 {
   if (topics_.count(code) == 0)
   {
-    const auto node = output_.create_stream("@topic");
+    const auto node = output_.create_stream("@topic", NodeTrack::Create("topic"));
     node->system = true;
     node->yaml["name"] = name;
     topics_[code].node = node;
@@ -127,7 +127,7 @@ void MergeSubscription::create_field(const std::string & name, const std::string
 {
   if (fields_.count(code) == 0)
   {
-    const auto node = output_.create_stream("@field");
+    const auto node = output_.create_stream("@field", NodeTrack::Create("field"));
     node->system = true;
     node->yaml["name"] = name;
     fields_[code].node = node;

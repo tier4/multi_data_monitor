@@ -49,9 +49,31 @@ namespace multi_data_monitor
 using NodeClass = std::string;
 using NodeLabel = std::string;
 
+class NodeTrack
+{
+public:
+  static NodeTrack Create(const std::string & start);
+  static NodeTrack Create(const std::string & start, size_t index);
+  NodeTrack panel() const;
+  NodeTrack apply() const;
+  NodeTrack rules() const;
+  NodeTrack input() const;
+  NodeTrack items(size_t index) const;
+  NodeTrack rules(size_t index) const;
+  std::string text() const;
+
+private:
+  explicit NodeTrack(const std::string & start);
+  std::string start_;
+  std::string extra_;
+  std::string items_;
+  std::string rules_;
+  size_t input_;
+};
+
 struct CommonData
 {
-  CommonData(const NodeClass & klass, const NodeLabel & label);
+  CommonData(const NodeClass & klass, const NodeTrack & track, const NodeLabel & label);
   virtual ~CommonData();
 
   // TODO(Takagi, Isamu): Remove debug code.
@@ -59,10 +81,10 @@ struct CommonData
   static inline int removed = 0;
 
   const NodeClass klass;
+  const NodeTrack track;
   const NodeLabel label;
   bool system = false;
   bool unused = false;
-  // TODO(Takagi, Isamu): debug info for exception
 };
 
 struct StreamData final : public CommonData
@@ -114,9 +136,9 @@ struct ConfigFile final
 
 struct ConfigData final
 {
-  FilterLink create_filter(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
-  StreamLink create_stream(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
-  WidgetLink create_widget(const NodeClass & klass, const NodeLabel & label = {}, YAML::Node yaml = {});
+  FilterLink create_filter(const NodeClass & klass, const NodeTrack & track, const NodeLabel & label = {}, YAML::Node yaml = {});
+  StreamLink create_stream(const NodeClass & klass, const NodeTrack & track, const NodeLabel & label = {}, YAML::Node yaml = {});
+  WidgetLink create_widget(const NodeClass & klass, const NodeTrack & track, const NodeLabel & label = {}, YAML::Node yaml = {});
 
   std::vector<FilterLink> filters;
   std::vector<StreamLink> streams;
@@ -130,21 +152,6 @@ public:
   virtual ~ConfigParserInterface() = default;
   virtual std::string name() = 0;
   virtual ConfigData execute(const ConfigData & input) = 0;
-};
-
-template <class T>
-struct NodeTraits;
-
-template <>
-struct NodeTraits<StreamLink>
-{
-  static constexpr auto Name = "stream";
-};
-
-template <>
-struct NodeTraits<WidgetLink>
-{
-  static constexpr auto Name = "widget";
 };
 
 }  // namespace multi_data_monitor
