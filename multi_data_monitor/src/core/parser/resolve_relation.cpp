@@ -13,10 +13,10 @@
 // limitations under the License.
 
 #include "resolve_relation.hpp"
-#include "common/exceptions.hpp"
 #include "common/graph.hpp"
 #include "common/util.hpp"
 #include "common/yaml.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <functional>
 #include <string>
 #include <unordered_map>

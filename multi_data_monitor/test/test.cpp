@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "common/exceptions.hpp"
 #include "loader/config_loader.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <gtest/gtest.h>
 
 std::string resource(const std::string & path)

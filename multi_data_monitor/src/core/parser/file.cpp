@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include "file.hpp"
-#include "common/exceptions.hpp"
 #include "common/path.hpp"
 #include "common/yaml.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <filesystem>
 #include <string>
 
@@ -31,16 +31,15 @@ ConfigFile ConfigFileLoader::execute(const std::string & input)
   }
 
   // TODO(Takagi, Isamu): handle yaml error
-  ConfigFile file;
-  file.yaml = YAML::LoadFile(path);
+  ConfigObject object(YAML::LoadFile(path), "config-file");
 
   // Check version.
-  const auto version = yaml::take_optional(file.yaml, "version").as<std::string>("undefined");
+  const auto version = object.take_required_data<std::string>("version");
   if (version != "2.0")
   {
     throw ConfigError("not supported version '" + version + "'");
   }
-  return file;
+  return ConfigFile{version, object.yaml};
 }
 
 }  // namespace multi_data_monitor

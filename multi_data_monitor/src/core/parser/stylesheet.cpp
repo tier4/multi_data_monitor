@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include "stylesheet.hpp"
-#include "common/exceptions.hpp"
 #include "common/path.hpp"
 #include "common/yaml.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <filesystem>
 #include <fstream>
 #include <memory>
@@ -37,7 +37,7 @@ DesignList ParseStyleSheet::execute(ConfigFile & file)
   }
 
   DesignList result;
-  for (const auto stylesheet : stylesheets)
+  for (const auto & stylesheet : stylesheets)
   {
     result.push_back(parse_stylesheet(stylesheet));
   }

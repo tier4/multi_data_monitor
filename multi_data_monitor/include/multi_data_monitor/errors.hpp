@@ -12,14 +12,35 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#ifndef CORE__COMMON__EXCEPTIONS_HPP_
-#define CORE__COMMON__EXCEPTIONS_HPP_
+#ifndef MULTI_DATA_MONITOR__ERRORS_HPP_
+#define MULTI_DATA_MONITOR__ERRORS_HPP_
 
-#include <stdexcept>
+#include <fmt/format.h>
+#include <exception>
 #include <string>
 
 namespace multi_data_monitor
 {
+
+struct Exception : public std::exception
+{
+  using std::exception::exception;
+  std::string message_;
+  const char * what() const noexcept override { return message_.c_str(); }
+};
+
+struct ConfigObjectError : public Exception
+{
+  void set_message(const std::string & field, const std::string & track, const std::string & message)
+  {
+    message_ = fmt::format("object field '{0}' {2} [{1}]", field, track, message);
+  }
+};
+
+struct FieldNotFound : public ConfigObjectError
+{
+  FieldNotFound(const std::string & field, const std::string & track) { set_message(field, track, "is required"); }
+};
 
 struct LogicError : public std::logic_error
 {
@@ -72,4 +93,4 @@ struct GraphIsNotTree : public ConfigError
 
 }  // namespace multi_data_monitor
 
-#endif  // CORE__COMMON__EXCEPTIONS_HPP_
+#endif  // MULTI_DATA_MONITOR__ERRORS_HPP_

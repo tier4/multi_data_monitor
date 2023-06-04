@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#include "common/exceptions.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <multi_data_monitor/filter.hpp>
 
 namespace multi_data_monitor

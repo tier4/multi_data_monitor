@@ -13,13 +13,13 @@
 // limitations under the License.
 
 #include "stream_loader.hpp"
-#include "common/exceptions.hpp"
 #include "config/types.hpp"
 #include "stream/apply.hpp"
 #include "stream/field.hpp"
 #include "stream/panel.hpp"
 #include "stream/print.hpp"
 #include "stream/topic.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <memory>
 #include <unordered_map>
 #include <utility>

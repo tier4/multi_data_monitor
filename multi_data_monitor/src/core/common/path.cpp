@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include "path.hpp"
-#include "common/exceptions.hpp"
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include <ament_index_cpp/get_package_share_directory.hpp>
+#include <multi_data_monitor/errors.hpp>
 #include <string>
 
 namespace multi_data_monitor::path

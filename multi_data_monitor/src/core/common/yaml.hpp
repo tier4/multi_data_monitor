@@ -18,6 +18,9 @@
 #include <yaml-cpp/yaml.h>
 #include <string>
 
+// TODO(Takagi, Isamu): move
+#include <multi_data_monitor/errors.hpp>
+
 namespace multi_data_monitor::yaml
 {
 
@@ -26,5 +29,30 @@ YAML::Node take_required(YAML::Node & yaml, const std::string & name);
 void check_empty(YAML::Node & yaml);
 
 }  // namespace multi_data_monitor::yaml
+
+namespace multi_data_monitor
+{
+
+struct ConfigObject
+{
+  ConfigObject(YAML::Node yaml, const std::string & track) : yaml(yaml), track(track) {}
+
+  template <class T>
+  T take_required_data(const std::string & field)
+  {
+    const auto node = yaml[field];
+    if (node)
+    {
+      yaml.remove(field);
+      return node.as<T>();
+    }
+    throw FieldNotFound(field, track);
+  }
+
+  YAML::Node yaml;
+  const std::string track;
+};
+
+}  // namespace multi_data_monitor
 
 #endif  // CORE__COMMON__YAML_HPP_

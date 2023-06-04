@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "yaml.hpp"
-#include "exceptions.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <string>
 #include <vector>
 
@@ -42,7 +42,7 @@ YAML::Node take_required(YAML::Node & yaml, const std::string & name)
 void check_empty(YAML::Node & yaml)
 {
   std::vector<std::string> fields;
-  for (const auto pair : yaml)
+  for (const auto & pair : yaml)
   {
     fields.push_back(pair.first.as<std::string>());
   }

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #include "check_system_class.hpp"
-#include "common/exceptions.hpp"
+#include <multi_data_monitor/errors.hpp>
 
 namespace multi_data_monitor
 {

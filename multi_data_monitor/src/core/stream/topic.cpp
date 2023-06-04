@@ -13,10 +13,10 @@
 // limitations under the License.
 
 #include "topic.hpp"
-#include "common/exceptions.hpp"
 #include "common/util.hpp"
 #include "common/yaml.hpp"
 #include <generic_type_utility/generic_message.hpp>
+#include <multi_data_monitor/errors.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <memory>
 #include <string>

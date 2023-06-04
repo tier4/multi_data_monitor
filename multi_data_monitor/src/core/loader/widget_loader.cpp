@@ -13,8 +13,8 @@
 // limitations under the License.
 
 #include "widget_loader.hpp"
-#include "common/exceptions.hpp"
 #include "config/types.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <QGridLayout>
 #include <QWidget>
 #include <sstream>

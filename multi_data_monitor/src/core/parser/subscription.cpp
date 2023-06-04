@@ -13,9 +13,9 @@
 // limitations under the License.
 
 #include "subscription.hpp"
-#include "common/exceptions.hpp"
 #include "common/util.hpp"
 #include "common/yaml.hpp"
+#include <multi_data_monitor/errors.hpp>
 #include <string>
 
 namespace multi_data_monitor
