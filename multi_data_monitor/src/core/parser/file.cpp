@@ -14,7 +14,7 @@
 
 #include "file.hpp"
 #include "common/path.hpp"
-#include "common/yaml.hpp"
+#include <multi_data_monitor/config.hpp>
 #include <multi_data_monitor/errors.hpp>
 #include <filesystem>
 #include <string>
