@@ -54,13 +54,13 @@ class NodeTrack
 public:
   static NodeTrack Create(const std::string & start);
   static NodeTrack Create(const std::string & start, size_t index);
+  operator std::string() const;
   NodeTrack panel() const;
   NodeTrack apply() const;
   NodeTrack rules() const;
   NodeTrack input() const;
   NodeTrack items(size_t index) const;
   NodeTrack rules(size_t index) const;
-  std::string text() const;
 
 private:
   explicit NodeTrack(const std::string & start);

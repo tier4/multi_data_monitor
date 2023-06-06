@@ -31,7 +31,7 @@ struct Exception : public std::exception
 
 struct ConfigObjectError : public Exception
 {
-  void set_message(const std::string & field, const std::string & track, const std::string & message)
+  void init(const std::string & field, const std::string & track, const std::string & message)
   {
     message_ = fmt::format("object field '{0}' {2} [{1}]", field, track, message);
   }
@@ -39,7 +39,17 @@ struct ConfigObjectError : public Exception
 
 struct FieldNotFound : public ConfigObjectError
 {
-  FieldNotFound(const std::string & field, const std::string & track) { set_message(field, track, "is required"); }
+  FieldNotFound(const std::string & field, const std::string & track) { init(field, track, "is required"); }
+};
+
+struct InvalidDataType : public ConfigObjectError
+{
+  InvalidDataType(const std::string & field, const std::string & track) { init(field, track, "is invalid type"); }
+};
+
+struct InvalidNodeType : public ConfigObjectError
+{
+  InvalidNodeType(const std::string & field, const std::string & track, const std::string & types) { init(field, track, "is not a " + types); }
 };
 
 struct LogicError : public std::logic_error

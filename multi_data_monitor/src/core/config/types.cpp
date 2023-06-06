@@ -34,6 +34,12 @@ NodeTrack::NodeTrack(const std::string & start)
   input_ = 0;
 }
 
+NodeTrack::operator std::string() const
+{
+  const auto input_depth = input_ ? "-input-" + std::to_string(input_) : "";
+  return start_ + items_ + input_depth + rules_ + extra_;
+}
+
 NodeTrack NodeTrack::panel() const
 {
   NodeTrack track(*this);
@@ -73,12 +79,6 @@ NodeTrack NodeTrack::rules(size_t index) const
   NodeTrack track(*this);
   track.rules_ += "-" + std::to_string(index);
   return track;
-}
-
-std::string NodeTrack::text() const
-{
-  const auto input_depth = input_ ? "-input-" + std::to_string(input_) : "";
-  return start_ + items_ + input_depth + rules_ + extra_;
 }
 
 CommonData::CommonData(const NodeClass & klass, const NodeTrack & track, const NodeLabel & label) : klass(klass), track(track), label(label)

@@ -31,7 +31,7 @@ ConfigFile ConfigFileLoader::execute(const std::string & input)
   }
 
   // TODO(Takagi, Isamu): handle yaml error
-  ConfigObject object(YAML::LoadFile(path), "config-file");
+  ConfigObject object(YAML::LoadFile(path), "config-file", false);
 
   // Check version.
   const auto version = object.take_required_data<std::string>("version");

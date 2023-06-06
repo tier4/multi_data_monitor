@@ -14,14 +14,27 @@
 
 #include "construction.hpp"
 #include "common/yaml.hpp"
+#include <multi_data_monitor/config.hpp>
 #include <multi_data_monitor/errors.hpp>
 #include <functional>
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace multi_data_monitor
 {
 
 using RootFunc = void (ParseBasicObject::*)(YAML::Node, const NodeTrack & track);
+
+auto enumerate(YAML::Node sequence)
+{
+  std::vector<std::pair<size_t, YAML::Node>> result;
+  for (size_t i = 0; i < sequence.size(); ++i)
+  {
+    result.emplace_back(i, sequence[i]);
+  }
+  return result;
+}
 
 void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self, RootFunc func)
 {
@@ -34,9 +47,9 @@ void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self,
   {
     throw ConfigError("config section '" + name + "' is not a sequence");
   }
-  for (size_t i = 0; i < nodes.size(); ++i)
+  for (const auto & [i, node] : enumerate(nodes))
   {
-    std::invoke(func, self, nodes[i], NodeTrack::Create(name, i));
+    std::invoke(func, self, node, NodeTrack::Create(name, i));
   }
 }
 
@@ -175,23 +188,21 @@ WidgetLink ParseBasicObject::parse_widget_link(YAML::Node yaml, const NodeTrack 
 
 FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml, const NodeTrack & track)
 {
-  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
-  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
-
+  ConfigObject object(yaml, track, false);
+  const auto klass = object.take_required_data<std::string>("class");
+  const auto label = object.take_optional_data<std::string>("label", "");
   FilterLink filter = data_.create_filter(klass, track, label, yaml);
+
   if (klass == builtin::function)
   {
-    YAML::Node rules = yaml::take_required(yaml, "rules");
+    YAML::Node rules = object.take_required_node("rules");
     if (!rules.IsSequence())
     {
-      YAML::Node array;
-      array.push_back(rules);
-      rules.reset(array);
-      throw ConfigError("function property 'rules' is not a sequence");
+      throw InvalidNodeType("rules", track, "sequence");
     }
-    for (size_t i = 0; i < rules.size(); ++i)
+    for (const auto & [i, rule] : enumerate(rules))
     {
-      filter->items.push_back(parse_filter_yaml(rules[i], track.rules(i)));
+      filter->items.push_back(parse_filter_yaml(rule, track.rules(i)));
     }
   }
   return filter;
@@ -199,46 +210,48 @@ FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml, const NodeTrack 
 
 StreamLink ParseBasicObject::parse_stream_dict(YAML::Node yaml, const NodeTrack & track)
 {
-  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
-  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
-  const auto input = yaml::take_optional(yaml, "input");
-  const auto rules = yaml::take_optional(yaml, "rules");
-
+  ConfigObject object(yaml, track, false);
+  const auto klass = object.take_required_data<std::string>("class");
+  const auto label = object.take_optional_data<std::string>("label", "");
   StreamLink stream = data_.create_stream(klass, track, label, yaml);
+
+  const auto input = object.take_optional_node("input");
   if (input)
   {
     stream->items = StreamList{parse_stream_yaml(input, track.input())};
   }
-  if (rules)
+  if (klass == builtin::apply)
   {
-    // TODO(Takagi, Isamu): check if class is apply
-    stream->apply = parse_filter_yaml(rules, track.rules());
+    const auto rules = object.take_required_node("rules");
+    if (rules)
+    {
+      stream->apply = parse_filter_yaml(rules, track.rules());
+    }
   }
   return stream;
 }
 
 WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml, const NodeTrack & track)
 {
-  const auto klass = yaml::take_required(yaml, "class").as<std::string>("");
-  const auto label = yaml::take_optional(yaml, "label").as<std::string>("");
-  const auto items = yaml::take_optional(yaml, "items");
-  const auto input = yaml::take_optional(yaml, "input");
-  const auto rules = yaml::take_optional(yaml, "rules");
-
+  ConfigObject object(yaml, track, false);
+  const auto klass = object.take_required_data<std::string>("class");
+  const auto label = object.take_optional_data<std::string>("label", "");
   WidgetLink widget = data_.create_widget(klass, track, label, yaml);
+
+  const auto items = object.take_optional_node("items");
   if (items)
   {
     if (!items.IsSequence())
     {
-      throw ConfigError("widget property 'items' is not a sequence");
+      throw InvalidNodeType("items", track, "sequence");
     }
-    for (size_t i = 0; i < items.size(); ++i)
+    for (const auto & [i, item] : enumerate(items))
     {
-      widget->items.push_back(parse_widget_yaml(items[i], track.items(i)));
+      widget->items.push_back(parse_widget_yaml(item, track.items(i)));
     }
   }
 
-  // TODO(Takagi, Isamu): error when only rules
+  const auto input = object.take_optional_node("input");
   if (input)
   {
     StreamLink panel = data_.create_stream(builtin::panel, track.panel());
@@ -246,6 +259,7 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml, const NodeTrack 
     panel->panel = widget;
     panel->items = StreamList{parse_stream_yaml(input, track.input())};
 
+    const auto rules = object.take_optional_node("rules");
     if (rules)
     {
       StreamLink apply = data_.create_stream(builtin::apply, track.apply());
@@ -261,9 +275,9 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml, const NodeTrack 
 FilterLink ParseBasicObject::parse_filter_list(YAML::Node yaml, const NodeTrack & track)
 {
   FilterLink filter = data_.create_filter(builtin::function, track);
-  for (size_t i = 0; i < yaml.size(); ++i)
+  for (const auto & [i, node] : enumerate(yaml))
   {
-    filter->items.push_back(parse_filter_yaml(yaml[i], track.rules(i)));
+    filter->items.push_back(parse_filter_yaml(node, track.rules(i)));
   }
   return filter;
 }

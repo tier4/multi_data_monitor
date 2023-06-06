@@ -19,27 +19,69 @@
 #include <yaml-cpp/yaml.h>
 #include <string>
 
+// DEBUG
+#include <iostream>
+
 namespace multi_data_monitor
 {
 
 struct ConfigObject
 {
-  ConfigObject(YAML::Node yaml, const std::string & track) : yaml(yaml), track(track) {}
+  ConfigObject(YAML::Node yaml, const std::string & track, bool check = true) : yaml(yaml), track(track), check(check) {}
+
+  YAML::Node take_node(const std::string & field, bool optional)
+  {
+    const auto node = yaml[field];
+    if (node || optional)
+    {
+      yaml.remove(field);
+      return node;
+    }
+    throw FieldNotFound(field, track);
+  }
+  YAML::Node take_required_node(const std::string & field) { return take_node(field, false); }
+  YAML::Node take_optional_node(const std::string & field) { return take_node(field, true); }
 
   template <class T>
   T take_required_data(const std::string & field)
   {
-    const auto node = yaml[field];
-    if (node)
+    try
     {
-      yaml.remove(field);
+      const auto node = take_required_node(field);
       return node.as<T>();
     }
-    throw FieldNotFound(field, track);
+    catch (const YAML::TypedBadConversion<T> &)
+    {
+      throw InvalidDataType(field, track);
+    }
+  }
+
+  template <class T>
+  T take_optional_data(const std::string & field, const T & fails)
+  {
+    try
+    {
+      const auto node = take_optional_node(field);
+      return node ? node.as<T>() : fails;
+    }
+    catch (const YAML::TypedBadConversion<T> &)
+    {
+      throw InvalidDataType(field, track);
+    }
+  }
+
+  ~ConfigObject()
+  {
+    if (check && yaml && yaml.size())
+    {
+      std::cout << "==================== " << track << " ====================" << std::endl;
+      std::cout << YAML::Dump(yaml) << std::endl;
+    }
   }
 
   YAML::Node yaml;
   const std::string track;
+  bool check;
 };
 
 }  // namespace multi_data_monitor
