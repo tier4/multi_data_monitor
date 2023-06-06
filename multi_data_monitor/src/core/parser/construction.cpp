@@ -45,7 +45,7 @@ void parse(YAML::Node & yaml, const std::string & name, ParseBasicObject * self,
   }
   if (!nodes.IsSequence())
   {
-    throw ConfigError("config section '" + name + "' is not a sequence");
+    throw InvalidNodeType(name + "-section", "list");
   }
   for (const auto & [i, node] : enumerate(nodes))
   {
@@ -130,8 +130,7 @@ FilterLink ParseBasicObject::parse_filter_yaml(YAML::Node yaml, const NodeTrack 
   {
     return parse_filter_list(yaml, track);
   }
-  // TODO(Takagi, Isamu): error message
-  throw ConfigError("unexpected filter format");
+  throw InvalidNodeType(track, "string/dict/list");
 }
 
 StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml, const NodeTrack & track)
@@ -144,8 +143,7 @@ StreamLink ParseBasicObject::parse_stream_yaml(YAML::Node yaml, const NodeTrack 
   {
     return parse_stream_dict(yaml, track);
   }
-  // TODO(Takagi, Isamu): error message
-  throw ConfigError("unexpected stream format");
+  throw InvalidNodeType(track, "string/dict");
 }
 
 WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml, const NodeTrack & track)
@@ -158,8 +156,7 @@ WidgetLink ParseBasicObject::parse_widget_yaml(YAML::Node yaml, const NodeTrack 
   {
     return parse_widget_dict(yaml, track);
   }
-  // TODO(Takagi, Isamu): error message
-  throw ConfigError("unexpected widget format");
+  throw InvalidNodeType(track, "string/dict");
 }
 
 FilterLink ParseBasicObject::parse_filter_link(YAML::Node yaml, const NodeTrack & track)
@@ -198,7 +195,7 @@ FilterLink ParseBasicObject::parse_filter_dict(YAML::Node yaml, const NodeTrack 
     YAML::Node rules = object.take_required_node("rules");
     if (!rules.IsSequence())
     {
-      throw InvalidNodeType("rules", track, "sequence");
+      throw InvalidNodeType("rules", track, "list");
     }
     for (const auto & [i, rule] : enumerate(rules))
     {
@@ -243,7 +240,7 @@ WidgetLink ParseBasicObject::parse_widget_dict(YAML::Node yaml, const NodeTrack 
   {
     if (!items.IsSequence())
     {
-      throw InvalidNodeType("items", track, "sequence");
+      throw InvalidNodeType("items", track, "list");
     }
     for (const auto & [i, item] : enumerate(items))
     {

@@ -33,7 +33,7 @@ DesignList ParseStyleSheet::execute(ConfigFile & file)
   }
   if (!stylesheets.IsSequence())
   {
-    throw ConfigError("config section 'stylesheets' is not a sequence");
+    throw InvalidNodeType("stylesheets-section", "list");
   }
 
   DesignList result;

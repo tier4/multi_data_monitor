@@ -31,8 +31,14 @@ struct Exception : public std::exception
 
 struct ConfigObjectError : public Exception
 {
+  void init(const std::string & track, const std::string & message)
+  {
+    // For config object without field.
+    message_ = fmt::format("config object {1} [{0}]", track, message);
+  }
   void init(const std::string & field, const std::string & track, const std::string & message)
   {
+    // For config object with field.
     message_ = fmt::format("object field '{0}' {2} [{1}]", field, track, message);
   }
 };
@@ -49,6 +55,7 @@ struct InvalidDataType : public ConfigObjectError
 
 struct InvalidNodeType : public ConfigObjectError
 {
+  InvalidNodeType(const std::string & track, const std::string & types) { init(track, "is not a " + types); }
   InvalidNodeType(const std::string & field, const std::string & track, const std::string & types) { init(field, track, "is not a " + types); }
 };
 
