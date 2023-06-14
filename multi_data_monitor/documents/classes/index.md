@@ -28,6 +28,7 @@
 
 - [function](./filter/function.md)
 - [Access](./filter/access.md)
+- [DiagFind](./filter/diag-find.md)
 - [Dump](./filter/dump.md)
 - [Units](./filter/units.md)
 - [Precision](./filter/precision.md)
