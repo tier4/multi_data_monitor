@@ -2,6 +2,8 @@
 
 This is an rviz2 plugin to monitor topics. [See here for package details.](./multi_data_monitor/README.md)
 
+![multi-data-monitor-with-autoware](https://github.com/tier4/multi_data_monitor/assets/43976882/d35b1173-493b-4617-a371-02aeb360e95c)
+
 ## Installation
 
 ```bash
