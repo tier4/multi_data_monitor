@@ -55,7 +55,7 @@ Packet Access::apply(const Packet & packet)
   {
     if (!value[field])
     {
-      value.reset(value_);
+      value.reset(YAML::Clone(value_));
       break;
     }
     value.reset(value[field]);
