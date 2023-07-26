@@ -18,52 +18,34 @@
 namespace multi_data_monitor
 {
 
-class Access : public BasicFilter
+class DiagFind : public BasicFilter
 {
 public:
   void setup(YAML::Node yaml) override;
   Packet apply(const Packet & packet) override;
 
 private:
-  std::vector<std::string> fields_;
-  YAML::Node value_;
+  std::string name_;
 };
 
-void Access::setup(YAML::Node yaml)
+void DiagFind::setup(YAML::Node yaml)
 {
-  switch (yaml["field"].Type())
-  {
-    case YAML::NodeType::Scalar:
-      fields_.push_back(yaml["field"].as<std::string>());
-      break;
-
-    case YAML::NodeType::Sequence:
-      fields_ = yaml["field"].as<std::vector<std::string>>();
-      break;
-
-    default:
-      // TODO(Takagi, Isamu): warning
-      break;
-  }
-  value_ = yaml["fails"];
+  name_ = yaml["name"].as<std::string>();
 }
 
-Packet Access::apply(const Packet & packet)
+Packet DiagFind::apply(const Packet & packet)
 {
-  YAML::Node value = packet.value;
-  for (const auto & field : fields_)
+  for (const auto & status : packet.value)
   {
-    if (!value[field])
+    if (name_ == status["name"].as<std::string>())
     {
-      value.reset(YAML::Clone(value_));
-      break;
+      return {status, packet.attrs};
     }
-    value.reset(value[field]);
   }
-  return {value, packet.attrs};
+  return {YAML::Node(), packet.attrs};
 }
 
 }  // namespace multi_data_monitor
 
 #include <pluginlib/class_list_macros.hpp>
-PLUGINLIB_EXPORT_CLASS(multi_data_monitor::Access, multi_data_monitor::BasicFilter)
+PLUGINLIB_EXPORT_CLASS(multi_data_monitor::DiagFind, multi_data_monitor::BasicFilter)
