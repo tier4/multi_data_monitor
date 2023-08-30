@@ -27,6 +27,25 @@ struct Packet
   using Attrs = std::unordered_map<std::string, std::string>;
   YAML::Node value;
   Packet::Attrs attrs;
+
+  Packet(const YAML::Node & v, const Packet::Attrs & a)
+  {
+    value.reset(v);
+    attrs = a;
+  }
+
+  Packet(const Packet & packet)
+  {
+    value.reset(packet.value);
+    attrs = packet.attrs;
+  }
+
+  Packet & operator=(const Packet & packet)
+  {
+    value.reset(packet.value);
+    attrs = packet.attrs;
+    return *this;
+  }
 };
 
 }  // namespace multi_data_monitor
