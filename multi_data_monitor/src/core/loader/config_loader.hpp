@@ -16,6 +16,7 @@
 #define CORE__LOADER__CONFIG_LOADER_HPP_
 
 #include "config/types.hpp"
+#include <functional>
 #include <memory>
 #include <string>
 #include <vector>

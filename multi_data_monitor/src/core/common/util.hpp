@@ -18,6 +18,7 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <functional>
 
 namespace multi_data_monitor::util
 {
